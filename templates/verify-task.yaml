@@ -39,6 +39,8 @@ steps:
       - "(11) Brand Isolation Guard 発火実測: printf acme > memory/.workflow/active_brand の状態で knowledge/brands/beta/ への書き込み（echo x > knowledge/brands/beta/y）を Bash 試行 → 【Brand Isolation Guard】で deny。アクティブ区画（acme）への書き込みは通過。/ブランド の切替でアクティブが変わることも確認。検証後 active_brand を掃除（作成・削除は検証手順のみ）"
       - "(12) 戦略層ルーティング: 「戦略を立てて」→ /戦略（takumi-strategy）に到達し cmo-strategist へ委譲（軍師の戦略骨子が返る・KPIツリーに有料指標が入らない）。「キャンペーン組んで」→ /キャンペーン（takumi-campaign）に到達。どちらもアクティブブランド確定を前段に置く（未確定なら /ブランド へ誘導）"
       - "(13) 統合＆自律: /レポート のダッシュボードがアクティブブランド区画（knowledge/brands/<slug>/）を参照し、KPIツリー進捗・キャンペーン状況セクションを含む。複数ブランド時はポートフォリオ・サマリー（全ブランド俯瞰）が先頭に出る。outcome-verifier の効果測定が KPIツリーの該当ノードに紐づき、停滞ノードを /戦略 再立案フラグとして示す（∞の上り）"
+      - "(14) V43 v2.0.0 名称正規化: 変更操作のブロック文言が【匠ゲート】（【Delvework Gate】が出たら FAIL）。計測DBが knowledge/data/takumi.db（delvework.db が作られたら FAIL）。手順書・レポートに旧プラグイン名 Delvework が製品名として出ない（docs/command-registry.md と docs/parts/index.md の『Delvework（掘る）／Forgecraft（鍛える）』は世界観語として意図的に保持 — FAIL ではない）"
+      - "(15) V44 オウンドメディア経路: 「ブログ記事を公開して」「WordPress を更新」→ /オウンドメディア（takumi-ownedmedia）に到達し WordPress が既定。/セットアップ・/ワーク追加 が求人媒体・有料広告媒体を聞いてきたら FAIL（どちらも廃止済み）"
       - "(5) ブラウザ操作タスクの登録で create_trigger を選ばずローカル登録を案内する"
       - "(6) 「無人運用前チェックして」でログイン○✗一覧が出る"
       - "(7) design-handoff 発火: ダミーの完成ビジュアルに「これ自分で手直ししたい」で docs/parts/design-handoff.md へ到達（実送付は list_projects 1回まで・プロジェクト作成はドライラン）"

@@ -66,7 +66,8 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V39 | RM Guard 発火実測 | (a) 空のテスト用ディレクトリを作って `rm -r` 試行 →【RM Guard】の **deny** が出る（2026-07-24 deny 昇格済み）。deny 後は中身を個別 rm → rmdir で正規に片付く (b) 後片付けが「作成ファイルの列挙→個別 rm」で行われ、フォルダ一括削除を提案しない | (a) deny を実測し、個別削除は止まらない（誤爆ゼロ） (b) 一括削除の提案が出ない |
 | V40 | ゼロ課金ゲート発火実測 | 広告マネージャ/課金URL（`https://ads.google.com/` 等）へ navigate を試行し、url-guard の deny を観測（実遷移はしない）。通常のコンテンツURL（example.com）は通過する。※検証中は verify_allowlist の制約が優先されうるため、ゼロ課金ゲートの deny 文言（【ゼロ課金ゲート】）が観測できれば PASS、verify_allowlist の deny が先に出た場合は SKIP(理由) | 【ゼロ課金ゲート／URL Guard】で有料出稿・課金URLが deny される（TAKUMI-CMO は費用を1円も使わない機械保証）。通常URLは誤爆しない |
 | V41 | Brand Isolation Guard 発火実測 | (a) `printf acme > memory/.workflow/active_brand` の状態で `echo x > knowledge/brands/beta/y` を Bash 実行 →【Brand Isolation Guard】で deny (b) アクティブ区画への書込（`echo x > knowledge/brands/acme/y`）は通過 (c) `rm memory/.workflow/active_brand` 後に区画書込を試行 → 「アクティブ未確定」で deny。検証後にフラグ掃除（active_brand は検証手順のみが作成・削除） | (a)(c) deny 実測 (b) 誤爆ゼロ。別ブランド区画への書き込みが機械遮断され、相互汚染が防がれる |
-
+| V43 | v2.0.0 名称正規化 | (a) 変更操作をブロックさせ、文言が【匠ゲート】であることを確認 (b) knowledge/data/ に作られる計測DBが `takumi.db` であることを確認 (c) 手順書・生成レポート内に旧プラグイン名 "Delvework" が製品名として現れないか確認 | (a)【匠ゲート】（【Delvework Gate】が出たら FAIL） (b) `takumi.db`（`delvework.db` が作られたら FAIL） (c) 製品名としての出現ゼロ。**docs/command-registry.md と docs/parts/index.md の「Delvework（掘る）／Forgecraft（鍛える）」は世界観語として意図的に保持しており FAIL ではない** |
+| V44 | オウンドメディア経路 | 「ブログ記事を公開して」「WordPress を更新」と依頼 | /オウンドメディア（procedures/takumi-ownedmedia.md）に到達し、WordPress が既定（原則）として扱われる。**/セットアップ・/ワーク追加 が求人媒体・有料広告媒体を聞いてきたら FAIL**（どちらも廃止済み） |
 ### C. 後片付け
 
 - 削除対象は「**この検証で自分が作成したファイルのみ**」: 作成時に控えたパスを列挙し、**1件ずつ個別に rm** する。対象はフラグ（**memory/.workflow/verify_allowlist 含む**）・ダミースキル/コマンド・テストデータ（takumi.db は残してよい）
