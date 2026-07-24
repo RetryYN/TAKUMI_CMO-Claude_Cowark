@@ -1,14 +1,14 @@
 {
-  "name": "unison-browser-worker",
+  "name": "retryyn-takumi-cmo",
   "owner": {
-    "name": "UNISON TECHNOLOGY"
+    "name": "RetryYN"
   },
   "plugins": [
     {
-      "name": "browser-worker",
+      "name": "takumi-cmo",
       "source": "./",
-      "version": "1.2.0",
-      "description": "Delvework — ブラウザ定常業務を探索→マッピング→最適化→実行で自動化するプラグイン"
+      "version": "2.0.0-dev",
+      "description": "匠CMO — ゼロ広告費のコンテンツドリブンで複数ブランドを無双させるマーケティングエンジン（匠の∞ループ）"
     }
   ]
 }
