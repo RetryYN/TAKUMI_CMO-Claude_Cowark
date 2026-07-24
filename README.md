@@ -5,8 +5,9 @@
 **TAKUMI-CMO** は Claude Cowork 上で動く、**ゼロ広告費のコンテンツドリブン**なマーケティングエンジン。
 1インストールで**複数ブランド**を扱い（記憶はブランドごとに分離）、1ブランドに**統合的な施策戦略**を打つ、匠のCMO。
 
-> 🚧 **v2.0.0-dev — 変革中**。堅牢に検証された「Browser Worker for Claude Cowork」基盤を土台に、匠CMOへ作り替え中です。
-> 到達点は下の[ロードマップ](#ロードマップ)を参照。設計の正本は [docs/command-registry.md](docs/command-registry.md)。
+> ✅ **v2.0.0 — 匠CMO 到達**。堅牢に検証された「Browser Worker for Claude Cowork」基盤を土台に、
+> ゼロ広告費・マルチブランドのマーケティングエンジンへ作り替えました。設計の正本は [docs/command-registry.md](docs/command-registry.md)。
+> **cloud Cowork 実機での `/検証 full`（FAIL 0）が配布の最終ゲート**です（[docs/開発ワークフロー.md §7](docs/開発ワークフロー.md)）。
 
 ## 世界観 — 匠の∞（無限）ループ
 
@@ -97,14 +98,14 @@ Browser Worker 基盤から匠CMOへの作り替え。各フェーズは原子�
 - [x] **Phase 2**：広告廃止 → コンテンツ転換（/広告→/コンテンツ）・URL Guard を「ゼロ課金ゲート」へ強化
 - [x] **Phase 3**：戦略層新設（/戦略・/キャンペーン・/ブランド・cmo-strategist・KPIツリー・Brand Isolation Guard・区画分離）
 - [x] **Phase 4**：統合＆自律（全パックをブランド参照へ・∞ループの自律フィードバック・CMOダッシュボード＋ポートフォリオ表示）
-- [ ] **Phase 5**：品質＆配布（Cowork前提の検証コマンド完成・version 2.0.0・配布）
+- [x] **Phase 5**：品質＆配布（検証コマンドを二層構造 Tier1/Tier2 で再設計・旧識別子の全面正規化と lint 固定・リリース手順の正本化・version 2.0.0）
 
 ## 同梱物（付録: 内部構成 — 使うだけなら読まなくて大丈夫です）
 
 | 種類 | 内容 |
 |---|---|
 | コマンド 13（日本語・カテゴリーレベル） | /戦略 /キャンペーン /ブランド + /SNS運用 /リサーチ /オウンドメディア /Webサイト /コンテンツ + /セットアップ /ワーク追加 /カスタマイズ /レポート + /検証。台帳: [docs/command-registry.md](docs/command-registry.md) |
-| 手順書 27 | `procedures/takumi-*.md` — 登録10+内部17 の手順の正本（コマンド/ルールが Read して実行） |
+| 手順書 30 | `procedures/takumi-*.md` — 登録13+内部17 の手順の正本（コマンド/ルールが Read して実行） |
 | 共有部品庫 | `docs/parts/` — タスク型の部品。パックのタスクが Read して使う（index.md が地図） |
 | フック 10 | 変更操作ゲート（送出監査 psv 含む）/ Money Watch / URL Guard（ゼロ課金ゲート）/ ナビゲーション警告 / インジェクション検知 / セッション開始通知 / OV Gate / Critic Gate / RM Guard / **Brand Isolation Guard**（別ブランド区画への書き込みを遮断）。**cloud セッションで有効・発火は環境依存**（[検証と安全設計](#検証と安全設計)） |
 | 執筆リファレンス 16 | `references/` 配下の内部教科書。web-design / sns-jp / content-design / seo-jp / cro-jp / copy / storytelling / logical / business / sales / video-ad / ad-compliance-jp + 心理3部作（psych-nudge/ux/target-jp）+ design-evidence-jp。業界を問わず使える執筆規範 |
@@ -140,6 +141,9 @@ Browser Worker 基盤から匠CMOへの作り替え。各フェーズは原子�
 - 認証情報は扱いません。ログインは人間が行います。**Credential Guard**: パスワード・認証コード欄へのAI入力を hook がブロック。
 - 変更操作はワークフローゲート（フェーズ判定・変更前記録）を通過しないと実行されません。
 - 送信・投稿など不可逆な送出の前は pre-send-verifier（敵対的監査）＋ 人間承認の二段ゲート。金銭・契約系画面は **Money Watch** が検知して変更操作を停止します。
+- **ゼロ広告費は二重に守られます**: hook（**ゼロ課金ゲート**が広告マネージャ・課金URLを deny）に加え、ドメイン層でも
+  KPIツリーが CAC/LTV/ROAS/CPA/広告費 等の有料指標を受け付けません（`takumi/domain/kpi_tree.py`）。hook が沈黙しても有料前提が設計に混入しません。
+- **ブランドの混線も二重**: hook（**Brand Isolation Guard** が非アクティブ区画への書き込みを deny）＋ 区画パスの境界判定（`BrandPartition`）。
 - **既知の限界（多層防御の前提）**:
   - **安全ゲートが機械強制されるのは cloud セッションのみ。ローカル Cowork では hooks が未配線（フェイルオープン。escalations E4）**。さらに Cowork のバージョン・構成によって plugin hooks が発火しない上流報告もあるため、**hooks を唯一の防御にせず、自己規律＋人間承認と併用**します。ゲート依存の運用（一括送出・金銭近傍・無人運用・ブランド分離）は cloud で行い、Tier 2 検証で実際の発火を確認してください。
   - ゲートは MCP ブラウザツールが対象。**Bash 経由の直接送信（node/curl 等）はゲート対象外**。
