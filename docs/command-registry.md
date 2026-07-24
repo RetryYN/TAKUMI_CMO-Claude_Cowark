@@ -20,7 +20,7 @@
 
 | 徳 | 定義 | 実装（この徳を担う実体） |
 |---|---|---|
-| **心** | ユーザー行動を心理学から読み解き、市場を開拓する | `references/psych-nudge-jp`（訴求フレーム選択）/ `psych-ux-jp`（デザインの心理根拠）/ `psych-target-jp`（読み手ごとの書き分け）/ `takumi-research`（背景の掘り起こし）。**心理学は不安の解消に使い、増幅（恐怖訴求・偽の希少性）は禁止**（session-rules (3)） |
+| **心** | ユーザー行動を心理学から読み解き、市場を開拓する。手法は**心理プロファイリング**（意思決定スタイル・不安・関係段階の3軸判定）と**CBT の認知の歪み**（全か無か／破局視／べき思考を特定し、購買・応募のブレーキを文面で外す） | `references/psych-target-jp`（プロファイリング3軸判定表・CBT応用・倫理境界）/ `psych-nudge-jp`（訴求フレーム選択・禁忌表・EAST自己審査）/ `psych-ux-jp`（視線・情報密度・配色・EFOの心理根拠）/ `takumi-research`（背景の掘り起こし）。**倫理境界**: 心理学は不安の解消に使い増幅（恐怖訴求・偽の希少性）は禁止（session-rules (3)）／読み手を「診断」する物言いをせずプロファイルは書き手側の内部判断に留める／判定基準は「事実を分かりやすく伝えた結果か、事実を歪めて作った感情か」／送信前は pre-send-verifier がこの基準への適合も監査する |
 | **技** | ユーザーにも AI にも届く形に磨き上げ、伝わることを実現する。*ユーザーに届く*＝**品質**／*AI に届く*＝**面**（マルチメディアの包囲網） | **品質**: `references/seo-jp`（検索意図）/ `cro-jp`（転換率）/ `design-evidence-jp`（可読性・コントラスト等の実証基準）/ `web-design` / 執筆スキル群 ＋ **design-artisan → design-critic の審査ループ**（Critic Gate が PASS 前の引き渡しを機械遮断）。**面**: テキスト（`takumi-ownedmedia`）× 画像・動画（`takumi-content` ＋ `docs/parts/imagegen`・`image-edit`・`video-content-script`、`templates/banner-compose.py`・`chromakey.py`・`guide-anim.py`）× SNS 7媒体（`takumi-sns`）を横断し、**`takumi-campaign` が複数媒体を1目標で束ねて包囲網を形成する** |
 | **体** | データを取り、仮説を裏付け、AI の実行力で加速する | A〜K ワークフロー（実ブラウザでの計測・公開・変更前記録）/ `knowledge/data/takumi.db`（計測DB）/ `outcome-verifier`（証跡のある確定数だけを成果に数える）/ `knowledge/sites/`（攻略済みサイトの地図） |
 
