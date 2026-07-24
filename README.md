@@ -39,6 +39,9 @@
 
 | カテゴリー（パック） | 言い方の例 |
 |---|---|
+| /戦略 | 「戦略を立てて」「KPIツリー作って」「3C分析して」（上流ループ＝軍師 cmo-strategist が立案。ゼロ広告費で統合戦略） |
+| /キャンペーン | 「キャンペーン組んで」「複数媒体を連動させて」（複数オーガニック媒体を1目標で統括） |
+| /ブランド | 「ブランドを追加」「acme に切り替え」「ブランド一覧」（マルチブランドの登録・切替・一覧。記憶は区画分離） |
 | /Webサイト | 「表示速度を測って」「デザイン調べて」「このLPを改善して」「徹底的に洗い出して」 |
 | /コンテンツ | 「記事のアイキャッチ作って」「サムネ作って」「Geminiで画像/動画作って」「バナーにして」「WebMにして」「このビジュアルからLP」（オウンド/オーガニック制作。**有料出稿は行いません＝ゼロ広告費**） |
 | /SNS運用 | 「Xの投稿ストック埋めて」「noteを書いて」（X/Instagram/Threads/TikTok/note/YouTube/LINE対応。単一媒体は /X運用 等が第一入口） |
@@ -51,8 +54,7 @@
 
 はじめての方は「何ができるの？」と聞けばガイドツアー（デモ）が始まります。
 
-> **変革で加わる予定のコマンド**（[ロードマップ](#ロードマップ)）: **/戦略**（上流ループ＝3C→KPIツリー→施策ロードマップ）・
-> **/キャンペーン**（複数媒体を1目標で統括）・**/ブランド**（ブランドの登録・切替・一覧＝マルチブランド）。
+> **匠CMOの中核コマンド**: **/戦略**（上流ループ＝3C→KPIツリー→施策ロードマップ）・**/キャンペーン**（複数媒体を1目標で統括）・**/ブランド**（登録・切替・一覧＝マルチブランド）。
 
 ## マルチブランド（記憶の分離）
 
@@ -61,7 +63,7 @@
 別ブランド区画への書き込みを機械的に遮断し、相互汚染を防ぎます（cloud セッション時）。
 すべてのタスクは、まずアクティブブランドを確定してから実行されます。
 
-> マルチブランドの基盤（`/ブランド`・区画分離・Brand Isolation Guard）は実装済み。戦略層（/戦略・/キャンペーン・cmo-strategist・KPIツリー）は Phase 3b で追加中。設計は [docs/domain-model.md](docs/domain-model.md)。
+> マルチブランド（`/ブランド`・区画分離・Brand Isolation Guard）と戦略層（/戦略・/キャンペーン・cmo-strategist・KPIツリー）は実装済み。設計は [docs/domain-model.md](docs/domain-model.md)。
 
 ## 何が起きるか
 
@@ -93,7 +95,7 @@ Browser Worker 基盤から匠CMOへの作り替え。各フェーズは原子�
 - [x] **Phase 0**：安全スナップショット・クリーンアップ
 - [x] **Phase 1**：識別子＆世界観リブランド（匠の∞ループ）・土台（Cowork仕様正本・DDDドメインモデル・CI強化）・README
 - [x] **Phase 2**：広告廃止 → コンテンツ転換（/広告→/コンテンツ）・URL Guard を「ゼロ課金ゲート」へ強化
-- [ ] **Phase 3**：戦略層新設（/戦略・/キャンペーン・/ブランド・cmo-strategist・KPIツリー・Brand Isolation Guard・区画分離）
+- [x] **Phase 3**：戦略層新設（/戦略・/キャンペーン・/ブランド・cmo-strategist・KPIツリー・Brand Isolation Guard・区画分離）
 - [ ] **Phase 4**：統合＆自律（全パックをブランド参照へ・∞ループの自律フィードバック・CMOダッシュボード）
 - [ ] **Phase 5**：品質＆配布（Cowork前提の検証コマンド完成・version 2.0.0・配布）
 
@@ -101,12 +103,12 @@ Browser Worker 基盤から匠CMOへの作り替え。各フェーズは原子�
 
 | 種類 | 内容 |
 |---|---|
-| コマンド 10（日本語・カテゴリーレベル） | /SNS運用 /リサーチ /媒体管理 /Webサイト /コンテンツ + /セットアップ /ワーク追加 /カスタマイズ /レポート + /検証。台帳: [docs/command-registry.md](docs/command-registry.md) |
+| コマンド 13（日本語・カテゴリーレベル） | /戦略 /キャンペーン /ブランド + /SNS運用 /リサーチ /媒体管理 /Webサイト /コンテンツ + /セットアップ /ワーク追加 /カスタマイズ /レポート + /検証。台帳: [docs/command-registry.md](docs/command-registry.md) |
 | 手順書 27 | `procedures/takumi-*.md` — 登録10+内部17 の手順の正本（コマンド/ルールが Read して実行） |
 | 共有部品庫 | `docs/parts/` — タスク型の部品。パックのタスクが Read して使う（index.md が地図） |
 | フック 10 | 変更操作ゲート（送出監査 psv 含む）/ Money Watch / URL Guard（ゼロ課金ゲート）/ ナビゲーション警告 / インジェクション検知 / セッション開始通知 / OV Gate / Critic Gate / RM Guard / **Brand Isolation Guard**（別ブランド区画への書き込みを遮断）。**cloud セッションで有効・発火は環境依存**（[検証と安全設計](#検証と安全設計)） |
 | 執筆リファレンス 17 | `references/` 配下の内部教科書。web-design / sns-jp / content-design / seo-jp / cro-jp / copy / storytelling / logical / business / sales / recruit + 心理3部作（psych-nudge/ux/target-jp）+ design-evidence-jp ほか。業界を問わず使える執筆規範 |
-| エージェント 6 | deliverable-writer（執筆）/ design-artisan（生成）/ design-critic（審査）/ strategy-advisor（設計壁打ち）/ pre-send-verifier（送信前監査）/ outcome-verifier（送信後の証跡・効果測定） |
+| エージェント 7 | cmo-strategist（**上流ループの戦略立案＝軍師**）/ deliverable-writer（執筆）/ design-artisan（生成）/ design-critic（審査）/ strategy-advisor（設計壁打ち）/ pre-send-verifier（送信前監査）/ outcome-verifier（送信後の証跡・効果測定） |
 | ドメインモデル | `takumi/` — dev-side の DDD 集約（Brand 等）。[docs/domain-model.md](docs/domain-model.md) が正本、`tests/` が単体テスト |
 | 正本ドキュメント | [docs/cowork-runtime.md](docs/cowork-runtime.md)（Cowork実行仕様）/ [docs/steps-reference.md](docs/steps-reference.md)（A〜K手順）/ [docs/開発ワークフロー.md](docs/開発ワークフロー.md)（開発規約） |
 
