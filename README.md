@@ -61,7 +61,7 @@
 別ブランド区画への書き込みを機械的に遮断し、相互汚染を防ぎます（cloud セッション時）。
 すべてのタスクは、まずアクティブブランドを確定してから実行されます。
 
-> マルチブランド層（`/ブランド`・区画・Brand Isolation Guard）は Phase 3 で実装中。設計は [docs/domain-model.md](docs/domain-model.md)。
+> マルチブランドの基盤（`/ブランド`・区画分離・Brand Isolation Guard）は実装済み。戦略層（/戦略・/キャンペーン・cmo-strategist・KPIツリー）は Phase 3b で追加中。設計は [docs/domain-model.md](docs/domain-model.md)。
 
 ## 何が起きるか
 
@@ -104,7 +104,7 @@ Browser Worker 基盤から匠CMOへの作り替え。各フェーズは原子�
 | コマンド 10（日本語・カテゴリーレベル） | /SNS運用 /リサーチ /媒体管理 /Webサイト /コンテンツ + /セットアップ /ワーク追加 /カスタマイズ /レポート + /検証。台帳: [docs/command-registry.md](docs/command-registry.md) |
 | 手順書 27 | `procedures/takumi-*.md` — 登録10+内部17 の手順の正本（コマンド/ルールが Read して実行） |
 | 共有部品庫 | `docs/parts/` — タスク型の部品。パックのタスクが Read して使う（index.md が地図） |
-| フック 9 | 変更操作ゲート（送出監査 psv 含む）/ Money Watch / URL Guard / ナビゲーション警告 / インジェクション検知 / セッション開始通知 / OV Gate / Critic Gate / RM Guard（2026-07-24 に deny 昇格）。**cloud セッションで有効・発火は環境依存**（[検証と安全設計](#検証と安全設計)） |
+| フック 10 | 変更操作ゲート（送出監査 psv 含む）/ Money Watch / URL Guard（ゼロ課金ゲート）/ ナビゲーション警告 / インジェクション検知 / セッション開始通知 / OV Gate / Critic Gate / RM Guard / **Brand Isolation Guard**（別ブランド区画への書き込みを遮断）。**cloud セッションで有効・発火は環境依存**（[検証と安全設計](#検証と安全設計)） |
 | 執筆リファレンス 17 | `references/` 配下の内部教科書。web-design / sns-jp / content-design / seo-jp / cro-jp / copy / storytelling / logical / business / sales / recruit + 心理3部作（psych-nudge/ux/target-jp）+ design-evidence-jp ほか。業界を問わず使える執筆規範 |
 | エージェント 6 | deliverable-writer（執筆）/ design-artisan（生成）/ design-critic（審査）/ strategy-advisor（設計壁打ち）/ pre-send-verifier（送信前監査）/ outcome-verifier（送信後の証跡・効果測定） |
 | ドメインモデル | `takumi/` — dev-side の DDD 集約（Brand 等）。[docs/domain-model.md](docs/domain-model.md) が正本、`tests/` が単体テスト |
