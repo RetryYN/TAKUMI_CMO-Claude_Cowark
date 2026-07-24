@@ -1,5 +1,5 @@
 #!/bin/bash
-# Delvework Injection Warn — PostToolUse hook（警告のみ、ブロックしない）
+# TAKUMI-CMO Injection Warn — PostToolUse hook（警告のみ、ブロックしない）
 # ページ読み取り系ツールの結果に「AIへの指示を装った文字列」（プロンプトインジェクション）
 # らしきパターンを検知したら、内容を信用しないよう注意喚起を注入する。
 # 検知は簡易grepであり万能ではない — 防御の本線は session-rules の

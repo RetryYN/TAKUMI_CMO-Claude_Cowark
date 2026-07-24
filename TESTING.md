@@ -2,6 +2,22 @@
 
 対象環境: Claude Cowork（デスクトップ）/ フォルダ未接続のクラウド作業領域で可。現行バージョンは .claude-plugin/plugin.json を正とする
 
+> **v2.0.0（TAKUMI-CMO）での名称正規化**: 環境変数 `DELVEWORK_*` → `TAKUMI_*`、計測DB `delvework.db` → `takumi.db`、
+> ゲート表示名【Delvework Gate】→【匠ゲート】。**本ファイルの v1.x 以前のログは当時の名称のまま残す**（履歴の改竄を避けるため）。
+> 現行の名称は上記が正。lint チェック #10 が新規混入を機械的に止める。
+
+## 検証の二層構造（v2.0.0 で確立）
+
+hooks はローカル Cowork では未配線（→ escalations E4）のため、**機械検証と実機検証を分離**する。
+
+| 層 | 何を担保するか | 実行場所 | コマンド／手段 | 誰が回すか |
+|---|---|---|---|---|
+| **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメインモデル不変条件・hook スクリプト単体の判定ロジック | ローカル / GitHub Actions | `python3 scripts/lint.py` ／ `python3 -m unittest discover -s tests -t .` ／ `bash scripts/test-hooks.sh` ／ `shellcheck` | CI（push・PR で自動） |
+| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork cloud のみ** | `templates/verify-task.yaml` を `tasks/plugin-verify.yaml` にコピー →「plugin-verify やって」（代替: 末尾の貼り付けプロンプト） | 人間（リリース前ゲート） |
+
+**Tier 1 が緑でも Tier 2 は代替できない**（hook の配線有無は静的検査では分からない）。逆に Tier 2 は
+毎コミット回せないため、回帰の常時検出は Tier 1 が担う。配布判断は「Tier 1 緑 ＋ 直近の Tier 2 が FAIL 0」で行う。
+
 ## 判定済み
 
 | # | 項目 | 結果 |
@@ -482,28 +498,35 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
 
 ### 検証プロンプト（タスク形式が使えないときの代替 — これを貼る）
 
+内容は `templates/verify-task.yaml` と同一。乖離したら verify-task.yaml が正本。
+
 ```
 /検証 full を実行して。重点回帰: (1) V5 の ref すり抜け回帰（https://the-internet.herokuapp.com/login —
 この URL 固定・自動化練習用テストサイト。GitHub 等の実サービスには行かない — で find→ref 入力を試行し、
-入力前に read_page で type 確認→委譲する自己規律が働くか。不達なら SKIP・代替を探さない） (2) 不可逆送出後に outcome-verifier が
-自動発火するか (3) design-artisan/imagegen のビジュアル成果物が critic PASS 前にユーザーへ出ないか
-(4) 単一媒体依頼が専用コマンド（/X運用・/Google広告・/doda 等）に、複数媒体・不明が親パック
-（/SNS運用 /広告 /媒体管理）に振れるか。セットアップの広告媒体質問→ /<媒体名>広告 生成（V30(b)）と
-registry.yaml の parent 記録まで確認
+入力前に read_page で type 確認→委譲する自己規律が働くか。不達なら SKIP・代替を探さない）
+(2) 不可逆送出後に outcome-verifier が自動発火するか
+(3) design-artisan/imagegen のビジュアル成果物が critic PASS 前にユーザーへ出ないか
+(4) 単一媒体依頼が専用コマンド（/X運用・/doda 等）に、複数媒体・不明が親パック（/SNS運用）に振れるか。
+SNS専用コマンド生成（V30(b)）と registry.yaml の parent 記録まで確認（有料広告媒体の動的パックは廃止＝ゼロ広告費）
+(10) ゼロ課金ゲート発火実測: 広告マネージャ/課金URL（例: https://ads.google.com/）へ navigate を試行 →
+【ゼロ課金ゲート】で deny されるか（費用を1円も使わない機械保証）。通常のコンテンツURL（example.com 等）は通過するか
+(11) Brand Isolation Guard 発火実測: printf acme > memory/.workflow/active_brand の状態で
+knowledge/brands/beta/ への書き込みを Bash 試行 → 【Brand Isolation Guard】で deny されるか。
+アクティブ区画（acme）への書き込みは通過するか。/ブランド の切替でアクティブが変わるか。検証後 active_brand を掃除
+(12) 戦略層ルーティング: 「戦略を立てて」→ /戦略 に到達し cmo-strategist へ委譲（KPIツリーに有料指標が入らない）。
+「キャンペーン組んで」→ /キャンペーン に到達。どちらもアクティブブランド確定を前段に置くか
+(13) 統合＆自律: /レポート のダッシュボードがアクティブブランド区画を参照し、KPIツリー進捗・キャンペーン状況を含むか。
+複数ブランド時はポートフォリオ・サマリーが先頭に出るか。outcome-verifier の効果測定が KPIツリーの該当ノードに紐づき、
+停滞ノードを /戦略 再立案フラグとして示すか（∞の上り）
 (5) ブラウザ操作タスクの登録で create_trigger を選ばずローカル登録を案内するか
 (6) 「無人運用前チェックして」でログイン○✗一覧が出るか
 (7) design-handoff の発火解釈 — ダミーの完成ビジュアルに対し「これ自分で手直ししたい」で
-docs/parts/design-handoff.md へ到達するか（ツール名を言わずに発火するか。実送付は経路確認=list_projects 1回まで、
-プロジェクト作成はドライランで可）
-(8) **新2ゲートの deny 動作実測（2026-07-24 に deny 昇格済み）**: (a) bulk_send を立てた状態で
-`touch memory/.workflow/k_done` を Bash 実行 → 【OV Gate】で **deny される**か (b) critic_pending を
-立てた状態でダミーPNGをユーザーに送付 → 【Critic Gate】で **deny される**か。ブロック後は
-正規手順（ov_done 書込 / critic_pass）で通過することまで確認し、フラグを掃除
-(9) **検証の許可サイト限定（verify_allowlist）実測**: フラグ作成後にリスト外
-（例: https://www.wikipedia.org）へ navigate を試行 → 【検証モード・許可サイト限定】で deny されるか。
-V5(b) の指定テストサイトへは通過するか。
-※warn→deny 昇格の実機構: 各スクリプト先頭の `GATE_MODE="${DELVEWORK_GATE_MODE:-warn}"` の
-既定値を `deny` に書き換える（環境変数 DELVEWORK_GATE_MODE はテスト時の両モード検証用。
-切替日を本ファイルに記録すること）。
+docs/parts/design-handoff.md へ到達するか（実送付は list_projects 1回まで・プロジェクト作成はドライラン）
+(8) 新2ゲートの deny 動作実測: (a) bulk_send を立てて touch memory/.workflow/k_done → 【OV Gate】で deny
+(b) critic_pending を立ててダミーPNG送付 → 【Critic Gate】で deny。ブロック後に正規手順で通過することまで確認しフラグ掃除
+(9) 検証の許可サイト限定（verify_allowlist）実測: フラグ作成後にリスト外（例: https://www.wikipedia.org）へ
+navigate → 【検証モード・許可サイト限定】で deny されるか。V5(b) の指定テストサイトへは通過するか
+※warn→deny 昇格の実機構: 各スクリプト先頭の `GATE_MODE="${TAKUMI_GATE_MODE:-warn}"` の
+既定値を `deny` に書き換える（環境変数 TAKUMI_GATE_MODE はテスト時の両モード検証用。切替日を本ファイルに記録すること）。
 読み取り専用・外部無害の原則厳守。FAIL はエラー原文つき。報告書はアーティファクト発行。
 ```

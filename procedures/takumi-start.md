@@ -3,7 +3,7 @@ description: ブラウザ操作タスクの開始手続き（ワークフロー�
 argument-hint: <タスク名>
 ---
 
-Delvework のタスク「$ARGUMENTS」を開始してください。
+TAKUMI-CMO のタスク「$ARGUMENTS」を開始してください。
 
 手順の正本は `${CLAUDE_PLUGIN_ROOT}/docs/steps-reference.md`（見つからなければ Glob `**/docs/steps-reference.md`）。
 **最初に必ず Read すること** — CP証跡定義（E-3）・レギュレーション検証（F-4）・ログ記録スキーマ（I-3）・ナレッジ構造（D-2）はそちらに従う。以下はフラグ操作の最短経路のみ。

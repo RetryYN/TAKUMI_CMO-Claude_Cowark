@@ -1,5 +1,5 @@
 #!/bin/bash
-# Delvework Workflow Gate — PreToolUse hook
+# TAKUMI-CMO Workflow Gate — PreToolUse hook
 # ブラウザ変更操作（click/type/fill_form/select_option/file_upload/press_key）を
 # B-4（フェーズ判定）と E（変更前記録）の完了フラグなしではブロックする。
 
@@ -60,20 +60,20 @@ if printf '%s' "$STDIN_JSON" | grep -q 'browser_batch'; then
 fi
 
 if [ ! -f "$WF_DIR/active" ]; then
-  deny "【Delvework Gate】ワークフロー未初期化。/タスク開始 でタスクを開始し、B-4（フェーズ判定）を完了してください（browser_batch は変更系を1つでも含むと一括でゲート対象になります）。"
+  deny "【匠ゲート】ワークフロー未初期化。/タスク開始 でタスクを開始し、B-4（フェーズ判定）を完了してください（browser_batch は変更系を1つでも含むと一括でゲート対象になります）。"
 fi
 
 if [ ! -f "$WF_DIR/b4_done" ]; then
-  deny "【Delvework Gate】B-4（フェーズ判定）が未完了です。/タスク開始 の手順に戻り、B-4（フェーズ判定）まで完了してから変更操作を行ってください。フラグを直接 touch して迂回することは禁止です。"
+  deny "【匠ゲート】B-4（フェーズ判定）が未完了です。/タスク開始 の手順に戻り、B-4（フェーズ判定）まで完了してから変更操作を行ってください。フラグを直接 touch して迂回することは禁止です。"
 fi
 
 # 一括送出タスク（Step F で bulk_send 宣言）は pre-send-verifier 監査完了（psv_done）まで変更操作を止める
 if [ -f "$WF_DIR/bulk_send" ] && [ ! -f "$WF_DIR/psv_done" ]; then
-  deny "【Delvework Gate】一括送出タスクは pre-send-verifier の敵対的監査（VERDICT）とユーザー承認が先です。監査完了後に psv_done を立ててから実行してください（手順: docs/steps-reference.md の Step H）。フラグだけ立てる迂回は禁止です。"
+  deny "【匠ゲート】一括送出タスクは pre-send-verifier の敵対的監査（VERDICT）とユーザー承認が先です。監査完了後に psv_done を立ててから実行してください（手順: docs/steps-reference.md の Step H）。フラグだけ立てる迂回は禁止です。"
 fi
 
 if [ ! -f "$WF_DIR/e_done" ]; then
-  deny "【Delvework Gate】Step E（変更前記録）が未完了です。/タスク開始 の手順どおり、read_page（Claude in Chrome）または browser_snapshot（Playwright）で変更前の状態を記録・保存してから進んでください。記録せずフラグだけ立てる迂回は禁止です。"
+  deny "【匠ゲート】Step E（変更前記録）が未完了です。/タスク開始 の手順どおり、read_page（Claude in Chrome）または browser_snapshot（Playwright）で変更前の状態を記録・保存してから進んでください。記録せずフラグだけ立てる迂回は禁止です。"
 fi
 
 exit 0

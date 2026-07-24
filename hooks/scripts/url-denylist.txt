@@ -1,4 +1,4 @@
-# Delvework URL Guard — デフォルト拒否リスト（金銭発生・広告出稿・課金設定ページ）
+# TAKUMI-CMO URL Guard — デフォルト拒否リスト（金銭発生・広告出稿・課金設定ページ）
 # 1行1パターン（grep -E の正規表現、URL に対して大文字小文字無視でマッチ）
 # '#' 始まりはコメント。ワークスペース側での追加は knowledge/config/url-denylist.txt、
 # 個別許可（このリストより優先）は knowledge/config/url-allowlist.txt に記載する。

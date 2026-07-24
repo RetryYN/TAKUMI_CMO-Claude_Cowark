@@ -3,12 +3,12 @@
 # outcome-verifier の独立検証記録（ov_done）なしでは通さない。
 # 対象は Bash の「touch × k_done」だけ。読み取り系・通常タスク（bulk_send なし）には一切干渉しない。
 # 導入手順（TESTING.md「GATE_MODE 昇格」節が正本）: 初期は warn（注入のみ）で運用し、誤爆ゼロ確認後に deny へ昇格。
-# 2026-07-24 deny 昇格済み（v0.101.1 実機で matcher 発火・誤爆ゼロを確認。テストは DELVEWORK_GATE_MODE で両モードを検証）。
+# 2026-07-24 deny 昇格済み（v0.101.1 実機で matcher 発火・誤爆ゼロを確認。テストは TAKUMI_GATE_MODE で両モードを検証）。
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/_common.sh"
 
-GATE_MODE="${DELVEWORK_GATE_MODE:-deny}"
+GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 
 # 1) k_done への touch を含むコマンドだけが対象
 printf '%s' "$STDIN_TEXT" | grep -q 'k_done' || exit 0

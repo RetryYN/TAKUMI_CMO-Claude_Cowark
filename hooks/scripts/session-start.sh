@@ -1,5 +1,5 @@
 #!/bin/bash
-# Delvework Session Start — 前回未完了タスクの通知 + 環境情報
+# TAKUMI-CMO Session Start — 前回未完了タスクの通知 + 環境情報
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/_common.sh"
@@ -8,7 +8,7 @@ source "$SCRIPT_DIR/_common.sh"
 PREFIX=""
 if [ -f "$WF_DIR/active" ] && [ ! -f "$WF_DIR/k_done" ]; then
   task="$(cat "$WF_DIR/active" 2>/dev/null | tr -d '\n"\\')"
-  PREFIX="【Delvework】前回のタスク「$task」が未完了です（k_done なし）。memory/session-log.md を確認して引き継ぐこと。 "
+  PREFIX="【TAKUMI-CMO】前回のタスク「$task」が未完了です（k_done なし）。memory/session-log.md を確認して引き継ぐこと。 "
 fi
 
 # 永続化チェック: ワークスペースに蓄積の痕跡（knowledge/）が無い場合、
@@ -43,4 +43,4 @@ if [ -f "$RULES_FILE" ]; then
 fi
 
 # フォールバック（rules ファイル欠損時）
-warn_session "${PREFIX}【Delvework】session-rules.txt が見つかりません（プラグイン破損の可能性）。docs/conventions.md と各 delve コマンドの手順に従い、変更操作は必ず /タスク開始 から行うこと。"
+warn_session "${PREFIX}【TAKUMI-CMO】session-rules.txt が見つかりません（プラグイン破損の可能性）。docs/conventions.md と各 takumi コマンドの手順に従い、変更操作は必ず /タスク開始 から行うこと。"

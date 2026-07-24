@@ -3,7 +3,7 @@ description: 作業成果のHTMLレポート生成 — 直近のブラウザタ�
 argument-hint: [タスク名（省略時は直近タスク）]
 ---
 
-Delvework タスク「$ARGUMENTS」（未指定なら `memory/.workflow/active` の直近タスク）のブラウジングレポートを HTML で生成してください。
+TAKUMI-CMO タスク「$ARGUMENTS」（未指定なら `memory/.workflow/active` の直近タスク）のブラウジングレポートを HTML で生成してください。
 
 ## 手順
 

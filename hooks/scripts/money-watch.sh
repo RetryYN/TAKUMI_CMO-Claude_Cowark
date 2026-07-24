@@ -1,5 +1,5 @@
 #!/bin/bash
-# Delvework Money Watch — PostToolUse hook
+# TAKUMI-CMO Money Watch — PostToolUse hook
 # ページ読み取り結果に金銭・契約・不可逆登録系のパターンを検知したら、
 # (1) 停止フラグ memory/.workflow/money_alert を設置（以降の変更操作を workflow-gate が deny）
 # (2) 上位モデル（strategy-advisor）への相談とユーザー承認を要求する警告を注入する。

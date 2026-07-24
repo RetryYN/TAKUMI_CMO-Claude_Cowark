@@ -1,9 +1,9 @@
 #!/bin/bash
-# Delvework Hook — shared functions (Cowork / Linux VM compatible)
+# TAKUMI-CMO Hook — shared functions (Cowork / Linux VM compatible)
 # ワークスペースのパスは CLAUDE_PROJECT_DIR から解決する（絶対パス直書き禁止）
 
 PROJECT_DIR="${CLAUDE_PROJECT_DIR:-$PWD}"
-WF_DIR="${DELVEWORK_WF_DIR:-$PROJECT_DIR/memory/.workflow}"
+WF_DIR="${TAKUMI_WF_DIR:-$PROJECT_DIR/memory/.workflow}"
 
 # Capture stdin (hook payload JSON) for input inspection
 STDIN_JSON="$(cat 2>/dev/null || true)"

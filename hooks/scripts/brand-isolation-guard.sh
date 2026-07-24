@@ -8,7 +8,7 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/_common.sh"
 
-GATE_MODE="${DELVEWORK_GATE_MODE:-deny}"
+GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 
 # ブランド区画パスに触れていなければ即通過
 printf '%s' "$STDIN_TEXT" | grep -qE 'knowledge/brands/[a-z0-9][a-z0-9-]*' || exit 0

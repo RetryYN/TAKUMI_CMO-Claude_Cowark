@@ -27,7 +27,7 @@ argument-hint: [register <タスク名> | list | remove <タスク名>]（省略
 
 ### 3. ナレッジの足場
 
-- `knowledge/sites/<place>/` が未整備なら作成し、index.md に「初回実行時に Delvework 方式でマッピングする（フェーズ①）」と記録
+- `knowledge/sites/<place>/` が未整備なら作成し、index.md に「初回実行時に 探索マッピング方式（掘る）でマッピングする（フェーズ①）」と記録
 
 ### 4. ループ登録
 
