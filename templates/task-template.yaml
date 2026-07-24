@@ -3,7 +3,7 @@
 
 name: your-task-name
 description: タスクの概要
-domain: 求人媒体            # 企画リサーチ / SNS運用 / 求人媒体 / 広告分析 / 基盤（docs/command-registry.md の分類）
+domain: オウンド             # SNS媒体 / オウンド / 戦略 / 基盤 / 記録 / 横断（docs/command-registry.md の分類）
 place: baitai-b             # 対象の場所（knowledge/sites/<place>/ のキー。媒体・サイト・SNSアカウント）
 
 # ループ（定常実行）。単発タスクなら schedule を省略

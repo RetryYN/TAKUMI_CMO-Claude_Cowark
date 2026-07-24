@@ -4,7 +4,7 @@
 
 要望から対象が読み取れなければ、質問ツールで確認する:
 
-1. **どの媒体・対象を調べる？** — SNS（X/Instagram/TikTok/note/YouTube）/ 競合コンテンツ・訴求 / Webサイト・LP / 求人媒体・求人市場 / その他のWeb情報
+1. **どの媒体・対象を調べる？** — SNS（X/Instagram/TikTok/note/YouTube）/ 競合コンテンツ・訴求 / Webサイト・LP / オウンドメディア・検索market（SEO・キーワード） / その他のWeb情報
 2. **何を知りたい？** — 競合の動き / トレンド・伸びてる型 / デザイン・見せ方 / 品質・数値 / 徹底的に全部 / その他
 
 確認した対象・観点はそのセッション中は前提として保持し、同じ質問を繰り返さない（調査記録の冒頭にも書き残す）。
@@ -18,7 +18,7 @@
 | Webサイト・LP のデザイン | docs/parts/style-research.md |
 | Webサイト・LP の品質・速度 | docs/parts/site-audit.md |
 | 徹底的に全部 | docs/parts/deep-research.md |
-| 求人媒体・市場 | knowledge/sites/<媒体>/ のナレッジ + 媒体内検索（読み取りのみ） |
+| オウンドメディア・検索市場（SEO） | procedures/takumi-ownedmedia.md のリサーチ節 + references/seo-jp/SKILL.md（キーワード・検索意図・競合記事の読み取りのみ） |
 
 ## 2. 共通ルール
 
