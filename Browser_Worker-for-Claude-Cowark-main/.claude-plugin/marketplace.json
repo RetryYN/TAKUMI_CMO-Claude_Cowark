@@ -1,0 +1,14 @@
+{
+  "name": "unison-browser-worker",
+  "owner": {
+    "name": "UNISON TECHNOLOGY"
+  },
+  "plugins": [
+    {
+      "name": "browser-worker",
+      "source": "./",
+      "version": "1.2.0",
+      "description": "Delvework — ブラウザ定常業務を探索→マッピング→最適化→実行で自動化するプラグイン"
+    }
+  ]
+}

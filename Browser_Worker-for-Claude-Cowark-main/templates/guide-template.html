@@ -1,0 +1,196 @@
+<title>Delvework 操作の手引</title>
+<style>
+:root{
+  --washi:#F7F2E4; --washi-2:#EFE7D2; --sumi:#2A211A; --sumi-2:#5C513F;
+  --niwa:#3D4F2F; --niwa-2:#66784A; --koke:#8A9A66;
+  --shu:#A63A2B;
+  --kin:#B08D3E; --kin-hi:#E3CB85;
+  --line:#D8CCAD;
+  --serif:"Shippori Mincho","Yu Mincho","YuMincho","Hiragino Mincho ProN","Noto Serif JP",serif;
+  --gothic:"Hiragino Kaku Gothic ProN","Yu Gothic","YuGothic","Noto Sans JP",sans-serif;
+  --kinpaku:linear-gradient(105deg,#B08D3E 0%,#E3CB85 35%,#C9A54A 55%,#EAD79B 78%,#B08D3E 100%);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--washi);color:var(--sumi);font-family:var(--gothic);
+  line-height:2;font-size:16px;
+  background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><filter id="p"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7"/><feColorMatrix values="0 0 0 0 0.42 0 0 0 0 0.36 0 0 0 0 0.26 0 0 0 0.04 0"/></filter><rect width="240" height="240" filter="url(%23p)"/></svg>')}
+
+/* ============ 表紙 — 掛け軸の正面構図 ============ */
+.cover{min-height:88vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:64px 24px 0;position:relative}
+.hinomaru{width:30px;height:30px;border-radius:50%;background:var(--shu);margin-bottom:34px;
+  box-shadow:0 0 0 5px var(--washi),0 0 0 6px var(--kin)}
+.daidai{writing-mode:vertical-rl;font-family:var(--serif);font-weight:600;margin:0 auto;
+  font-size:clamp(40px,6vw,60px);letter-spacing:.3em;line-height:1.2;color:var(--sumi)}
+.fukudai{font-family:var(--serif);font-size:13px;letter-spacing:.55em;color:var(--niwa);
+  margin:34px 0 0;padding-left:.55em}
+.kin-line{width:72px;height:2px;background:var(--kinpaku);margin:26px auto 30px}
+.lede{font-family:var(--serif);font-size:15.5px;max-width:34em;margin:0 auto;color:var(--sumi-2);line-height:2.4;text-align:center}
+
+/* 庭 — 刈込の丘と金の水面 */
+.niwa{width:100%;max-width:1080px;height:130px;position:relative;margin-top:auto;overflow:hidden;flex:none}
+.niwa i{position:absolute;bottom:26px;border-radius:50% 50% 0 0;display:block}
+.niwa .k1{left:6%;width:150px;height:52px;background:var(--niwa)}
+.niwa .k2{left:15%;width:110px;height:38px;background:var(--niwa-2)}
+.niwa .k3{right:14%;width:180px;height:60px;background:var(--niwa)}
+.niwa .k4{right:7%;width:100px;height:34px;background:var(--koke)}
+.niwa .k5{left:38%;width:80px;height:26px;background:var(--koke)}
+.niwa .mizu{position:absolute;left:0;right:0;bottom:20px;height:2px;background:var(--kinpaku);border-radius:0}
+.niwa .ishi{position:absolute;bottom:6px;width:26px;height:10px;border-radius:50%;background:var(--line)}
+.niwa .i1{left:30%}.niwa .i2{left:50%;width:34px}.niwa .i3{left:66%}
+
+/* ============ 奥付帯 ============ */
+.okuzuke-wrap{max-width:840px;margin:56px auto 0;padding:0 32px}
+.okuzuke{display:flex;flex-wrap:wrap;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.okuzuke div{flex:1 1 150px;padding:18px 20px;border-right:1px solid var(--line)}
+.okuzuke div:first-child{padding-left:4px}
+.okuzuke div:last-child{border-right:none}
+.okuzuke dt{font-size:11px;letter-spacing:.3em;color:var(--kin);margin:0 0 4px;font-family:var(--serif);font-weight:600}
+.okuzuke dd{margin:0;font-size:14px;font-family:var(--serif)}
+
+/* ============ 章 ============ */
+.wrap{max-width:840px;margin:0 auto;padding:0 32px 120px}
+.sec{margin-top:clamp(80px,11vh,120px)}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:34px;border-bottom:1px solid var(--line);padding-bottom:14px;position:relative}
+.sec-head::after{content:"";position:absolute;left:0;bottom:-1px;width:72px;height:2px;background:var(--kinpaku)}
+.kanji-no{font-family:var(--serif);font-size:17px;color:var(--shu);flex:none;letter-spacing:.1em}
+.sec-head h2{font-family:var(--serif);font-weight:600;font-size:clamp(22px,3vw,26px);letter-spacing:.18em;margin:0;color:var(--niwa)}
+.sec-head .fu{margin-left:auto;font-size:11px;letter-spacing:.4em;color:var(--sumi-2);font-family:var(--serif)}
+.sec>p{max-width:40em;color:var(--sumi-2);font-size:15px}
+
+/* 心得 */
+.kokoroe{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:clamp(22px,3.5vw,40px)}
+.kokoroe .kk h3{font-family:var(--serif);font-size:17.5px;font-weight:600;margin:0 0 12px;color:var(--niwa);letter-spacing:.1em;
+  padding-top:14px;border-top:2px solid var(--niwa)}
+.kokoroe .kk p{margin:0;font-size:14px;color:var(--sumi-2);line-height:2.1}
+
+/* お品書き */
+.oshina{margin:0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.oshina li{display:grid;grid-template-columns:minmax(10em,13em) 1fr;gap:6px 30px;
+  padding:22px 4px;border-bottom:1px solid var(--line);align-items:baseline}
+.oshina .nani{font-size:14px;color:var(--sumi-2);letter-spacing:.06em}
+.oshina .iikata{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--sumi);letter-spacing:.04em}
+.oshina .iikata::before{content:"「";color:var(--kin)}
+.oshina .iikata::after{content:"」";color:var(--kin)}
+.oshina .okoru{grid-column:2;font-size:13.5px;color:var(--sumi-2)}
+.oshina .okoru::before{content:"─ ";color:var(--niwa-2)}
+@media (max-width:560px){.oshina li{grid-template-columns:1fr}.oshina .okoru{grid-column:1}}
+
+/* 工程 — 飛び石 */
+.kotei{display:flex;flex-wrap:wrap;counter-reset:step;margin-top:10px}
+.kotei .st{flex:1 1 170px;padding:24px 26px 24px 0}
+.kotei .st+.st{padding-left:26px;border-left:1px solid var(--line)}
+.kotei .st::before{counter-increment:step;content:counter(step,cjk-ideographic);
+  font-family:var(--serif);color:var(--shu);font-size:15px;display:block;margin-bottom:10px}
+.kotei .st b{display:block;font-family:var(--serif);font-size:17px;color:var(--niwa);letter-spacing:.12em;margin-bottom:8px;font-weight:600}
+.kotei .st span{font-size:13.5px;color:var(--sumi-2);line-height:2}
+
+/* 注書き */
+.chu{border-left:3px solid var(--shu);padding:8px 0 8px 24px;font-size:14px;max-width:42em;margin-top:40px;color:var(--sumi-2);background:var(--washi-2)}
+.chu b{font-family:var(--serif);letter-spacing:.2em;color:var(--shu);display:block;margin-bottom:4px;font-size:13px}
+
+footer{max-width:840px;margin:110px auto 0;padding:26px 32px 52px;border-top:1px solid var(--line);
+  display:flex;justify-content:space-between;align-items:center;font-size:11.5px;letter-spacing:.28em;color:var(--sumi-2);font-family:var(--serif)}
+.rakkan{width:56px;height:56px;background:var(--shu);color:#F7F2E4;border-radius:50%;
+  display:grid;place-items:center;font-family:var(--serif);font-size:15px;line-height:1.25;
+  letter-spacing:.06em;writing-mode:vertical-rl}
+
+@media (prefers-reduced-motion: no-preference){
+  .sec,.okuzuke-wrap{opacity:0;transform:translateY(12px);transition:opacity .9s ease,transform .9s ease}
+  .sec.mieru,.okuzuke-wrap.mieru{opacity:1;transform:none}
+  .hinomaru,.daidai,.fukudai,.kin-line,.lede{animation:sumi-ire 1.4s ease both}
+  .daidai{animation-delay:.15s}.fukudai{animation-delay:.4s}.kin-line{animation-delay:.55s}.lede{animation-delay:.7s}
+  .niwa{animation:sumi-ire 1.8s .5s ease both}
+  @keyframes sumi-ire{from{opacity:0}to{opacity:1}}
+}
+</style>
+
+<header class="cover">
+  <div class="hinomaru"></div>
+  <h1 class="daidai">操作の手引</h1>
+  <div class="fukudai">ブラウザ業務自動化 デルヴワーク</div>
+  <div class="kin-line"></div>
+  <p class="lede">命令を覚える必要はありません。やりたいことを、そのまま話しかけてください。該当する仕事を判断し、承認を得てから実行します。本書はその「言い方」の見本帳です。</p>
+  <div class="niwa">
+    <i class="k1"></i><i class="k2"></i><i class="k3"></i><i class="k4"></i><i class="k5"></i>
+    <span class="mizu"></span>
+    <span class="ishi i1"></span><span class="ishi i2"></span><span class="ishi i3"></span>
+  </div>
+</header>
+
+<div class="okuzuke-wrap">
+  <dl class="okuzuke">
+    <div><dt>環境</dt><dd>Cowork + Claude in Chrome</dd></div>
+    <div><dt>機能</dt><dd>全て稼働中</dd></div>
+    <div><dt>習得スキル</dt><dd>未登録</dd></div>
+    <div><dt>改訂</dt><dd>二〇二六年 文月 / v0.53</dd></div>
+  </dl>
+</div>
+
+<div class="wrap">
+  <section class="sec">
+    <div class="sec-head"><span class="kanji-no">一</span><h2>心得</h2><span class="fu">こころえ</span></div>
+    <div class="kokoroe">
+      <div class="kk"><h3>話しかけるだけ</h3><p>「表示速度を測って」「今日の作業まとめて」——思ったことをそのまま言えば、該当する処理が起動します。</p></div>
+      <div class="kk"><h3>勝手に送信しない</h3><p>クリックや入力などの「変更」は、開始手続きと変更前記録を経なければ実行できない仕組みです。</p></div>
+      <div class="kk"><h3>使うほど育つ</h3><p>調査や作業のたびにサイトの地図・手順・好みが蓄積され、次回の仕事が速く正確になります。</p></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="kanji-no">二</span><h2>しらべる</h2><span class="fu">お品書き</span></div>
+    <ul class="oshina">
+      <li><span class="nani">サイトの健康診断</span><span class="iikata">表示速度を測って</span><span class="okoru">全ページを実測し、診断書を一枚に</span></li>
+      <li><span class="nani">デザインの下調べ</span><span class="iikata">このサイトのデザイン調べて</span><span class="okoru">色・書体・余白を採寸し、比較帳に</span></li>
+      <li><span class="nani">競合の見張り</span><span class="iikata">競合を監視して</span><span class="okoru">定点で巡回し、変わった所だけ報告</span></li>
+      <li><span class="nani">徹底調査</span><span class="iikata">とことん洗い出して</span><span class="okoru">複数の職人を並べて多角検証</span></li>
+    </ul>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="kanji-no">三</span><h2>こしらえる</h2><span class="fu">お品書き</span></div>
+    <ul class="oshina">
+      <li><span class="nani">ページの改善</span><span class="iikata">このLPを改善して</span><span class="okoru">診断、改善版の試作、職人同士の相互審査</span></li>
+      <li><span class="nani">広告からLP起こし</span><span class="iikata">このバナーからLP作って</span><span class="okoru">広告の訴求と揃ったLP試作を生成</span></li>
+      <li><span class="nani">動画広告の台本</span><span class="iikata">TikTok広告の台本作って</span><span class="okoru">冒頭三秒の掴みから絵コンテまで</span></li>
+      <li><span class="nani">文章ごしらえ</span><span class="iikata">求人票を書いて</span><span class="okoru">業種の作法（十一の技能帳）が自動で適用</span></li>
+    </ul>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="kanji-no">四</span><h2>安全の仕組み</h2><span class="fu">まもり</span></div>
+    <p>ブラウザへの「変更」は、次の工程を踏まなければ一切実行されません。読み取り（閲覧・撮影）は自由です。</p>
+    <div class="kotei">
+      <div class="st"><b>開始の儀</b><span>タスクを宣言し、段取りを判定する</span></div>
+      <div class="st"><b>変更前記録</b><span>手を入れる前の姿を写し取る</span></div>
+      <div class="st"><b>実行</b><span>ここで初めて操作が通る</span></div>
+      <div class="st"><b>記録</b><span>結果と学びを帳面に残す</span></div>
+    </div>
+    <p class="chu"><b>錠前</b>パスワードや認証コードは、いかなる場合もAIが入力しません。ログインは人の手で。二段階認証に出会ったら中断してお知らせします。</p>
+  </section>
+
+  <section class="sec">
+    <div class="sec-head"><span class="kanji-no">五</span><h2>困ったとき</h2><span class="fu">こまりごと</span></div>
+    <ul class="oshina">
+      <li><span class="nani">操作がブロックされた</span><span class="iikata">今どういう状態？</span><span class="okoru">ゲートの状態と次の一手を報告</span></li>
+      <li><span class="nani">全体を見渡したい</span><span class="iikata">ダッシュボード見せて</span><span class="okoru">司令塔ページ（固定URL）を更新して提示</span></li>
+      <li><span class="nani">機能を絞りたい</span><span class="iikata">SNS機能を切って</span><span class="okoru">該当機能を停止し、以後は提案もしません</span></li>
+    </ul>
+  </section>
+</div>
+
+<footer>
+  <span>UNISON TECHNOLOGY 謹製</span>
+  <div class="rakkan">删滅</div>
+</footer>
+
+<script>
+(function(){
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('mieru'); io.unobserve(e.target);} });
+  },{threshold:.12});
+  document.querySelectorAll('.sec,.okuzuke-wrap').forEach(function(el){ io.observe(el); });
+})();
+</script>

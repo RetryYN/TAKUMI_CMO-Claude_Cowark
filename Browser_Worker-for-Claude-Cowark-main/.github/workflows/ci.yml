@@ -1,0 +1,25 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    name: 参照整合・frontmatter・JSON lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run lint
+        run: python3 scripts/lint.py
+
+  hooks:
+    name: hooks スモークテスト
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: shellcheck (errors only)
+        run: shellcheck --severity=error hooks/scripts/*.sh scripts/*.sh
+      - name: Run hook smoke tests
+        run: bash scripts/test-hooks.sh

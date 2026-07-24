@@ -1,0 +1,51 @@
+# 定常タスク定義テンプレート（/delve-task が生成する tasks/<name>.yaml の骨格）
+# 本家 Delvework の tasks/_template.yaml から移植。実行は /delve-start が担う（A〜Kワークフロー）
+
+name: your-task-name
+description: タスクの概要
+domain: 求人媒体            # 企画リサーチ / SNS運用 / 求人媒体 / 広告分析 / 基盤（docs/command-registry.md の分類）
+place: baitai-b             # 対象の場所（knowledge/sites/<place>/ のキー。媒体・サイト・SNSアカウント）
+
+# ループ（定常実行）。単発タスクなら schedule を省略
+schedule:
+  cadence: "平日 10:00"     # 自然言語でよい（Cowork のスケジュール登録文に使う）
+  close_with_dashboard: true # 締めに /delve-dashboard を実行
+
+# パラメータ: 実行時に変わる値
+params:
+  - name: param_name
+    description: パラメータの説明
+    required: true
+    example: "例の値"
+
+# ステップ: 上から順に実行。destructive: true/auto のステップは Step H（人の承認）を必ず通る
+# action 種別:
+#   navigate  { url, wait_for? }                     … URL遷移
+#   login     { place }                              … ログイン（認証は人間に委譲。AIは入力しない）
+#   interact  { description, loop_over?, fallback? } … 自然言語のブラウザ操作（destructive: auto 判定）
+#   generate_text { instruction, skill?, reference? }… 文章生成（skill はスキル台帳から割当）
+#   verify    { checks, screenshot? }                … 確認
+#   command   { command }                            … シェル実行（destructive: auto）
+# destructive auto 判定キーワード: 送信 / 公開 / 削除 / 投稿 / 保存
+# ブラウザ操作を含むタスクは、複数Chrome接続時の選択待ちブロックを防ぐため
+# 先頭の browser-select ステップを残すこと（docs/unattended-ops.md §ブラウザの一意化）
+steps:
+  - action: interact
+    description: |
+      knowledge/config/browser.md を読み、優先ブラウザが記録されていればそれを選択する（未記録なら確認して記録する）。
+  - action: navigate
+    url: "https://example.com/admin"
+  - action: login
+    place: "{{place}}"
+  - action: generate_text
+    skill: recruit-writing
+    instruction: "何を生成するかの指示（テンプレート変数可）"
+  - action: interact
+    description: |
+      生成した文面を入力欄に貼り、内容を確認する。
+  - action: verify
+    checks:
+      - "入力内容が意図どおりであることを画面で確認"
+    screenshot: true
+
+on_error: "スクリーンショットを撮って状況を報告する"

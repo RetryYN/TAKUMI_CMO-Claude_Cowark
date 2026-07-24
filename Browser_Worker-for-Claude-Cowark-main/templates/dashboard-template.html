@@ -1,0 +1,990 @@
+<!--
+  ブラウザワーカー ダッシュボード（正本テンプレート v8・階層 = 全体/媒体/サイト）
+  =====================================================================
+  情報設計（2026-07-22 ユーザー指摘で確定）:
+    - 実体の階層は「場所（サイト/媒体）→ その中のタスク」。タスクを場所からはがして
+      トップタブに並べない（スカウトは媒体Bの内蔵機能、競合ウォッチはサイト監視の内蔵機能）
+    - トップタブは大分類のみ: 全体 / 媒体（媒体A掲載・媒体Bスカウト・SNS）/ サイト（自社・競合）
+    - フェーズ①〜④は「場所の攻略度」。場所ごとの状態カードに付ける
+  その他の原則（継承）:
+    - 各場所に状態カード（フェーズ/現在ステップ/次回実行/状態）。承認が絡む場所は工程の飛び石図（A〜K・関所）
+    - ラベルは平易な機能名のみ。世界観は視覚だけ（浮世絵ヘッダー・歩く旅人・紋・鮫小紋・判子バッジ）
+    - タブを進めると旅人が尾根道を歩く（停留点はタブ数と同数）
+    - ファーストビューで価値に到達（全体タブ直下にアラート+場所一覧）
+  実例=雛形。数値・文言（見本データ）を knowledge/ の実データに差し替えて使う。
+  CSS・構造・演出は変更しない（例外: タブ数変更時の stops/.taboji 再生成のみ）。単一テーマ。外部読込なし。
+-->
+<title>ブラウザワーカー ダッシュボード</title>
+<style>
+  :root{
+    --washi:#F7F1E1; --washi-2:#EFE5CC; --sumi:#2A211A; --sumi-70:rgba(42,33,26,.72);
+    --tsuchi:#8B6B4A; --niwa:#3D4F2F; --niwa-2:#5C6E44; --koke:#8A9A66;
+    --shu:#A63A2B; --yuhi:#C9603B; --akane:#E19A5E;
+    --ai:#3A4660; --ai-2:#2A2E3C;
+    --kin:#B08D3E; --kin-2:#D9BC6E; --kin-3:#E3CB85; --sakura:#E4AFB4; --sakura-2:#D68E96;
+    --kinpaku:linear-gradient(105deg,#B08D3E 0%,#E3CB85 22%,#C9A54A 48%,#EAD79B 74%,#B08D3E 100%);
+    --mincho:"Shippori Mincho","Hiragino Mincho ProN","Yu Mincho","YuMincho","MS PMincho",serif;
+    --data:"BIZ UDPGothic","Hiragino Kaku Gothic ProN","Yu Gothic UI",Meiryo,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){ html{scroll-behavior:auto} }
+  body{
+    background:var(--washi); color:var(--sumi);
+    font-family:var(--mincho); font-weight:500; font-size:16.5px; line-height:1.95;
+    -webkit-font-smoothing:antialiased; overflow-x:hidden;
+  }
+  ::selection{background:var(--kin-2);color:var(--sumi)}
+  a{color:var(--niwa)}
+  img,svg{max-width:100%;display:block}
+
+  .washi-me{
+    position:absolute; inset:0; pointer-events:none; opacity:.5; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='w'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.02' numOctaves='3' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 0.55 0 0 0 0 0.48 0 0 0 0 0.38 0 0 0 0.06 0'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23w)'/%3E%3C/svg%3E");
+  }
+
+  /* ============ ヘッダー（浮世絵ランドスケープ + 歩く旅人） ============ */
+  .hero{
+    position:relative; height:clamp(220px,30vh,300px); overflow:hidden;
+    background:linear-gradient(to bottom,#F4EBD5 0%,#F0E2C4 62%,#E8D3B0 100%);
+  }
+  .hero svg.e{ position:absolute; inset:0; width:100%; height:100% }
+  .hero .washi-me{ opacity:.7; z-index:5 }
+  .hero-dai{ position:absolute; top:16px; left:clamp(18px,5vw,70px); z-index:6 }
+  .hero-dai h1{
+    font-size:clamp(19px,2.4vw,26px); font-weight:700; letter-spacing:.22em; color:var(--sumi);
+  }
+  .kirameki{ animation:kirameku 4.2s ease-in-out infinite alternate }
+  @keyframes kirameku{ from{opacity:.35} to{opacity:.7} }
+  .hi-akari{ animation:yurameki 2.8s ease-in-out infinite alternate }
+  @keyframes yurameki{ from{opacity:.55} to{opacity:.95} }
+  .kumo-a{ animation:nagare 28s ease-in-out infinite alternate }
+  .kumo-b{ animation:nagare 36s ease-in-out infinite alternate-reverse }
+  @keyframes nagare{ from{transform:translateX(0)} to{transform:translateX(16px)} }
+
+  #tabibito{ transition:transform 4.2s cubic-bezier(.42,.08,.58,.92) }
+  #tabibito .muki{ transform-box:fill-box; transform-origin:center }
+  #tabibito .muki.gyaku{ transform:scaleX(-1) }
+  #tabibito .ashi{ transform-box:fill-box; transform-origin:50% 6% }
+  #tabibito .ude{ transform-box:fill-box; transform-origin:50% 10% }
+  #tabibito .karada{ transform-box:fill-box; transform-origin:center }
+  #tabibito.aruku .ashi-a{ animation:ashiA .85s linear infinite }
+  #tabibito.aruku .ashi-b{ animation:ashiB .85s linear infinite }
+  #tabibito.aruku .ude{ animation:udefuri .85s linear infinite }
+  #tabibito.aruku .karada{ animation:hazumi .425s linear infinite alternate }
+  @keyframes ashiA{ 0%{transform:rotate(16deg)} 50%{transform:rotate(-14deg)} 100%{transform:rotate(16deg)} }
+  @keyframes ashiB{ 0%{transform:rotate(-14deg)} 50%{transform:rotate(16deg)} 100%{transform:rotate(-14deg)} }
+  @keyframes udefuri{ 0%{transform:rotate(-7deg)} 50%{transform:rotate(9deg)} 100%{transform:rotate(-7deg)} }
+  @keyframes hazumi{ from{transform:translateY(0)} to{transform:translateY(-1.6px)} }
+  .taboji{ fill:none; stroke:#C9A54A; stroke-width:1.5; opacity:.8 }
+  .taboji.sugi{ fill:#D9BC6E }
+
+  @media (prefers-reduced-motion:reduce){
+    #tabibito{ transition:none }
+    .kumo-a,.kumo-b,.kirameki,.hi-akari{ animation:none }
+  }
+
+  /* ============ タブ ============ */
+  .fudaretsu{
+    position:sticky; top:0; z-index:50; background:var(--washi);
+    border-bottom:2px solid var(--kin); box-shadow:0 2px 10px rgba(42,33,26,.08);
+  }
+  .fudaretsu .naka{
+    max-width:1080px; margin:0 auto; display:flex; gap:4px; padding:10px 16px 0; overflow-x:auto;
+    scrollbar-width:none; -ms-overflow-style:none; align-items:flex-end;
+  }
+  .fudaretsu .naka::-webkit-scrollbar{ display:none; width:0; height:0 }
+  .fuda-tab{
+    appearance:none; border:none; cursor:pointer; background:var(--washi-2);
+    font-family:var(--mincho); font-weight:700; font-size:15px; letter-spacing:.14em; color:var(--sumi-70);
+    padding:11px 22px 9px; border-radius:6px 6px 0 0; position:relative; white-space:nowrap;
+    border-top:3px solid transparent; transition:background .3s,color .3s;
+  }
+  .fuda-tab:hover{ color:var(--niwa) }
+  .fuda-tab.ima{
+    background:var(--washi); color:var(--niwa); border-top-color:var(--kin);
+    box-shadow:0 -2px 8px rgba(42,33,26,.08);
+  }
+  .fuda-tab.ima::after{ content:""; position:absolute; left:0; right:0; bottom:-2px; height:2px; background:var(--washi) }
+  .fuda-tab .kazu-chip{
+    display:inline-block; margin-left:7px; font-family:var(--data); font-size:11px; font-weight:700;
+    color:var(--washi); background:var(--shu); border-radius:9px; padding:1px 7px; vertical-align:2px; letter-spacing:0;
+  }
+  .fuda-tab .kazu-chip.ki{ background:var(--kin) }
+  .fuda-tab:focus-visible{ outline:2px solid var(--kin); outline-offset:-2px }
+  .koshin-mini{
+    margin-left:auto; padding:0 4px 10px 12px; font-family:var(--data); font-size:12px;
+    color:var(--sumi-70); white-space:nowrap; font-variant-numeric:tabular-nums; align-self:center;
+  }
+
+  /* ============ 本体 ============ */
+  .honbun{ position:relative; background:var(--washi); padding:40px 24px 40px }
+  .honbun > .washi-me{ position:fixed; z-index:0 }
+  .uchi{ position:relative; z-index:1; max-width:1080px; margin:0 auto }
+  .pane{ display:none }
+  .pane.ima{ display:block }
+
+  .bu{ margin-bottom:72px }
+  .bu:last-child{ margin-bottom:26px }
+  .bu .sho{ opacity:0; transform:translateY(16px); transition:opacity .8s ease,transform .8s ease }
+  .bu.mieru .sho{ opacity:1; transform:none }
+
+  .sec-head{ display:flex; align-items:center; gap:14px; margin-bottom:8px }
+  .sec-head .mon{ width:32px; height:32px; flex:none }
+  .mon .waku{ stroke:var(--kin); opacity:.4; fill:none; stroke-width:1 }
+  .mon .sen{ stroke:var(--kin); fill:none; stroke-width:1.7; stroke-linecap:round; stroke-linejoin:round }
+  .mon .nuri{ fill:var(--kin); stroke:none; opacity:.85 }
+  .sec-head h2{ font-size:clamp(19px,2.4vw,23px); font-weight:700; letter-spacing:.2em; color:var(--niwa) }
+  .sec-head .sode{ margin-left:auto; font-size:12px; letter-spacing:.2em; color:var(--tsuchi); font-weight:600; align-self:flex-end }
+  .sec-sita{ width:76px; height:3px; background:var(--kinpaku); margin-bottom:26px; position:relative }
+  .sec-sita::after{
+    content:""; position:absolute; right:-16px; top:-4px; width:7px; height:9px;
+    background:var(--kin-3); opacity:.75; transform:rotate(21deg);
+    clip-path:polygon(12% 0,100% 22%,84% 100%,0 74%);
+  }
+  /* 場所内の小見出し */
+  .naka-dai{
+    display:flex; align-items:baseline; gap:12px; margin:34px 0 14px;
+    font-size:16.5px; font-weight:700; letter-spacing:.16em; color:var(--sumi);
+  }
+  .naka-dai::before{ content:""; width:14px; height:3px; background:var(--kinpaku); align-self:center }
+  .naka-dai .chii{ font-size:12.5px; color:var(--tsuchi); font-weight:600; letter-spacing:.1em }
+
+  .te{
+    margin-top:18px; font-size:14.5px; letter-spacing:.06em; color:var(--sumi-70); font-weight:600;
+    display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+  }
+  .te .te-mei{ color:var(--tsuchi); letter-spacing:.3em; font-size:12.5px; white-space:nowrap; font-weight:700 }
+  .iu{
+    color:var(--niwa); font-weight:700; font-size:16px; cursor:pointer;
+    border-bottom:1px dashed var(--kin); padding-bottom:1px; transition:color .25s;
+  }
+  .iu::before{ content:"「"; color:var(--kin) } .iu::after{ content:"」"; color:var(--kin) }
+  .iu:hover{ color:var(--shu) }
+  .utsushi{
+    position:fixed; left:50%; bottom:34px; transform:translate(-50%,10px); z-index:70;
+    background:var(--sumi); color:var(--washi); font-size:13.5px; letter-spacing:.2em;
+    padding:10px 22px; opacity:0; pointer-events:none; transition:opacity .35s,transform .35s;
+  }
+  .utsushi.miseru{ opacity:1; transform:translate(-50%,0) }
+
+  .komon{
+    background-image:radial-gradient(circle at 3px 3px, rgba(42,33,26,.07) 0 1.2px, transparent 1.6px);
+    background-size:11px 11px;
+  }
+
+  .joho{
+    display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:0;
+    background:var(--washi-2); border-top:4px solid var(--kin); padding:16px 8px;
+  }
+  .joho .ko{ padding:6px 18px; border-left:1px solid rgba(42,33,26,.14) }
+  .joho .ko:first-child{ border-left:none }
+  .joho .t{ font-size:12px; letter-spacing:.28em; color:var(--tsuchi); font-weight:700 }
+  .joho .v{ font-size:17px; font-weight:700; color:var(--sumi); margin-top:2px }
+  .joho .v .chii{ font-size:13px; color:var(--sumi-70); font-weight:600 }
+  .joho .v.aka{ color:var(--shu) }
+  .phase{
+    display:inline-block; font-size:13px; font-weight:700; letter-spacing:.1em;
+    border:1.5px solid var(--niwa); color:var(--niwa); border-radius:3px; padding:1px 9px;
+  }
+  .phase.p1{ border-color:var(--tsuchi); color:var(--tsuchi) }
+
+  .kotei{ display:flex; align-items:flex-start; overflow-x:auto; padding:8px 2px 4px; margin-top:6px }
+  .ishi{ flex:1; min-width:62px; display:flex; flex-direction:column; align-items:center; gap:6px; position:relative }
+  .ishi + .ishi::before{
+    content:""; position:absolute; top:15px; right:calc(50% + 17px); left:calc(-50% + 17px); height:2px;
+    background:repeating-linear-gradient(to right,var(--kin) 0 4px,transparent 4px 9px); opacity:.55;
+  }
+  .ishi .maru{
+    width:31px; height:31px; border-radius:52% 46% 50% 48%; border:2px solid var(--koke);
+    background:var(--washi-2); display:flex; align-items:center; justify-content:center;
+    font-family:var(--data); font-size:12px; font-weight:700; color:var(--sumi-70); position:relative; z-index:1;
+  }
+  .ishi.sumi-i .maru{ background:var(--koke); border-color:var(--niwa); color:var(--washi) }
+  .ishi.ima-i .maru{
+    background:var(--kin-3); border-color:var(--kin); color:var(--sumi);
+    box-shadow:0 0 0 4px rgba(176,141,62,.22);
+  }
+  .ishi .na{ font-size:11px; color:var(--sumi-70); letter-spacing:.03em; font-weight:600; text-align:center; line-height:1.5 }
+  .ishi .seki{
+    font-size:10.5px; font-weight:700; letter-spacing:.1em; padding:1px 6px; border-radius:3px;
+    transform:rotate(-2deg); white-space:nowrap;
+  }
+  .seki.mada{ color:var(--shu); border:1.5px solid var(--shu) }
+  .seki.zumi{ color:var(--niwa); border:1.5px solid var(--niwa) }
+
+  .alert{ border-left:5px solid var(--shu); background:var(--washi-2); padding:20px 26px }
+  .alert li{
+    list-style:none; display:flex; gap:14px; align-items:baseline; flex-wrap:wrap;
+    padding:10px 0; border-bottom:1px solid rgba(42,33,26,.14); font-weight:600;
+  }
+  .alert li:last-child{ border-bottom:none }
+  .alert .naiyo{ flex:1 1 260px }
+
+  .omo,.shirushi{
+    display:inline-block; font-size:11.5px; letter-spacing:.2em; padding:2px 9px;
+    white-space:nowrap; font-weight:700; border-radius:3px; transform:rotate(-2.4deg);
+  }
+  li:nth-child(even) .omo, li:nth-child(even) .shirushi, tr:nth-child(even) .shirushi{ transform:rotate(1.8deg) }
+  .omo{ color:var(--shu); border:1.5px solid var(--shu) }
+  .shirushi.dai{ color:var(--shu); border:1.5px solid var(--shu) }
+  .shirushi.chu{ color:var(--tsuchi); border:1.5px solid var(--tsuchi) }
+  .shirushi.yo{ color:var(--niwa); border:1.5px solid var(--niwa) }
+
+  .stat{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:18px }
+  .fuda-t{
+    background:var(--washi-2); border-top:4px solid var(--kin); padding:18px 18px 14px;
+    text-align:center; position:relative; overflow:hidden;
+  }
+  .fuda-t::before{
+    content:""; position:absolute; right:-26px; top:-26px; width:92px; height:92px;
+    border:2.5px solid var(--kin); border-radius:50%; opacity:.16;
+  }
+  .fuda-t .kazu{
+    font-family:var(--mincho); font-size:clamp(28px,3.4vw,38px); font-weight:700; color:var(--sumi);
+    font-variant-numeric:tabular-nums; line-height:1.3; position:relative;
+  }
+  .fuda-t .kazu .tan{ font-size:15px; margin-left:2px; color:var(--sumi-70) }
+  .fuda-t .mei{ font-size:12.5px; letter-spacing:.22em; color:var(--tsuchi); font-weight:700; margin-top:5px }
+  .fuda-t .sa{ font-size:13px; margin-top:3px; font-weight:700 }
+  .sa.yoi{ color:var(--niwa) } .sa.warui{ color:var(--shu) } .sa.onaji{ color:var(--sumi-70) }
+
+  .hyo{ width:100%; border-collapse:collapse; font-family:var(--data); font-size:14.5px }
+  .hyo th{
+    font-family:var(--mincho); font-weight:700; letter-spacing:.16em; font-size:13.5px; color:var(--niwa);
+    text-align:left; padding:10px 12px; border-bottom:2px solid var(--niwa);
+  }
+  .hyo td{ padding:11px 12px; border-bottom:1px solid rgba(42,33,26,.16); font-variant-numeric:tabular-nums; transition:background .25s }
+  .hyo tr:hover td{ background:rgba(176,141,62,.08) }
+  .hyo .su{ text-align:right }
+  .hyo th.su{ text-align:right }
+  .hyo .kei{ color:var(--shu); font-weight:700 }
+  .hyo-maki{ overflow-x:auto }
+  .hyo .tobu-t{ cursor:pointer; color:var(--niwa); font-weight:700; border-bottom:1px dashed var(--kin) }
+
+  .nanoka{ display:flex; gap:12px; align-items:flex-end; height:110px; margin:6px 0 10px }
+  .hi-bou{ flex:1; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:flex-end }
+  .hi-bou .bou{
+    width:100%; max-width:44px; background-color:var(--koke); border-top:3px solid var(--niwa);
+    transition:height 1s ease; border-radius:3px 3px 0 0;
+    background-image:radial-gradient(circle at 3px 3px, rgba(247,241,225,.35) 0 1.2px, transparent 1.6px);
+    background-size:9px 9px;
+  }
+  .hi-bou.shippai .bou{ background-color:#C99A8D; border-top-color:var(--shu) }
+  .hi-bou .hi{ font-family:var(--data); font-size:12px; color:var(--sumi-70); letter-spacing:.05em }
+  .nanoka-chu{ font-size:13.5px; color:var(--sumi-70); font-weight:600; letter-spacing:.06em }
+  .nanoka-chu .ten{ display:inline-block; width:10px; height:10px; margin:0 4px 0 12px; vertical-align:baseline }
+  .ten-sei{ background:var(--koke) } .ten-hi{ background:#C99A8D }
+
+  .stock{ display:grid; gap:16px }
+  .stock-gyo{ display:grid; grid-template-columns:110px 1fr 110px; gap:14px; align-items:center }
+  .stock-gyo .dare{ font-weight:700; letter-spacing:.14em; font-size:15px }
+  .stock-obi{ height:16px; background:var(--washi-2); border:1px solid rgba(42,33,26,.2); position:relative }
+  .stock-obi .mi{
+    position:absolute; inset:0 auto 0 0; background-color:var(--koke); border-right:3px solid var(--niwa);
+    transition:width 1.2s ease;
+    background-image:radial-gradient(circle at 3px 3px, rgba(247,241,225,.35) 0 1.2px, transparent 1.6px);
+    background-size:9px 9px;
+  }
+  .stock-gyo.tarinai .stock-obi .mi{ background-color:#D8A79A; border-right-color:var(--shu) }
+  .stock-gyo .wari{ font-family:var(--data); font-size:14.5px; text-align:right; font-variant-numeric:tabular-nums; font-weight:600 }
+  .stock-gyo.tarinai .wari{ color:var(--shu); font-weight:700 }
+
+  .maki li{ list-style:none; display:flex; gap:14px; align-items:baseline; padding:12px 2px; border-bottom:1px solid rgba(42,33,26,.16); flex-wrap:wrap }
+  .maki li:last-child{ border-bottom:none }
+  .maki .moto{ font-weight:700; letter-spacing:.1em; white-space:nowrap }
+  .maki .koto{ flex:1 1 280px; font-weight:600; color:var(--sumi) }
+  .maki .itsu{ font-family:var(--data); font-size:13px; color:var(--sumi-70); margin-left:auto; font-variant-numeric:tabular-nums }
+
+  .seika li{ list-style:none; display:flex; gap:14px; align-items:baseline; padding:12px 2px; border-bottom:1px solid rgba(42,33,26,.16); flex-wrap:wrap }
+  .seika li:last-child{ border-bottom:none }
+  .seika .tagui{
+    font-size:11.5px; letter-spacing:.2em; padding:2px 9px; font-weight:700; white-space:nowrap;
+    border-radius:3px; transform:rotate(-2deg);
+  }
+  .seika li:nth-child(even) .tagui{ transform:rotate(1.6deg) }
+  .tagui.gd{ color:var(--niwa); border:1.5px solid var(--niwa) }
+  .tagui.rp{ color:var(--tsuchi); border:1.5px solid var(--tsuchi) }
+  .tagui.mk{ color:var(--shu); border:1.5px solid var(--shu) }
+  .seika a{ font-weight:700; letter-spacing:.06em; color:var(--niwa); text-decoration:none; border-bottom:1px dashed var(--kin) }
+  .seika .itsu{ font-family:var(--data); font-size:13px; color:var(--sumi-70); margin-left:auto; font-variant-numeric:tabular-nums }
+  .seika .tokoro{ font-family:var(--data); font-size:13px; color:var(--sumi-70) }
+
+  .chu{ border-left:4px solid var(--shu); padding:6px 0 6px 18px; font-size:14.5px; color:var(--sumi-70); font-weight:600; letter-spacing:.05em }
+
+  .ashimoto{ position:relative; background:var(--washi); padding:20px 24px 70px; text-align:center }
+  .ashimoto .kin-sen{ width:200px; height:2px; background:var(--kinpaku); margin:0 auto 30px }
+  .ashimoto p{ font-size:13.5px; letter-spacing:.2em; color:var(--sumi-70); font-weight:600; line-height:2.3 }
+
+  @media (prefers-reduced-motion:reduce){
+    .bu .sho{ opacity:1; transform:none; transition:none }
+  }
+  @media (max-width:640px){
+    .stock-gyo{ grid-template-columns:80px 1fr 84px }
+    .sec-head .mon{ width:26px; height:26px }
+    .fuda-tab{ padding:10px 14px 8px; font-size:13.5px; letter-spacing:.08em }
+    .joho .ko{ border-left:none; padding:6px 12px }
+    .koshin-mini{ display:none }
+  }
+</style>
+
+<!-- ============ ヘッダー（浮世絵ランドスケープ） ============ -->
+<header class="hero" id="hero">
+  <svg class="e" viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <filter id="fude" x="-8%" y="-8%" width="116%" height="116%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.017 0.041" numOctaves="3" seed="11" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="6"/>
+      </filter>
+      <filter id="fude2" x="-12%" y="-12%" width="124%" height="124%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011 0.05" numOctaves="3" seed="4" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="11"/>
+      </filter>
+      <pattern id="sei-aka" width="36" height="16" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="#C96F5E" stroke-width="1.4" opacity=".85">
+          <circle cx="18" cy="18" r="15"/><circle cx="18" cy="18" r="10"/><circle cx="18" cy="18" r="5"/>
+          <circle cx="0" cy="26" r="15"/><circle cx="0" cy="26" r="10"/>
+          <circle cx="36" cy="26" r="15"/><circle cx="36" cy="26" r="10"/>
+        </g>
+      </pattern>
+      <pattern id="sei-kin" width="36" height="16" patternUnits="userSpaceOnUse">
+        <g fill="none" stroke="#C9A54A" stroke-width="1.3" opacity=".7">
+          <circle cx="18" cy="18" r="15"/><circle cx="18" cy="18" r="10"/><circle cx="18" cy="18" r="5"/>
+          <circle cx="0" cy="26" r="15"/><circle cx="0" cy="26" r="10"/>
+          <circle cx="36" cy="26" r="15"/><circle cx="36" cy="26" r="10"/>
+        </g>
+      </pattern>
+    </defs>
+
+    <!-- 金箔の月 -->
+    <g filter="url(#fude)">
+      <circle cx="1150" cy="84" r="62" fill="#C9A54A" opacity=".45"/>
+      <circle cx="1150" cy="84" r="50" fill="#D9BC6E" opacity=".75"/>
+      <circle cx="1150" cy="84" r="40" fill="#E3CB85"/>
+    </g>
+    <g opacity=".8">
+      <polygon points="1122,60 1142,54 1138,72 1120,74" fill="#EAD79B"/>
+      <polygon points="1156,48 1178,54 1172,70 1152,66" fill="#C9A54A"/>
+      <polygon points="1130,98 1152,92 1156,110 1136,114" fill="#B08D3E" opacity=".6"/>
+      <polygon points="1164,86 1184,82 1180,100 1162,100" fill="#EAD79B" opacity=".7"/>
+    </g>
+    <circle cx="1150" cy="84" r="70" fill="none" stroke="#C9A54A" stroke-width="1" opacity=".4" filter="url(#fude)"/>
+
+    <!-- 遠嶺 -->
+    <g filter="url(#fude2)">
+      <polygon points="0,208 160,168 330,210 470,182 620,212 620,300 0,300" fill="#55607A" opacity=".38"/>
+      <polygon points="820,214 980,178 1140,212 1300,184 1440,210 1440,300 820,300" fill="#55607A" opacity=".34"/>
+    </g>
+
+    <!-- 富士 -->
+    <g filter="url(#fude)">
+      <polygon points="380,252 720,54 1070,252" fill="#38445C"/>
+      <polygon points="380,252 720,54 1070,252 1070,262 380,262" fill="#38445C" opacity=".6"/>
+      <polygon points="636,102 660,116 684,100 706,118 730,98 754,116 778,102 804,120 720,54" fill="#F2E9D3"/>
+      <path d="M 560,252 L 690,110" stroke="#2A3348" stroke-width="3" opacity=".5" fill="none"/>
+      <path d="M 900,252 L 760,116" stroke="#2A3348" stroke-width="3" opacity=".4" fill="none"/>
+    </g>
+
+    <!-- 青海波の雲 -->
+    <g class="kumo-a" filter="url(#fude)">
+      <g>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="#F7E9DC"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="url(#sei-aka)"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="none" stroke="#B0605A" stroke-width="1.6" opacity=".8"/>
+      </g>
+      <g transform="translate(400,52) scale(0.7)">
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="#F7EFDA"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="url(#sei-kin)"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="none" stroke="#C9A54A" stroke-width="1.8" opacity=".7"/>
+      </g>
+    </g>
+    <g class="kumo-b" filter="url(#fude)">
+      <g transform="translate(1180,140) scale(0.85)">
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="#F7E9DC"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="url(#sei-aka)"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="none" stroke="#B0605A" stroke-width="1.8" opacity=".8"/>
+      </g>
+      <g transform="translate(560,168) scale(0.6)">
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="#F7EFDA"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="url(#sei-kin)"/>
+        <path d="M 40,150 a30,26 0 0 1 56,-14 a26,24 0 0 1 50,4 a24,22 0 0 1 40,14 q6,16 -10,20 l-130,0 q-16,-6 -6,-24 Z" fill="none" stroke="#C9A54A" stroke-width="1.8" opacity=".6"/>
+      </g>
+    </g>
+
+    <!-- 攻略済みサイトの峰 -->
+    <g filter="url(#fude)">
+      <polygon points="1150,262 1250,160 1330,214 1400,178 1440,214 1440,300 1150,300" fill="#3A4254" opacity=".9"/>
+    </g>
+    <g stroke="#D9BC6E" stroke-width="1.5" fill="none" stroke-linecap="round" opacity=".9" filter="url(#fude)">
+      <g transform="translate(1252,158)"><line x1="-7" y1="0" x2="7" y2="0"/><line x1="-5" y1="0" x2="-5" y2="-9"/><line x1="5" y1="0" x2="5" y2="-9"/><path d="M -9,-9 L 0,-16 L 9,-9"/></g>
+      <g transform="translate(1288,182)"><line x1="-6" y1="0" x2="6" y2="0"/><line x1="-4" y1="0" x2="-4" y2="-8"/><line x1="4" y1="0" x2="4" y2="-8"/><path d="M -8,-8 L 0,-14 L 8,-8"/></g>
+      <g transform="translate(1330,210)"><line x1="-7" y1="0" x2="7" y2="0"/><line x1="-5" y1="0" x2="-5" y2="-9"/><line x1="5" y1="0" x2="5" y2="-9"/><path d="M -9,-9 L 0,-16 L 9,-9"/></g>
+      <g transform="translate(1372,186)"><line x1="-6" y1="0" x2="6" y2="0"/><line x1="-4" y1="0" x2="-4" y2="-8"/><line x1="4" y1="0" x2="4" y2="-8"/><path d="M -8,-8 L 0,-14 L 8,-8"/></g>
+      <g transform="translate(1408,206)"><line x1="-6" y1="0" x2="6" y2="0"/><line x1="-4" y1="0" x2="-4" y2="-8"/><line x1="4" y1="0" x2="4" y2="-8"/><path d="M -8,-8 L 0,-14 L 8,-8"/></g>
+    </g>
+    <g filter="url(#fude)">
+      <line x1="1196" y1="258" x2="1196" y2="216" stroke="#6E5433" stroke-width="5"/>
+      <polygon points="1178,214 1246,214 1256,225 1246,236 1178,236" fill="#D9C9A0" stroke="#6E5433" stroke-width="2"/>
+    </g>
+    <text x="1184" y="230" font-size="13" font-weight="700" fill="#2A211A" letter-spacing="1"
+          style="font-family:'Shippori Mincho','Hiragino Mincho ProN','Yu Mincho',serif">攻略済み</text>
+
+    <!-- 尾根の道 -->
+    <g filter="url(#fude)">
+      <path d="M 0,262 C 140,254 240,264 360,258 C 500,252 600,264 720,258 C 860,252 980,264 1100,258 C 1240,252 1360,262 1440,258 L 1440,300 L 0,300 Z" fill="#2A2E3C"/>
+      <path d="M 0,264 C 140,256 240,266 360,260 C 500,254 600,266 720,260 C 860,254 980,266 1100,260 C 1240,254 1360,264 1440,260"
+            fill="none" stroke="#F2E9D3" stroke-width="2.4" stroke-dasharray="2 12" opacity=".55"/>
+    </g>
+
+    <!-- 道中の風景（道標 / 松林 / 洞窟 / 橋 / 灯籠 / 温泉+楼閣） -->
+    <g filter="url(#fude)">
+      <line x1="66" y1="258" x2="66" y2="232" stroke="#6E5433" stroke-width="4"/>
+      <rect x="52" y="228" width="28" height="12" fill="#D9C9A0" stroke="#6E5433" stroke-width="1.6"/>
+      <polygon points="106,258 118,226 130,258" fill="#33402C"/>
+    </g>
+    <g filter="url(#fude)" opacity=".95">
+      <polygon points="292,258 306,218 320,258" fill="#33402C"/>
+      <polygon points="312,258 328,208 344,258" fill="#26301C"/>
+      <polygon points="336,258 350,222 364,258" fill="#33402C"/>
+    </g>
+    <g filter="url(#fude)">
+      <path d="M 512,258 a36,30 0 0 1 72,0 Z" fill="#3A3242"/>
+      <path d="M 532,258 a16,15 0 0 1 32,0 Z" fill="#1C1410"/>
+    </g>
+    <g filter="url(#fude)">
+      <path d="M 748,258 Q 778,236 808,258" fill="none" stroke="#8B6B4A" stroke-width="5"/>
+      <line x1="756" y1="252" x2="756" y2="260" stroke="#6E5433" stroke-width="3"/>
+      <line x1="800" y1="252" x2="800" y2="260" stroke="#6E5433" stroke-width="3"/>
+    </g>
+    <g transform="translate(1008,258)" stroke="#B08D3E" stroke-width="1.9" fill="none" stroke-linecap="round" opacity=".95" filter="url(#fude)">
+      <line x1="-9" y1="0" x2="9" y2="0"/>
+      <line x1="-6" y1="0" x2="-6" y2="-17"/><line x1="6" y1="0" x2="6" y2="-17"/>
+      <path d="M -14,-17 L 0,-27 L 14,-17"/>
+      <line x1="-17" y1="-32" x2="17" y2="-32"/>
+      <path d="M -12,-32 L 0,-42 L 12,-32"/>
+    </g>
+    <ellipse cx="1042" cy="256" rx="16" ry="6" fill="#44523A" filter="url(#fude)"/>
+    <g filter="url(#fude)">
+      <ellipse cx="1238" cy="256" rx="36" ry="8" fill="#7E97A0" opacity=".85"/>
+      <g class="hi-akari" stroke="#F2E9D3" stroke-width="2" fill="none" opacity=".6">
+        <path d="M 1224,246 C 1220,238 1228,232 1224,224"/>
+        <path d="M 1240,244 C 1236,236 1244,230 1240,222"/>
+        <path d="M 1254,247 C 1250,239 1258,233 1254,225"/>
+      </g>
+      <g transform="translate(1290,254) scale(0.6)" stroke="#C9A54A" stroke-width="2.4" fill="none" stroke-linecap="round" opacity=".95">
+        <line x1="-34" y1="0" x2="34" y2="0"/>
+        <line x1="-26" y1="0" x2="-26" y2="-14"/><line x1="26" y1="0" x2="26" y2="-14"/>
+        <path d="M -40,-14 L -30,-26 L 30,-26 L 40,-14"/>
+        <line x1="-22" y1="-26" x2="-22" y2="-38"/><line x1="22" y1="-26" x2="22" y2="-38"/>
+        <path d="M -30,-38 L -20,-48 L 20,-48 L 30,-38"/>
+        <line x1="0" y1="-48" x2="0" y2="-58"/>
+      </g>
+    </g>
+
+    <!-- 旅の停留点（タブと同数） -->
+    <circle class="taboji sugi" cx="86" cy="276" r="4"/>
+    <circle class="taboji" cx="374" cy="276" r="4"/>
+    <circle class="taboji" cx="662" cy="276" r="4"/>
+    <circle class="taboji" cx="950" cy="276" r="4"/>
+    <circle class="taboji" cx="1238" cy="276" r="4"/>
+
+    <!-- 旅人（ブラウザワーカー） -->
+    <g id="tabibito" style="transform:translateX(86px)">
+      <g class="muki">
+        <g class="karada">
+          <rect x="-30" y="180" width="22" height="8" rx="4" fill="#D9C9A0" stroke="#8B6B4A" stroke-width="1.4"/>
+          <line x1="-25" y1="180" x2="-25" y2="188" stroke="#8B6B4A" stroke-width="1.2"/>
+          <line x1="-13" y1="180" x2="-13" y2="188" stroke="#8B6B4A" stroke-width="1.2"/>
+          <g transform="rotate(7 -14 170)"><rect x="-17" y="162" width="7" height="16" fill="#F7F1E1" stroke="#B0885E" stroke-width="1"/><circle cx="-13.5" cy="166" r="1.4" fill="#A63A2B"/></g>
+          <rect x="-29" y="188" width="18" height="30" rx="3" fill="#A08050" stroke="#6E5433" stroke-width="1.5"/>
+          <line x1="-27" y1="196" x2="-13" y2="196" stroke="#D9BC6E" stroke-width="1.2" opacity=".8"/>
+          <line x1="-27" y1="203" x2="-13" y2="203" stroke="#D9BC6E" stroke-width="1.2" opacity=".8"/>
+          <line x1="-27" y1="210" x2="-13" y2="210" stroke="#D9BC6E" stroke-width="1.2" opacity=".8"/>
+          <line x1="-11" y1="192" x2="-2" y2="198" stroke="#6E5433" stroke-width="2.5"/>
+          <g class="ashi ashi-a">
+            <line x1="4" y1="222" x2="9" y2="248" stroke="#3A4660" stroke-width="8"/>
+            <line x1="7" y1="238" x2="10" y2="250" stroke="#E8DFC8" stroke-width="8"/>
+            <ellipse cx="11" cy="253" rx="7" ry="3" fill="#2A211A"/>
+          </g>
+          <g class="ashi ashi-b">
+            <line x1="-2" y1="222" x2="-7" y2="248" stroke="#333D54" stroke-width="8"/>
+            <line x1="-5" y1="238" x2="-8" y2="250" stroke="#DCD2B8" stroke-width="8"/>
+            <ellipse cx="-8" cy="253" rx="7" ry="3" fill="#2A211A"/>
+          </g>
+          <path d="M -12,192 Q 0,186 12,192 L 15,224 Q 0,230 -15,224 Z" fill="#3A4660" stroke="#2A2E3C" stroke-width="1.6"/>
+          <line x1="-13" y1="214" x2="13" y2="214" stroke="#C9A54A" stroke-width="3"/>
+          <g class="ude">
+            <line x1="9" y1="196" x2="19" y2="212" stroke="#3A4660" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="20" cy="214" r="3.2" fill="#E8C39A"/>
+            <line x1="22" y1="176" x2="22" y2="254" stroke="#8B6B4A" stroke-width="3.4" stroke-linecap="round"/>
+            <circle cx="22" cy="175" r="2.6" fill="#6E5433"/>
+          </g>
+          <!-- 頭 + 編み笠 -->
+          <circle cx="2" cy="173" r="10.5" fill="#E8C39A" stroke="#6E5433" stroke-width="1"/>
+          <path d="M -8,170 A 10.5,10.5 0 0 1 12,170 L 9,166 Q 2,162 -5,166 Z" fill="#2A211A"/>
+          <circle cx="8" cy="172" r="1.4" fill="#2A211A"/>
+          <path d="M 5,178 q 3,2.4 6,0" stroke="#2A211A" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+          <path d="M -11,171 Q 2,186 15,171" fill="none" stroke="#8B6B4A" stroke-width="1.1" opacity=".8"/>
+          <path d="M -18,167 Q 2,144 22,167 Z" fill="#D9C9A0" stroke="#8B6B4A" stroke-width="1.5"/>
+          <path d="M -13,162 Q 2,150 17,162" fill="none" stroke="#B0885E" stroke-width="1" opacity=".8"/>
+          <path d="M -7,156 Q 2,149 11,156" fill="none" stroke="#B0885E" stroke-width="1" opacity=".7"/>
+          <line x1="2" y1="148" x2="2" y2="144" stroke="#8B6B4A" stroke-width="1.8" stroke-linecap="round"/>
+          <path d="M -3,186 L 2,192 L 7,186" fill="none" stroke="#A63A2B" stroke-width="2.4"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+  <div class="washi-me"></div>
+  <div class="hero-dai"><h1>ブラウザワーカー ダッシュボード</h1></div>
+</header>
+
+<!-- ============ タブ（全体 / 媒体 / サイト） ============ -->
+<nav class="fudaretsu" aria-label="表示切り替え">
+  <div class="naka" role="tablist">
+    <button class="fuda-tab ima" role="tab" aria-selected="true" data-pane="p-zentai" id="t-zentai">全体<span class="kazu-chip">2</span></button>
+    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-kikaku" id="t-kikaku">企画リサーチ</button>
+    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-sns" id="t-sns">SNS運用<span class="kazu-chip">1</span></button>
+    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-kyujin" id="t-kyujin">求人媒体<span class="kazu-chip">1</span><span class="kazu-chip ki">3</span></button>
+    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-kokoku" id="t-kokoku">広告分析</button>
+    <span class="koshin-mini">最終更新 2026-07-22 17:04・見本データ</span>
+  </div>
+</nav>
+
+<!-- ============ 本体 ============ -->
+<main class="honbun">
+  <div class="washi-me"></div>
+  <div class="uchi">
+
+    <!-- ======== タブ: 全体 ======== -->
+    <div class="pane ima" id="p-zentai" role="tabpanel" aria-labelledby="t-zentai">
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M10.5 19.5 a6.5 6.5 0 0 1 13 0 v1.5 h-13 z M15 10.5 q2 -2.5 4 0"/><circle class="nuri" cx="17" cy="24.5" r="1.6"/></svg>
+            <h2>アラート</h2><span class="sode">先に対応が必要なもの 2件</span>
+          </div>
+          <div class="sec-sita"></div>
+          <ul class="alert komon">
+            <li>
+              <span class="omo">急ぎ</span>
+              <span class="naiyo">求人媒体Aの残り掲載枠が <strong>2件</strong>（契約期限 7/31 まで9日）→ 求人媒体タブへ</span>
+              <span class="iu" data-iu="媒体Aの掲載枠の状況を見せて">媒体Aの掲載枠の状況を見せて</span>
+            </li>
+            <li>
+              <span class="omo">今週中</span>
+              <span class="naiyo">X の投稿ストックが残り <strong>1.5日分</strong>（目標7日分に対し2割）→ SNS運用タブへ</span>
+              <span class="iu" data-iu="Xの投稿ストックを埋めて">Xの投稿ストックを埋めて</span>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><ellipse class="sen" cx="11" cy="23" rx="4" ry="2.4"/><ellipse class="sen" cx="18" cy="17.5" rx="3.5" ry="2.1"/><ellipse class="sen" cx="24" cy="12" rx="3" ry="1.8"/></svg>
+            <h2>場所とタスク</h2><span class="sode">フェーズ=その場所の攻略度。場所クリックで詳細</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="hyo-maki"><table class="hyo">
+            <tr><th>ドメイン</th><th>場所</th><th>タスク</th><th>フェーズ</th><th>次回実行</th><th>状態</th></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-kikaku">企画リサーチ</span></td><td>競合サイト 3社</td><td>変更検知の巡回</td><td>④ 最適化</td><td>明朝 9:00</td><td><span class="shirushi yo">正常</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-kikaku">企画リサーチ</span></td><td>自社サイト</td><td>診断（速度・リンク）</td><td>① 初回</td><td>毎週月曜</td><td><span class="shirushi yo">正常</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-sns">SNS運用</span></td><td>X・IG・note</td><td>予約投稿・ストック補充</td><td>④ 最適化</td><td>明朝 7:30</td><td><span class="shirushi chu">ストック不足</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-kyujin">求人媒体</span></td><td>求人媒体A</td><td>掲載枠・応募の確認</td><td>② 再訪問</td><td>毎朝 8:30</td><td><span class="shirushi dai">要対応</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-kyujin">求人媒体</span></td><td>求人媒体B</td><td>スカウト送信</td><td>④ 最適化</td><td>平日 10:00</td><td><span class="shirushi chu">承認待ち 3通</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-kokoku">広告分析</span></td><td>競合LP・動画広告</td><td>LP/動画の分析（依頼時）</td><td>① 初回</td><td>依頼時</td><td><span class="shirushi yo">正常</span></td></tr>
+          </table></div>
+        </div>
+      </section>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M11 24.5 L23 21.5 M11 21.5 L23 24.5 M17 20 C13.5 16.5 15.5 12 17 9.5 C18.5 12 20.5 16.5 17 20 Z"/></svg>
+            <h2>直近7日の実行</h2><span class="sode">全タスク合計</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="nanoka">
+            <div class="hi-bou"><div class="bou" data-take="45%"></div><span class="hi">7/16</span></div>
+            <div class="hi-bou"><div class="bou" data-take="70%"></div><span class="hi">7/17</span></div>
+            <div class="hi-bou"><div class="bou" data-take="55%"></div><span class="hi">7/18</span></div>
+            <div class="hi-bou shippai"><div class="bou" data-take="30%"></div><span class="hi">7/19</span></div>
+            <div class="hi-bou"><div class="bou" data-take="80%"></div><span class="hi">7/20</span></div>
+            <div class="hi-bou"><div class="bou" data-take="65%"></div><span class="hi">7/21</span></div>
+            <div class="hi-bou"><div class="bou" data-take="90%"></div><span class="hi">7/22</span></div>
+          </div>
+          <p class="nanoka-chu">バーの高さは実行数。<span class="ten ten-sei"></span>すべて成功<span class="ten ten-hi"></span>失敗あり（7/19 競合巡回1件が取得失敗 → 当日中に再実行で回収済み）</p>
+        </div>
+      </section>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M17 26 C17 21 17 18 17 14.5 M17 17.5 C13 17 10.5 14 10 10.5 C14 11 16.5 13.5 17 17.5 M17 14.5 C21 14 23.5 11 24 7.5 C20 8 17.5 10.5 17 14.5"/></svg>
+            <h2>蓄積と成長</h2><span class="sode">使うほど自分専用になる</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="stat">
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="8">0</span><span class="tan">個</span></div><div class="mei">習得スキル</div><div class="sa yoi">今週 +2</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="14">0</span><span class="tan">件</span></div><div class="mei">暗黙知トピック</div><div class="sa yoi">今週 +3</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="5">0</span><span class="tan">件</span></div><div class="mei">攻略済みサイト</div><div class="sa onaji">うち④最適化 2件</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="23">0</span><span class="tan">件</span></div><div class="mei">学習済み OK / NG</div><div class="sa yoi">今週 +4</div></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="11.5" y="13" width="11" height="11" transform="rotate(45 17 18.5)"/><circle class="sen" cx="17" cy="10.5" r="2.2"/></svg>
+            <h2>生成物</h2><span class="sode">発行済みアーティファクト</span>
+          </div>
+          <div class="sec-sita"></div>
+          <ul class="seika">
+            <li><span class="tagui gd">ガイド</span><a href="#">Delvework 操作ガイド（和風総本家版）</a><span class="itsu">7/22</span></li>
+            <li><span class="tagui rp">レポート</span><a href="#">媒体週次サマリー 7月第3週</a><span class="itsu">7/18</span></li>
+            <li><span class="tagui mk">モックアップ</span><span class="tokoro">採用LP改善案 v2 ── ローカルのみ（knowledge/reports/lp-kaizen-v2.html）</span><span class="itsu">7/15</span></li>
+          </ul>
+          <p class="chu" style="margin-top:24px">できることの一覧と言い方は操作ガイドへ。この画面の更新は「ダッシュボード更新して」。パスワード等の認証は人間のみが扱う（Credential Guard）。</p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ======== タブ: 求人媒体（媒体A掲載・媒体Bスカウトを内蔵） ======== -->
+    <div class="pane" id="p-kyujin" role="tabpanel" aria-labelledby="t-kyujin" hidden>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="11.5" y="10.5" width="11" height="14" rx="5.5"/><path class="sen" d="M11.5 15 h11 M11.5 20 h11 M14.5 8.5 h5 M14.5 26.5 h5"/></svg>
+            <h2>求人媒体A ── 掲載</h2><span class="sode">攻略度 ②再訪問・毎朝巡回</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="joho">
+            <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase p1">② 再訪問</span></p></div>
+            <div class="ko"><p class="t">現在ステップ</p><p class="v">J レポート <span class="chii">今朝分</span></p></div>
+            <div class="ko"><p class="t">次回実行</p><p class="v">明朝 8:30 <span class="chii">自動</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v aka">要対応 <span class="chii">残枠あと2件</span></p></div>
+          </div>
+          <div class="hyo-maki" style="margin-top:22px"><table class="hyo">
+            <tr><th>指標</th><th class="su">今回</th><th class="su">前回比</th><th>備考</th></tr>
+            <tr><td>応募</td><td class="su">12件</td><td class="su">+3</td><td>直近3日で伸び</td></tr>
+            <tr><td>掲載枠</td><td class="su">残り 2件</td><td class="su">−1</td><td class="kei">契約期限 7/31（あと9日）</td></tr>
+          </table></div>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="媒体Aの残枠2件に出す求人を決めよう">媒体Aの残枠2件に出す求人を決めよう</span></p>
+        </div>
+      </section>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M9.5 12.5 h15 v10 h-15 z M9.5 12.5 L17 19 L24.5 12.5"/></svg>
+            <h2>求人媒体B ── スカウト送信</h2><span class="sode">攻略度 ④最適化・7月第4週 実行中</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="joho">
+            <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase">④ 最適化</span></p></div>
+            <div class="ko"><p class="t">現在ステップ</p><p class="v">H 承認 <span class="chii">（人の承認待ち）</span></p></div>
+            <div class="ko"><p class="t">次回実行</p><p class="v">平日 10:00 <span class="chii">自動</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v aka">承認待ち 3通</p></div>
+          </div>
+          <div class="kotei" style="margin-top:22px">
+            <div class="ishi sumi-i"><span class="maru">A</span><span class="na">指令</span></div>
+            <div class="ishi sumi-i"><span class="maru">B</span><span class="na">外部探索</span></div>
+            <div class="ishi sumi-i"><span class="maru">C</span><span class="na">内部探索</span></div>
+            <div class="ishi sumi-i"><span class="maru">D</span><span class="na">マップ</span></div>
+            <div class="ishi sumi-i"><span class="maru">E</span><span class="na">変更前記録</span><span class="seki zumi">記録済</span></div>
+            <div class="ishi sumi-i"><span class="maru">F</span><span class="na">計画</span></div>
+            <div class="ishi sumi-i"><span class="maru">G</span><span class="na">下書き</span></div>
+            <div class="ishi ima-i"><span class="maru">H</span><span class="na">承認</span><span class="seki mada">承認待ち</span></div>
+            <div class="ishi"><span class="maru">I</span><span class="na">検証</span></div>
+            <div class="ishi"><span class="maru">J</span><span class="na">レポート</span></div>
+            <div class="ishi"><span class="maru">K</span><span class="na">成果報告</span></div>
+          </div>
+
+          <p class="naka-dai">承認待ちの3通 <span class="chii">承認されるまで送信しない</span></p>
+          <div class="hyo-maki"><table class="hyo">
+            <tr><th>宛先（属性）</th><th>件名（13字以内）</th><th>テンプレ</th></tr>
+            <tr><td>営業職・26卒・関東</td><td>週3リモートで営業を</td><td>営業 draft-3</td></tr>
+            <tr><td>マーケ職・26卒・関西</td><td>企画から任せる新規事業</td><td>マーケ draft-4</td></tr>
+            <tr><td>マーケ職・27卒・首都圏</td><td>学生発の企画が通る会社</td><td>マーケ draft-4</td></tr>
+          </table></div>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="承認待ちの3通を本文つきで見せて">承認待ちの3通を本文つきで見せて</span><span class="iu" data-iu="3通ともOK、送って">3通ともOK、送って</span></p>
+
+          <p class="naka-dai">今週の成果</p>
+          <div class="stat">
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="24">0</span><span class="tan">通</span></div><div class="mei">送信</div><div class="sa onaji">先週 26通</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="38">0</span><span class="tan">%</span></div><div class="mei">開封率</div><div class="sa yoi">+5pt</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="4">0</span><span class="tan">件</span></div><div class="mei">返信</div><div class="sa yoi">+1</div></div>
+          </div>
+          <ul class="maki" style="margin-top:16px">
+            <li><span class="shirushi yo">OK</span><span class="koto">件名13字以内 + 大学名なしの方が開封が高い（この媒体の学習）</span></li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ======== タブ: SNS運用（レポート/投稿を内蔵） ======== -->
+    <div class="pane" id="p-sns" role="tabpanel" aria-labelledby="t-sns" hidden>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="10" y="12" width="14" height="11"/><path class="sen" d="M10 17.5 h14 M17 12 v11"/></svg>
+            <h2>SNS ── 予約投稿・ストック</h2><span class="sode">攻略度 ④最適化・X / Instagram / note</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="joho">
+            <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase">④ 最適化</span></p></div>
+            <div class="ko"><p class="t">最終投稿</p><p class="v">今朝 7:30 <span class="chii">X・成功</span></p></div>
+            <div class="ko"><p class="t">次回投稿</p><p class="v">明朝 7:30 <span class="chii">予約済み</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v aka">Xストック不足</p></div>
+          </div>
+          <div class="hyo-maki" style="margin-top:22px"><table class="hyo">
+            <tr><th>アカウント</th><th class="su">主要数値</th><th class="su">前回比</th><th>備考</th></tr>
+            <tr><td>X</td><td class="su">インプレッション 8,400</td><td class="su">−600</td><td class="kei">ストック切れの影響が出始め</td></tr>
+            <tr><td>Instagram</td><td class="su">フォロワー 1,240</td><td class="su">+18</td><td>保存率が先週比で微増</td></tr>
+            <tr><td>note</td><td class="su">週間ビュー 620</td><td class="su">+40</td><td>採用記事が安定して読まれる</td></tr>
+          </table></div>
+          <p class="naka-dai">ストック充足率 <span class="chii">目標: 7日分を維持</span></p>
+          <div class="stock">
+            <div class="stock-gyo tarinai"><span class="dare">X</span><div class="stock-obi"><div class="mi" data-mi="21%"></div></div><span class="wari">21%（1.5日）</span></div>
+            <div class="stock-gyo"><span class="dare">Instagram</span><div class="stock-obi"><div class="mi" data-mi="80%"></div></div><span class="wari">80%（5.6日）</span></div>
+            <div class="stock-gyo"><span class="dare">note</span><div class="stock-obi"><div class="mi" data-mi="66%"></div></div><span class="wari">66%（2本）</span></div>
+          </div>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="Xの投稿ストックを埋めて">Xの投稿ストックを埋めて</span></p>
+          <ul class="maki" style="margin-top:16px">
+            <li><span class="shirushi dai">NG</span><span class="koto">週末夜の自動投稿は反応が沈む。予約は平日朝に寄せる（この媒体の学習）</span></li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ======== タブ: 企画リサーチ（競合ウォッチ・自社診断=構想抽出を内蔵） ======== -->
+    <div class="pane" id="p-kikaku" role="tabpanel" aria-labelledby="t-kikaku" hidden>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M17 25.5 V13 M17 18.5 L11 15.5 M17 18.5 L23 15.5 M17 13 L12.5 9.5 M17 13 L21.5 9.5"/></svg>
+            <h2>自社サイト ── 診断</h2><span class="sode">攻略度 ①初回・週次</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="joho">
+            <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase p1">① 初回</span></p></div>
+            <div class="ko"><p class="t">最終実行</p><p class="v">7/21（月）<span class="chii">成功</span></p></div>
+            <div class="ko"><p class="t">次回実行</p><p class="v">7/28（月）<span class="chii">自動</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v">正常 <span class="chii">改善2件を確認</span></p></div>
+          </div>
+          <div class="hyo-maki" style="margin-top:22px"><table class="hyo">
+            <tr><th>指標</th><th class="su">今回</th><th class="su">前回</th></tr>
+            <tr><td>LCP（表示の速さ）</td><td class="su">2.1s</td><td class="su">2.1s ±0</td></tr>
+            <tr><td>CLS（画面のガタつき）</td><td class="su">0.02</td><td class="su">0.05 改善</td></tr>
+            <tr><td>リンク切れ</td><td class="su">0件</td><td class="su">2件 改善</td></tr>
+          </table></div>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="LCPを2秒切りたい。改善案を出して">LCPを2秒切りたい。改善案を出して</span></p>
+        </div>
+      </section>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M8 20 q4 -6.5 8 0 M17 15.5 q4 -6.5 8 0"/></svg>
+            <h2>競合サイト ── 変更検知</h2><span class="sode">攻略度 ④最適化・対象3社・毎朝巡回</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="joho">
+            <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase">④ 最適化</span></p></div>
+            <div class="ko"><p class="t">最終実行</p><p class="v">今朝 9:00 <span class="chii">成功</span></p></div>
+            <div class="ko"><p class="t">次回実行</p><p class="v">明朝 9:00 <span class="chii">自動</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v">正常 <span class="chii">本日分 完了・閲覧のみ</span></p></div>
+          </div>
+          <p class="naka-dai">直近の検知 <span class="chii">重要度順</span></p>
+          <ul class="maki">
+            <li><span class="shirushi dai">重要</span><span class="moto">競合C社</span><span class="koto">求人の給与レンジを上方改定（+2万円）。同職種で当社と逆転</span><span class="itsu">7/21</span></li>
+            <li><span class="shirushi chu">変化</span><span class="moto">競合D社</span><span class="koto">採用LPを刷新。社員インタビューを冒頭に移動</span><span class="itsu">7/20</span></li>
+            <li><span class="shirushi yo">変化なし</span><span class="moto">競合E社</span><span class="koto">7日間、掲載内容に変化なし</span><span class="itsu">7/22</span></li>
+          </ul>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="C社の給与改定の詳細と当社への影響をまとめて">C社の給与改定の詳細と当社への影響をまとめて</span></p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ======== タブ: 広告分析（LP/動画分析を内蔵） ======== -->
+    <div class="pane" id="p-kokoku" role="tabpanel" aria-labelledby="t-kokoku" hidden>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="10.5" y="10.5" width="13" height="16"/><path class="sen" d="M10.5 15.5 h13 M13 19 h8 M13 22.5 h5"/></svg>
+            <h2>競合LP ── 分析</h2><span class="sode">攻略度 ①初回・依頼時に実行</span>
+          </div>
+          <div class="sec-sita"></div>
+          <div class="joho">
+            <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase p1">① 初回</span></p></div>
+            <div class="ko"><p class="t">最終分析</p><p class="v">7/18 <span class="chii">競合C社LP</span></p></div>
+            <div class="ko"><p class="t">次回実行</p><p class="v">依頼時 <span class="chii">定常化も可</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v">正常 <span class="chii">閲覧のみ</span></p></div>
+          </div>
+          <p class="naka-dai">直近の分析</p>
+          <ul class="maki">
+            <li><span class="shirushi dai">重要</span><span class="moto">競合C社 LP</span><span class="koto">ファーストビューの訴求が「価格」→「スピード」に変更。CTAを画面上部へ移動</span><span class="itsu">7/18</span></li>
+            <li><span class="shirushi chu">参考</span><span class="moto">競合D社 LP</span><span class="koto">社員インタビュー動画を冒頭に配置。滞在時間狙いの構成</span><span class="itsu">7/15</span></li>
+          </ul>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="このLPを分析して改善案を出して">このLPを分析して改善案を出して</span></p>
+        </div>
+      </section>
+
+      <section class="bu">
+        <div class="sho">
+          <div class="sec-head">
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="9.5" y="12" width="15" height="11" rx="1.5"/><path class="nuri" d="M15 15 L20.5 17.5 L15 20 Z"/></svg>
+            <h2>動画広告 ── 構成案</h2><span class="sode">台本・字コンテの下書き</span>
+          </div>
+          <div class="sec-sita"></div>
+          <ul class="maki">
+            <li><span class="shirushi yo">下書き</span><span class="moto">採用動画 15秒</span><span class="koto">構成案 v1（フック: 「休日に仕事を思い出さない」）── knowledge/drafts/ に保存済み</span><span class="itsu">7/15</span></li>
+          </ul>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="15秒の採用動画の構成案を仕上げて">15秒の採用動画の構成案を仕上げて</span></p>
+        </div>
+      </section>
+
+    </div>
+
+  </div>
+</main>
+
+<footer class="ashimoto">
+  <div class="kin-sen"></div>
+  <p>
+    このダッシュボードは定常タスクの締めごとに自動更新される。<br>
+    本ページは見本データ ── 実運用では knowledge/ の実データから生成される。
+  </p>
+</footer>
+
+<div class="utsushi" id="utsushi">コピーしました ── そのまま貼って使えます</div>
+
+<script>
+(function(){
+  var shizuka = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- タブ切り替え + 旅人の歩行 ---- */
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.fuda-tab'));
+  var panes = Array.prototype.slice.call(document.querySelectorAll('.pane'));
+  var tabi = document.getElementById('tabibito');
+  var muki = tabi.querySelector('.muki');
+  var teishi = Array.prototype.slice.call(document.querySelectorAll('.taboji'));
+  var stops = [86, 374, 662, 950, 1238];
+  var genzai = 0, aruT = null;
+
+  function erabu(tab){
+    var i = tabs.indexOf(tab);
+    tabs.forEach(function(t){
+      var on = (t === tab);
+      t.classList.toggle('ima', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panes.forEach(function(p){
+      var on = (p.id === tab.dataset.pane);
+      p.classList.toggle('ima', on);
+      if(on){ p.removeAttribute('hidden'); } else { p.setAttribute('hidden',''); }
+    });
+    if(i !== genzai){
+      muki.classList.toggle('gyaku', i < genzai);
+      tabi.style.transform = 'translateX(' + stops[i] + 'px)';
+      if(!shizuka){
+        tabi.classList.add('aruku');
+        clearTimeout(aruT);
+        aruT = setTimeout(function(){ tabi.classList.remove('aruku'); }, 4250);
+      }
+      teishi.forEach(function(d,j){ d.classList.toggle('sugi', j <= i); });
+      genzai = i;
+    }
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click', function(){ erabu(t); });
+    t.addEventListener('keydown', function(ev){
+      var j = null;
+      if(ev.key==='ArrowRight') j = (i+1) % tabs.length;
+      if(ev.key==='ArrowLeft')  j = (i-1+tabs.length) % tabs.length;
+      if(j !== null){ ev.preventDefault(); tabs[j].focus(); erabu(tabs[j]); }
+    });
+  });
+  document.querySelectorAll('[data-tobu]').forEach(function(el){
+    el.addEventListener('click', function(){
+      var t = document.getElementById(el.dataset.tobu);
+      if(t){ erabu(t); t.focus(); }
+    });
+  });
+
+  /* ---- セクションの出現 ---- */
+  var deru = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(e.isIntersecting){ e.target.classList.add('mieru'); deru.unobserve(e.target); }
+    });
+  },{threshold:.18});
+  document.querySelectorAll('.bu').forEach(function(el){ deru.observe(el); });
+
+  /* ---- サマリー数値のカウントアップ ---- */
+  var kazoe = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      kazoe.unobserve(e.target);
+      var owari = parseInt(e.target.dataset.kazu,10);
+      if(shizuka){ e.target.textContent = owari; return; }
+      var hajime = null;
+      function susumu(t){
+        if(!hajime) hajime = t;
+        var w = Math.min((t - hajime)/900, 1);
+        e.target.textContent = Math.round(owari * (1 - Math.pow(1-w,3)));
+        if(w < 1) requestAnimationFrame(susumu);
+      }
+      requestAnimationFrame(susumu);
+    });
+  },{threshold:.6});
+  document.querySelectorAll('.kazoeru').forEach(function(el){ kazoe.observe(el); });
+
+  /* ---- バーの伸び ---- */
+  var nobi = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if(!e.isIntersecting) return;
+      nobi.unobserve(e.target);
+      e.target.querySelectorAll('.bou').forEach(function(b){ b.style.height = b.dataset.take; });
+      e.target.querySelectorAll('.mi').forEach(function(b){ b.style.width = b.dataset.mi; });
+    });
+  },{threshold:.4});
+  document.querySelectorAll('.nanoka,.stock').forEach(function(el){
+    el.querySelectorAll('.bou').forEach(function(b){ b.style.height = shizuka ? b.dataset.take : '4%'; });
+    el.querySelectorAll('.mi').forEach(function(b){ b.style.width = shizuka ? b.dataset.mi : '2%'; });
+    if(!shizuka) nobi.observe(el);
+  });
+
+  /* ---- 指示文のクリックコピー ---- */
+  var fuda = document.getElementById('utsushi');
+  var fudaT = null;
+  document.querySelectorAll('[data-iu]').forEach(function(el){
+    el.setAttribute('role','button'); el.setAttribute('tabindex','0');
+    el.title = 'クリックでコピー';
+    function utsusu(){
+      var moji = el.dataset.iu;
+      var ta = document.createElement('textarea');
+      ta.value = moji; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); }catch(e){}
+      document.body.removeChild(ta);
+      if(navigator.clipboard){ navigator.clipboard.writeText(moji).catch(function(){}); }
+      fuda.classList.add('miseru');
+      clearTimeout(fudaT);
+      fudaT = setTimeout(function(){ fuda.classList.remove('miseru'); }, 2200);
+    }
+    el.addEventListener('click', utsusu);
+    el.addEventListener('keydown', function(ev){ if(ev.key==='Enter'||ev.key===' '){ ev.preventDefault(); utsusu(); } });
+  });
+})();
+</script>

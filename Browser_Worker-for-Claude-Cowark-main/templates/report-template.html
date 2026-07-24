@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<!-- Delvework Report Template v1 —
+  使い方:
+  1. まず templates/design-principles.md を読む（配置・比較併記・情報量・グラフ選択・色の原則）
+  2. {{...}} プレースホルダを置換する
+  3. <main> 内に section スニペット（下のコメント参照）を積む。
+     順序は「サマリー（stats）→ 本体 → 詳細表 → 示唆」= 全体から部分へ
+  4. CSS は変更しない。色替えは :root の変数だけ触る
+  禁止: 独自レイアウトCSSの追加 / インラインstyleでの幅指定（.bar-fill の width% を除く）/ 固定px幅
+-->
+<style>
+:root{
+  --accent:#0154a9;        /* レポートのアクセント色。フェーズ/対象に合わせ変更可 */
+  --accent-soft:#1f9de233; /* アクセントの淡色（badge/線） */
+  --ok:#197A4B; --warn:#b58900; --bad:#CE0000;
+  /* チャート系列色（デジタル庁パレット準拠・この順で使用） */
+  --chart-1:#3460FB; --chart-2:#00A3BF; --chart-3:#259D63;
+  --chart-4:#FB5B01; --chart-5:#767676;
+  --bg:#ffffff; --bg-alt:#f6f8fa; --fg:#1c2733; --fg-muted:#5a6b7b;
+  --border:#dde4ea; --card:#ffffff; --shadow:0 1px 3px rgba(16,32,48,.08);
+}
+@media (prefers-color-scheme: dark){
+  :root{--bg:#0e1620;--bg-alt:#16212e;--fg:#e7edf3;--fg-muted:#9db0c0;
+        --border:#27354a;--card:#141f2c;--shadow:0 1px 3px rgba(0,0,0,.4);}
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic UI",sans-serif;
+     background:var(--bg);color:var(--fg);line-height:1.75;font-size:15px;
+     overflow-x:hidden}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px 80px}
+img{max-width:100%;height:auto;display:block}
+a{color:var(--accent)}
+
+/* ── ヘッダー ── */
+.hero{background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent) 55%,#000));
+      color:#fff;padding:48px 0 40px;margin-bottom:40px}
+.hero .wrap{padding-bottom:0}
+.hero .kicker{display:inline-block;border:1px solid #ffffff66;border-radius:99px;
+      padding:2px 14px;font-size:11px;letter-spacing:.18em;margin-bottom:14px}
+.hero h1{font-size:clamp(22px,4vw,32px);line-height:1.35;font-weight:700}
+.hero p.lead{margin-top:10px;font-size:14px;opacity:.9;max-width:640px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+      gap:10px;margin-top:24px}
+.meta div{background:#ffffff1a;border:1px solid #ffffff2e;border-radius:10px;padding:10px 14px}
+.meta dt{font-size:10px;letter-spacing:.14em;opacity:.75}
+.meta dd{font-size:13px;font-weight:700;word-break:break-all}
+
+/* ── セクション ── */
+section{margin:44px 0}
+.sec-h{display:flex;align-items:center;gap:12px;margin-bottom:14px;
+       border-bottom:2px solid var(--border);padding-bottom:10px}
+.sec-h .num{flex:none;width:32px;height:32px;border-radius:8px;background:var(--accent);
+       color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center}
+.sec-h h2{font-size:19px;font-weight:700}
+.sec-note{color:var(--fg-muted);font-size:13px;margin-bottom:14px}
+
+/* ── 汎用パーツ ── */
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;
+      padding:16px;box-shadow:var(--shadow)}
+figure.shot{background:var(--card);border:1px solid var(--border);border-radius:12px;
+      overflow:hidden;box-shadow:var(--shadow)}
+figure.shot img{border-bottom:1px solid var(--border)}
+figure.shot figcaption{padding:10px 14px;font-size:12px;color:var(--fg-muted)}
+.badge{display:inline-block;font-size:10px;font-weight:700;border-radius:99px;
+      padding:1px 10px;vertical-align:1px}
+.badge.est{background:var(--warn);color:#fff}     /* 目視推定 */
+.badge.ok{background:var(--ok);color:#fff}
+.badge.bad{background:var(--bad);color:#fff}
+.badge.soft{background:var(--accent-soft);color:var(--accent)}
+
+/* スウォッチ */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px}
+.swatch{border:1px solid var(--border);border-radius:10px;overflow:hidden;background:var(--card)}
+.swatch .chip{height:56px}
+.swatch .info{padding:8px 10px;font-size:11px}
+.swatch .hex{font-family:ui-monospace,Consolas,monospace;font-weight:700;font-size:12px}
+.swatch .role{color:var(--fg-muted)}
+
+/* 表（必ず .tbl で包む＝横崩れ防止） */
+.tbl{overflow-x:auto;border:1px solid var(--border);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:480px}
+th,td{padding:8px 12px;border-bottom:1px solid var(--border);text-align:left;
+      white-space:nowrap}
+td.wrap-ok{white-space:normal;min-width:200px}
+th{background:var(--bg-alt);font-size:11px;letter-spacing:.06em}
+tr:last-child td{border-bottom:none}
+
+/* 数値ハイライト */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.stat{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
+      border-radius:10px;padding:12px 14px}
+.stat .v{font-size:22px;font-weight:700;line-height:1.2}
+.stat .l{font-size:11px;color:var(--fg-muted)}
+.stat.warn{border-left-color:var(--warn)} .stat.bad{border-left-color:var(--bad)}
+.stat.ok{border-left-color:var(--ok)}
+.stat .d{font-size:11px;font-weight:700;margin-top:2px}
+.delta.up{color:var(--ok)} .delta.down{color:var(--bad)}
+.delta.up::before{content:"▲ "} .delta.down::before{content:"▼ "}
+
+/* CSS横棒（数量比較用。width:% をインラインで指定する唯一の例外） */
+.bars{display:grid;gap:8px}
+.bar-row{display:grid;grid-template-columns:minmax(90px,160px) 1fr 70px;
+   gap:10px;align-items:center;font-size:12px}
+.bar-track{background:var(--bg-alt);border-radius:6px;height:16px;overflow:hidden}
+.bar-fill{height:100%;background:var(--chart-1);border-radius:6px}
+.bar-row .val{text-align:right;font-family:ui-monospace,Consolas,monospace}
+
+/* タイムライン */
+.timeline{list-style:none;border-left:2px solid var(--border);margin-left:8px;padding-left:20px}
+.timeline li{position:relative;margin-bottom:14px;font-size:13px}
+.timeline li::before{content:"";position:absolute;left:-26px;top:6px;width:10px;height:10px;
+      border-radius:50%;background:var(--accent)}
+.timeline li .t{font-family:ui-monospace,Consolas,monospace;color:var(--fg-muted);
+      font-size:11px;margin-right:8px}
+
+/* コード/プリ */
+pre{background:var(--bg-alt);border:1px solid var(--border);border-radius:10px;
+    padding:14px;overflow-x:auto;font-size:12px;line-height:1.6}
+code{font-family:ui-monospace,Consolas,monospace}
+
+/* 示唆・引き継ぎ */
+.callout{border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:10px;padding:14px 16px;background:var(--bg-alt);margin:10px 0;font-size:13px}
+.callout b{display:block;margin-bottom:4px}
+
+footer{margin-top:60px;border-top:1px solid var(--border);padding-top:16px;
+    font-size:12px;color:var(--fg-muted)}
+
+@media print{
+  .hero{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  section{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="kicker">{{REPORT_KIND}}</span> <!-- 例: STYLE RESEARCH / SITE AUDIT / DELVE REPORT -->
+    <h1>{{TITLE}}</h1>
+    <p class="lead">{{LEAD}}</p>
+    <dl class="meta">
+      {{META_ITEMS}} <!-- <div><dt>SITE</dt><dd>…</dd></div> を必要数 -->
+    </dl>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- ============ section スニペット集（使うものを複製して埋める） ============
+
+  ■ 基本セクション（番号付き見出し）
+  <section>
+    <div class="sec-h"><span class="num">01</span><h2>見出し</h2></div>
+    <p class="sec-note">このセクションの読み方を1〜2文で。</p>
+    ...中身...
+  </section>
+
+  ■ スクリーンショット（grid2 内に figure.shot を並べる）
+  <div class="grid2">
+    <figure class="shot"><img src="..." alt="..."><figcaption>キャプション</figcaption></figure>
+  </div>
+
+  ■ カラーパレット（推定色には <span class="badge est">目視推定</span> を付ける）
+  <div class="swatches">
+    <div class="swatch"><div class="chip" style="background:#0154a9"></div>
+      <div class="info"><div class="hex">#0154a9</div><div class="role">primary</div></div></div>
+  </div>
+
+  ■ 表（必ず .tbl で包む。長文セルは td.wrap-ok）
+  <div class="tbl"><table>...</table></div>
+
+  ■ 数値ハイライト（閾値超えは .warn / .bad。**必ず比較対象を .d に併記**: 前回比/目標/目安）
+  <div class="stats"><div class="stat"><div class="v">2.1s</div><div class="l">LCP（目安2.5s）</div>
+    <div class="d delta up">0.4s 改善（前回比）</div></div></div>
+
+  ■ CSS横棒（数量比較。値の大きい順にソートし、最大値を100%とする）
+  <div class="bars">
+    <div class="bar-row"><span>画像</span><div class="bar-track">
+      <div class="bar-fill" style="width:84%"></div></div><span class="val">1.2MB</span></div>
+  </div>
+
+  ■ 操作タイムライン
+  <ul class="timeline"><li><span class="t">14:02</span>navigate → …</li></ul>
+
+  ■ 示唆・引き継ぎ
+  <div class="callout"><b>示唆1</b>本文…</div>
+  ============================================================================ -->
+
+  {{SECTIONS}}
+
+</main>
+
+<footer class="wrap">
+  {{FOOTER}} <!-- 生成日時・データソースのパス・次タスクへの導線 -->
+</footer>
+
+</body>
+</html>

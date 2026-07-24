@@ -1,0 +1,37 @@
+# Delvework URL Guard — デフォルト拒否リスト（金銭発生・広告出稿・課金設定ページ）
+# 1行1パターン（grep -E の正規表現、URL に対して大文字小文字無視でマッチ）
+# '#' 始まりはコメント。ワークスペース側での追加は knowledge/config/url-denylist.txt、
+# 個別許可（このリストより優先）は knowledge/config/url-allowlist.txt に記載する。
+
+# --- 広告マネージャ（出稿＝金銭発生） ---
+ads\.(x|twitter)\.com
+ads\.tiktok\.com
+business\.facebook\.com/(adsmanager|ads)
+adsmanager\.facebook\.com
+facebook\.com/ads/manage
+ads\.google\.com
+admanager\.google\.com
+business\.instagram\.com/advertise
+ads\.linkedin\.com
+linkedin\.com/campaignmanager
+ads\.pinterest\.com
+ads\.smartnews\.com
+promote\.line\.me
+ad\.line\.me
+yahoo\.co\.jp/promotionalads
+ads-developers?\.yahoo
+
+# --- プラットフォーム内の宣伝・ブースト導線 ---
+/promote(_|/|\?|$)
+/boost(_post)?(/|\?|$)
+/quick_promote
+/superfollows
+
+# --- 課金・支払い・サブスクリプション設定 ---
+/billing(/|\?|$)
+/payments?(/|\?|$)
+/checkout(/|\?|$)
+/purchase(/|\?|$)
+/subscribe(/|\?|$)
+/add[-_]?funds
+/payment[-_]?methods?
