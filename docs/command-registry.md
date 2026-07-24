@@ -29,7 +29,7 @@
 
 新しい媒体を増やす＝パック1個追加。できることを増やす＝部品（docs/parts/）の追加。**エンジン側（ワークフロー層）は一切変えない。**
 
-**動的パック**: 媒体の個別コマンド（例: /ワンキャリア /doda）は **/ワーク追加** で生成する — 登録 + 初期マッピング（フェーズ①・読み取り専用）+ ワークスペース `.claude/commands/` への専用コマンド生成を1コマンドで実行（プラグイン本体は増やさない）。**/セットアップ の媒体選択でも自動生成**する — SNS=`/<媒体名>運用`（/X運用 等）、広告媒体=`/<媒体名>広告`（/Google広告 等・参照先 takumi-ads で媒体固定）、求人媒体=/ワーク追加接続で `/<媒体名>`。以後の単一媒体依頼は専用コマンドが第一入口（/SNS運用 /広告 /媒体管理 は複数媒体・媒体不明時の受け皿に降格）。**既存パックに該当しない完全別ワークは非表示の親「その他ワーク」の配下**に生成する（親判定表の正本は procedures/takumi-add-work.md §4 — registry.yaml に `parent:` を記録）。
+**動的パック**: 媒体の個別コマンド（例: /ワンキャリア /doda）は **/ワーク追加** で生成する — 登録 + 初期マッピング（フェーズ①・読み取り専用）+ ワークスペース `.claude/commands/` への専用コマンド生成を1コマンドで実行（プラグイン本体は増やさない）。**/セットアップ の媒体選択でも自動生成**する — SNS=`/<媒体名>運用`（/X運用 等）、求人媒体=/ワーク追加接続で `/<媒体名>`。以後の単一媒体依頼は専用コマンドが第一入口（/SNS運用 /媒体管理 は複数媒体・媒体不明時の受け皿に降格）。**有料広告媒体の動的パック（旧 /<媒体名>広告）は廃止**（ゼロ広告費のため出稿系の入口を持たない）。**既存パックに該当しない完全別ワークは非表示の親「その他ワーク」の配下**に生成する（親判定表の正本は procedures/takumi-add-work.md §4 — registry.yaml に `parent:` を記録）。
 
 ## 命名ルール
 
@@ -47,8 +47,8 @@
 | takumi-media | 媒体管理 | 求人媒体 | media | 「全媒体の状況見せて」「スカウト送って」 |
 | takumi-add-work | ワーク追加 | 基盤 | core | 「dodaを追加して」（登録+初期マッピング+専用コマンド生成） |
 | takumi-setup | セットアップ | 基盤 | core | 「初期設定」「使う機能を選びたい」（回答保存・済んだ質問は聞かない・未選択パックは発火停止） |
-| takumi-website | Webサイト | 自社・広告 | research | 「表示速度を測って」「このLP改善して」 |
-| takumi-ads | 広告 | 自社・広告 | creative | 「バナー作って」「競合広告を洗い出して」 |
+| takumi-website | Webサイト | オウンド | research | 「表示速度を測って」「このLP改善して」 |
+| takumi-content | コンテンツ | オウンド | creative | 「サムネ作って」「記事のアイキャッチ」「このビジュアルからLP」 |
 | takumi-customize | カスタマイズ | 基盤 | core | 「毎朝これやって」「これ覚えて」（タスク登録/スキル化/好み記憶/機能ON-OFF を選択式で） |
 | takumi-reporting | レポート | 記録 | core | 「今どうなってる？」「今日の作業まとめて」（トップ=ダッシュボード + 作業ログ/運用レポートを選択） |
 | takumi-verify | 検証 | 記録 | core | 「プラグインを検証して」※セルフテスト。品質保証機能として同梱（導入直後は quick、更新後・不調時は full） |
@@ -86,7 +86,7 @@
 | 計画 | content-calendar（カレンダー・送信/配信計画 → queue・定常タスクへ接続） |
 | リサーチ | style-research / deep-research / sns-research |
 | 収集 | asset-collect / video-asset-collect |
-| クリエイティブ | jobpost-writing / scoutmail-writing / imagegen / videogen / image-edit / video-edit / page-improve / ad-to-lp / video-ad-script |
+| クリエイティブ | jobpost-writing / scoutmail-writing / imagegen / videogen / image-edit / video-edit / page-improve / content-to-lp / video-content-script |
 | 分析 | site-audit / sns-research（数値読み） |
 | 掃き出し | design-sync / canva-export / design-handoff（成果物を Claude Design へ送って人間が編集→回収。critic PASS 後に「Design に送って手直ししますか？」） |
 
@@ -104,8 +104,8 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 | storytelling | SNS媒体・求人媒体 | 社員ストーリー・採用広報記事 |
 | recruit-writing | 求人媒体（jobpost/scoutmail 部品） | 求人原稿・スカウト本文 |
 | copywriting | 広告・求人媒体・SNS | キャッチコピー・件名13字 |
-| video-ad | 広告 | 動画広告の構成・台本 |
-| ad-compliance-jp | 広告・全公開物 | 日本の広告表現規制チェック |
+| video-ad | コンテンツ（動画） | 動画コンテンツの構成・台本（オーガニック動画。有料出稿はしない） |
+| ad-compliance-jp | コンテンツ・全公開物 | 景表法・ステマ規制・PR表記チェック（オーガニック含む全公開物の表現規制） |
 | web-design | Webサイト・広告 | LP/ページのデザイン実装 |
 | business-writing | 基盤 | 社内外メール・事務連絡・校正 |
 | seo-jp | Webサイト・SNS媒体 | 日本語SEO/AEO — 記事設計・既存ページ診断・AI検索対応 |
@@ -120,13 +120,13 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 
 | カテゴリー | ループ | 標準周期 | 使うコマンド | 締め |
 |---|---|---|---|---|
-| 自社・広告 | 自社サイト診断 | 週次（月曜） | Webサイト | ダッシュボード更新 |
+| オウンド | 自社サイト診断 | 週次（月曜） | Webサイト | ダッシュボード更新 |
 | SNS媒体 | 予約投稿・実績記録 | 毎朝 | SNS運用 | 同上 |
 | SNS媒体 | ストック補充 | 週次 or 残量アラート時 | SNS運用 | 同上 |
 | SNS媒体 | カレンダー消化率チェック・翌週計画 | 週次（金曜） | SNS運用（content-calendar 部品） | 同上 |
 | 求人媒体 | 媒体ステータス巡回 | 毎朝 | 媒体管理 | 同上 |
 | 求人媒体 | スカウト送信 | 平日（承認後のみ送信） | 媒体管理 + タスク開始 | 同上 |
-| 広告 | 広告リサーチ・制作 | 依頼時（定常化も可） | 広告 | 同上 |
+| コンテンツ | コンテンツ制作・競合コンテンツ調査 | 依頼時（定常化も可） | コンテンツ | 同上 |
 
 **原則1: 実行系（変更操作）は全カテゴリー共通で `takumi-start` が担う**（A〜Kワークフロー + 変更前記録/承認の関所）。パック別の実行コマンドは新設しない。
 
@@ -140,7 +140,7 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 |---|---|
 | SNS媒体 | knowledge/sns/<platform>/（ネタ帳は queue.md、調査は research/） |
 | 求人媒体 | knowledge/media/・approvals/・drafts/ |
-| 自社・広告 | knowledge/audits/・styles/・mockups/・assets/・drafts/ |
+| オウンド | knowledge/audits/・styles/・mockups/・assets/・drafts/ |
 | 基盤・記録（横断） | knowledge/sites/・logs/・reports/・tacit/・feedback/・data/・config/・artifacts-index.md |
 
 ## 追加時のチェックリスト

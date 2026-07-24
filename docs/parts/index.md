@@ -15,7 +15,7 @@
 | 計画 | content-calendar.md（投稿カレンダー・配信/送信計画・制作スケジュール — 作って終わりでなく queue.md と定常タスクへの接続まで） |
 | リサーチ | style-research.md（デザイン・配色） / deep-research.md（徹底洗い出し） / sns-research.md（SNSトレンド・競合） |
 | 収集 | asset-collect.md（画像素材・ライセンス証跡） / video-asset-collect.md（動画素材） |
-| クリエイティブ | jobpost-writing.md（求人票） / scoutmail-writing.md（スカウト文面） / imagegen.md（画像生成・Gemini実証） / videogen.md（動画生成・Gemini実証） / image-edit.md（バナー合成・クロマキー） / video-edit.md（WebM・アルファ・注釈アニメ） / page-improve.md（ページ改善モック） / ad-to-lp.md（広告→LP） / video-ad-script.md（動画広告台本） |
+| クリエイティブ | jobpost-writing.md（求人票） / scoutmail-writing.md（スカウト文面） / imagegen.md（画像生成・Gemini実証） / videogen.md（動画生成・Gemini実証） / image-edit.md（バナー合成・クロマキー） / video-edit.md（WebM・アルファ・注釈アニメ） / page-improve.md（ページ改善モック） / content-to-lp.md（コンテンツ/ビジュアル→LP） / video-content-script.md（オーガニック動画コンテンツ台本） |
 | 分析 | site-audit.md（速度・SEO・品質） / sns-research.md（数値読み） / 各媒体パックの分析タスク |
 | 掃き出し | design-sync.md（Claude Design 同期・既定ルート） / design-handoff.md（**人間編集ハンドオフ** — DesignSync 認可なし環境のUIルート。critic PASS 後に「Design に送って手直ししますか？」→ 編集後回収。**発火は広く解釈**: 「手直ししたい」「自分で調整」「いじれるようにして」等、完成済みビジュアルに人間が手を入れたい意図が読めれば全部ここ） / canva-export.md（Canva 書き出し） / 各媒体の投稿・配信・入稿（必ず /タスク開始 経由 + 不可逆なら pre-send-verifier） |
 
