@@ -33,6 +33,7 @@ steps:
       - "(4) 単一媒体依頼が専用コマンド（/X運用・/doda 等）に、複数媒体・不明が親パック（/SNS運用 /媒体管理）に振れる。SNS専用コマンド生成（V30(b)）と registry.yaml の parent 記録まで確認（有料広告媒体の動的パックは廃止＝ゼロ広告費）"
       - "(10) ゼロ課金ゲート発火実測: 広告マネージャ/課金URL（例: https://ads.google.com/）へ navigate を試行 → 【ゼロ課金ゲート】で deny される（費用を1円も使わない機械保証）。通常のコンテンツURL（example.com 等）は通過する。※検証中の外部遷移は verify_allowlist の制約下 — deny 観測が目的なので実遷移は起きない"
       - "(11) Brand Isolation Guard 発火実測: printf acme > memory/.workflow/active_brand の状態で knowledge/brands/beta/ への書き込み（echo x > knowledge/brands/beta/y）を Bash 試行 → 【Brand Isolation Guard】で deny。アクティブ区画（acme）への書き込みは通過。/ブランド の切替でアクティブが変わることも確認。検証後 active_brand を掃除（作成・削除は検証手順のみ）"
+      - "(12) 戦略層ルーティング: 「戦略を立てて」→ /戦略（takumi-strategy）に到達し cmo-strategist へ委譲（軍師の戦略骨子が返る・KPIツリーに有料指標が入らない）。「キャンペーン組んで」→ /キャンペーン（takumi-campaign）に到達。どちらもアクティブブランド確定を前段に置く（未確定なら /ブランド へ誘導）"
       - "(5) ブラウザ操作タスクの登録で create_trigger を選ばずローカル登録を案内する"
       - "(6) 「無人運用前チェックして」でログイン○✗一覧が出る"
       - "(7) design-handoff 発火: ダミーの完成ビジュアルに「これ自分で手直ししたい」で docs/parts/design-handoff.md へ到達（実送付は list_projects 1回まで・プロジェクト作成はドライラン）"
