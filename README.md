@@ -5,9 +5,10 @@
 **TAKUMI-CMO** は Claude Cowork 上で動く、**ゼロ広告費のコンテンツドリブン**なマーケティングエンジン。
 1インストールで**複数ブランド**を扱い（記憶はブランドごとに分離）、1ブランドに**統合的な施策戦略**を打つ、匠のCMO。
 
-> ✅ **v2.0.0 — 匠CMO 到達**。堅牢に検証された「Browser Worker for Claude Cowork」基盤を土台に、
+> ✅ **v2.0.1 — 匠CMO 到達**。堅牢に検証された「Browser Worker for Claude Cowork」基盤を土台に、
 > ゼロ広告費・マルチブランドのマーケティングエンジンへ作り替えました。設計の正本は [docs/command-registry.md](docs/command-registry.md)。
-> **cloud Cowork 実機での `/検証 full`（FAIL 0）が配布の最終ゲート**です（[docs/開発ワークフロー.md §7](docs/開発ワークフロー.md)）。
+> **cloud Cowork 実機での `/検証 full` が FAIL 0** を確認済み（2026-07-25・第7ラン。[TESTING.md](TESTING.md)）。
+> 配布の最終ゲートの定義は [docs/開発ワークフロー.md §7](docs/開発ワークフロー.md)。
 
 ## 世界観 — 匠の∞（無限）ループ
 
