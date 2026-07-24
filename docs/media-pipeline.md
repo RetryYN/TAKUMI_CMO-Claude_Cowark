@@ -6,7 +6,7 @@
 
 | 部品 | 実体 | 用途 |
 |---|---|---|
-| 画像生成 | 部品 docs/parts/imagegen.md（/広告 等のパックから） | Gemini/ChatGPT の UI 操作で生成。グリーンバック指定可 |
+| 画像生成 | 部品 docs/parts/imagegen.md（/コンテンツ 等のパックから） | Gemini/ChatGPT の UI 操作で生成。グリーンバック指定可 |
 | 動画生成 | 部品 docs/parts/videogen.md（本体は imagegen.md §2b） | **Gemini 経由で実機検証済み（2026-07-23）**。生成AI動画→取り込みは画像と同じルート（専用DLフォルダ / blob fetch） |
 | 素材調達 | 部品 docs/parts/asset-collect.md / video-asset-collect.md | ストックサイトからライセンス証跡つき取り込み |
 | 切り抜き | `templates/chromakey.py` | GB生成画像 → 透過PNG（緑優勢度→連続アルファ+スピル抑制） |
