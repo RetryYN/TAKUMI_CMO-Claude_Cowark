@@ -11,7 +11,7 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/_common.sh"
 
-GATE_MODE="${DELVEWORK_GATE_MODE:-deny}"
+GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 
 # 1) デザイン生成中でなければ素通し
 [ -f "$WF_DIR/critic_pending" ] || exit 0

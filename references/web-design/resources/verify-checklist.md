@@ -1,6 +1,6 @@
 # モックアップ/LP 出荷前チェックリスト
 
-design-critic の審査項目、および Delvework の Verify ステップで使う。Front-End-Checklist 系の公開知見から LP 制作に必要な項目を再構成。
+design-critic の審査項目、および TAKUMI-CMO の Verify ステップで使う。Front-End-Checklist 系の公開知見から LP 制作に必要な項目を再構成。
 
 ## Critical（1つでも該当したら REVISE）
 

@@ -10,7 +10,7 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 source "$SCRIPT_DIR/_common.sh"
 
-GATE_MODE="${DELVEWORK_GATE_MODE:-deny}"
+GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 
 # 対象コマンド判定（該当しなければ即通過）
 DANGEROUS=0

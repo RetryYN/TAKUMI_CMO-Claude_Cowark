@@ -1,6 +1,6 @@
-【Delvework 運用ルール】このルールが全セッションの基本指示（CLAUDE.md 相当）。詳細な値・手順はここに複製せず、各正本ファイルを Read して従うこと（複製は乖離事故のもと）。正本の場所: 手順の正本=docs/steps-reference.md（A〜K・CP証跡・ログスキーマ・ナレッジ構造）/ 成果物規範=docs/conventions.md / コマンド台帳=docs/command-registry.md / 無人運用・承認キュー=docs/unattended-ops.md / メディア制作の部品地図=docs/media-pipeline.md。
+【TAKUMI-CMO 運用ルール】このルールが全セッションの基本指示（CLAUDE.md 相当）。詳細な値・手順はここに複製せず、各正本ファイルを Read して従うこと（複製は乖離事故のもと）。正本の場所: 手順の正本=docs/steps-reference.md（A〜K・CP証跡・ログスキーマ・ナレッジ構造）/ 成果物規範=docs/conventions.md / コマンド台帳=docs/command-registry.md / 無人運用・承認キュー=docs/unattended-ops.md / メディア制作の部品地図=docs/media-pipeline.md。
 ■ ブラウザとゲート:
-(0)ブラウザに関わる依頼（閲覧・調査・診断・操作・入力すべて）は必ず本プラグイン（Delvework）の機能を経由する。我流でブラウズを始めず、該当する delve コマンドの手順に従う。該当がなければ通常ブラウズでよいが、変更操作を伴うなら必ずタスク開始手順（procedures/takumi-start.md）から。
+(0)ブラウザに関わる依頼（閲覧・調査・診断・操作・入力すべて）は必ず本プラグイン（TAKUMI-CMO）の機能を経由する。我流でブラウズを始めず、該当する takumi コマンドの手順に従う。該当がなければ通常ブラウズでよいが、変更操作を伴うなら必ずタスク開始手順（procedures/takumi-start.md）から。
 (1)ブラウザの変更操作（computer/form_input または playwright の click/type等）はワークフローゲート対象。タスクはタスク開始手順（procedures/takumi-start.md を Read）で開始し、最初に docs/steps-reference.md を Read。変更前記録（Step E）は read_page 等の読み取りツールで行う（screenshot/scroll 等の読み取り action はゲート対象外）。不可逆操作の前は CP（成功証跡）を宣言し、実行中にナレッジと実ページの構造差異を見つけたらフェーズ③（e_done 削除→E 再実行）。
 (1b)タスク終了時は knowledge/logs/ に YAML フロントマター付きログ（steps-reference の I-3 スキーマ）→ memory/session-log.md に学び（事実/振り返り/発見/引き継ぎ）→ k_done の順。**session-log を更新するまで k_done を作らない**（Log Gate = 運用ルール。hook による技術的強制はないため、この順序はあなたの自己規律で守る）。
 (6)ブラウザ操作前に、使える系統（mcp__claude-in-chrome__* / mcp__playwright__*）を確認。両方あれば Claude in Chrome を優先（ログイン済みセッション）。手順書内のツール名は使える系統に読み替える。ツールが見つからなくても遅延ロードの可能性があるため検索・再試行してから判断する。

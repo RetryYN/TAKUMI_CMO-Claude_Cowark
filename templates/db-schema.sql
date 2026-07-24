@@ -1,6 +1,6 @@
--- Delvework 計測データベース スキーマ v1
--- 場所: ワークスペースの knowledge/data/delvework.db
--- 初期化: python -c "import sqlite3,pathlib; pathlib.Path('knowledge/data').mkdir(parents=True,exist_ok=True); sqlite3.connect('knowledge/data/delvework.db').executescript(open('<このファイル>').read())"
+-- TAKUMI-CMO 計測データベース スキーマ v1
+-- 場所: ワークスペースの knowledge/data/takumi.db
+-- 初期化: python -c "import sqlite3,pathlib; pathlib.Path('knowledge/data').mkdir(parents=True,exist_ok=True); sqlite3.connect('knowledge/data/takumi.db').executescript(open('<このファイル>').read())"
 -- 方針: 設定・知識・手順は Markdown/YAML（人間が読み書きする）、時系列の計測値だけ SQLite（前回比・推移・集計用）
 -- 書き込みは常に INSERT（追記型）。UPDATE で履歴を消さない。最新値は MAX(measured_at) で取る
 

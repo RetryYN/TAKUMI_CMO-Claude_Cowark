@@ -32,7 +32,7 @@ performance.getEntriesByType('navigation')[0]
 
 ## 3. 出力（2つ）
 
-1. **計測データ JSON**: knowledge/data/delvework.db の audit_pages（DBが無ければ templates/db-schema.sql で初期化。detail_json に全計測値）
+1. **計測データ JSON**: knowledge/data/takumi.db の audit_pages（DBが無ければ templates/db-schema.sql で初期化。detail_json に全計測値）
    - 過去の JSON があれば読み込み、**前回比**を算出する（改善/悪化の差分）
 2. **診断 HTML レポート**: `knowledge/reports/site-audit-<date>.html`（templates/report-template.html を骨格に使用・自己完結）
    - サマリー: サイト全体のスコア感（速度/品質/リンク健全性の3軸）と最重要指摘 Top3
@@ -43,6 +43,6 @@ performance.getEntriesByType('navigation')[0]
 
 ## 注意
 
-- 読み取り専用タスク（navigate / evaluate / network_requests / screenshot のみ）。Delvework ゲート対象外
+- 読み取り専用タスク（navigate / evaluate / network_requests / screenshot のみ）。匠ゲート対象外
 - 計測は本番環境の実測値であり、回線・キャッシュ状態の影響を受けることをレポートに明記する
 - ログイン必須ページはスキップして報告

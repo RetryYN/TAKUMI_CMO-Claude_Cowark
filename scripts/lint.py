@@ -148,6 +148,39 @@ for f in list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) +
         if n >= 3:
             err(f"{f.relative_to(ROOT)}: 同一行が{n}回重複（一括置換バグの疑い）: {line[:40]}…")
 
+# --- 10. 旧 Delvework 識別子の残骸チェック（環境変数・DBファイル名・ゲート表示名。
+#         世界観語としての「Delvework/Forgecraft」は下り工程の内部所作として保持するため、
+#         ここで禁じるのは機械的な識別子のみ。TESTING.md は過去ログのため除外） ---
+OLD_IDENTS = [
+    (re.compile(r"\bDELVEWORK_[A-Z_]+"), "旧環境変数 DELVEWORK_*（TAKUMI_* にリネームすること）"),
+    (re.compile(r"\bdelvework\.db\b"), "旧DBファイル名 delvework.db（takumi.db にリネームすること）"),
+    (re.compile(r"\bdelve コマンド"), "旧コマンド呼称『delve コマンド』（takumi コマンド にリネームすること）"),
+    (re.compile(r"Delvework"), "旧プラグイン名 Delvework（TAKUMI-CMO にリネームすること。"
+                               "世界観語としての用法は WORLDVIEW_OK の正本のみ）"),
+]
+# 世界観語「Delvework（掘る）／Forgecraft（鍛える）」を定義する正本だけ Delvework を許す
+WORLDVIEW_OK = {"docs/command-registry.md", "docs/parts/index.md"}
+ident_targets = (
+    list(ROOT.glob("hooks/scripts/*")) + list(ROOT.glob("scripts/*"))
+    + list(ROOT.glob("templates/*")) + list(ROOT.glob("commands/*.md"))
+    + list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md"))
+    + list(ROOT.glob("agents/*.md")) + list(ROOT.glob("references/**/*.md"))
+    + [ROOT / "README.md"]
+)
+for f in ident_targets:
+    rel = str(f.relative_to(ROOT)) if f.is_file() else ""
+    if not f.is_file() or f.name == "lint.py":
+        continue
+    try:
+        body = read(f)
+    except UnicodeDecodeError:
+        continue
+    for pat, msg in OLD_IDENTS:
+        if rel in WORLDVIEW_OK and pat.pattern == "Delvework":
+            continue
+        if pat.search(body):
+            err(f"{rel}: {msg}")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'references').glob('*/SKILL.md')))} "

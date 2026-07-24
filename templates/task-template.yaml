@@ -1,5 +1,5 @@
 # 定常タスク定義テンプレート（/takumi-task が生成する tasks/<name>.yaml の骨格）
-# 本家 Delvework の tasks/_template.yaml から移植。実行は /takumi-start が担う（A〜Kワークフロー）
+# 旧 browser-worker 版 tasks/_template.yaml から移植。実行は /takumi-start が担う（A〜Kワークフロー）
 
 name: your-task-name
 description: タスクの概要

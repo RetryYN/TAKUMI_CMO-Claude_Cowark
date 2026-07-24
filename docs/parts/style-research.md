@@ -41,6 +41,6 @@ argument-hint: <URL...>（スペース区切りで複数可）
 
 ## 注意
 
-- これは読み取り専用タスク（navigate / snapshot / evaluate / screenshot のみ）。変更操作は行わないため Delvework ゲートの対象外
+- これは読み取り専用タスク（navigate / snapshot / evaluate / screenshot のみ）。変更操作は行わないため 匠ゲートの対象外
 - ログインが必要なサイトはスキップして報告する
 - 生成後、トークン JSON は「このトークンで LP を作成」という次タスクの入力として使えることを伝える

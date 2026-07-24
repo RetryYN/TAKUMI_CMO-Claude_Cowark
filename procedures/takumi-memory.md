@@ -5,7 +5,7 @@
 ## 手順
 1. 対象を確定（引数: session-log | logs | all。省略時は session-log）
 2. session-log: 古いセッション節（直近3セッションより前）を「1セッション=1行サマリー + 学びの箇条書き」に圧縮し、memory/session-archive.md へ移動。session-log 本体には直近分と引き継ぎのみ残す
-3. logs: knowledge/logs/ の YAML フロントマターを knowledge/data/delvework.db（SQLite）に取り込み、本文が冗長なログは要点化。DB が無ければ templates/db-schema.sql で初期化
+3. logs: knowledge/logs/ の YAML フロントマターを knowledge/data/takumi.db（SQLite）に取り込み、本文が冗長なログは要点化。DB が無ければ templates/db-schema.sql で初期化
 4. 圧縮前後の行数・ファイル数を報告。削除は行わない（アーカイブ移動のみ。破壊的変更はユーザー承認後）
 5. 圧縮結果を session-log に1行記録
 

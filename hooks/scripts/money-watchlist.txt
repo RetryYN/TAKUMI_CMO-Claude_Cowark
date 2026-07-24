@@ -1,4 +1,4 @@
-# Delvework Money Watch — 画面内検知パターン（金銭・契約・不可逆登録）
+# TAKUMI-CMO Money Watch — 画面内検知パターン（金銭・契約・不可逆登録）
 # 1行1パターン（grep -E、大文字小文字無視）。'#' 始まりはコメント。
 # ワークスペース側での追加は knowledge/config/money-watchlist.txt に記載する。
 # 目的: ページ本文にこれらが現れたら「金銭・契約系画面」とみなし、変更操作を一時停止する。
