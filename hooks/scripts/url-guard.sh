@@ -1,7 +1,8 @@
 #!/bin/bash
-# Delvework URL Guard — PreToolUse hook（ページ単位権限）
-# navigate 系ツールの遷移先URLを拒否リストと照合し、金銭発生・広告出稿・課金設定
-# ページへの遷移をブロックする。誤操作・自律判断による広告出稿（＝金銭発生）の防止が目的。
+# TAKUMI-CMO ゼロ課金ゲート（URL Guard）— PreToolUse hook（ページ単位権限）
+# navigate 系ツールの遷移先URLを拒否リストと照合し、有料出稿・課金・支払い設定
+# ページへの遷移をブロックする。TAKUMI-CMO は費用を1円も使わない（ゼロ広告費の
+# コンテンツドリブン）＝その保証を機械強制するのがこのゲート。
 #
 # リストの優先順位:
 #   1. knowledge/config/url-allowlist.txt … マッチしたら許可（拒否リストより優先。ユーザーが明示的に開放）
@@ -52,7 +53,7 @@ while IFS= read -r URL; do
   # 2-3. 拒否リスト照合
   for LIST in "$PROJECT_DIR/knowledge/config/url-denylist.txt" "$SCRIPT_DIR/url-denylist.txt"; do
     if match_list "$LIST" "$URL"; then
-      deny "【URL Guard】このページ（$URL）は金銭発生・広告出稿・課金設定に該当するため遷移をブロックしました。広告出稿や課金操作はAIには許可されていません。業務上必要な場合は、ユーザー本人が knowledge/config/url-allowlist.txt に該当パターンを追記して明示的に開放してください（AIが代行して追記することは禁止）。"
+      deny "【ゼロ課金ゲート／URL Guard】このページ（$URL）は有料出稿・課金・支払い設定に該当するため遷移をブロックしました。TAKUMI-CMO は費用を1円も使いません（ゼロ広告費のコンテンツドリブンで無双する設計）。有料出稿・課金操作はAIには許可されていません。業務上どうしても必要な場合は、ユーザー本人が knowledge/config/url-allowlist.txt に該当パターンを追記して明示的に開放してください（AIが代行して追記することは禁止）。"
     fi
   done
 done <<EOF

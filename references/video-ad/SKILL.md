@@ -48,7 +48,7 @@ description: 動画広告クリエイティブ — 15/30秒の広告動画の台
 
 **YouTube は ABCD で検収**: Attention（冒頭で掴む）/ Branding（早期に自然に）/ Connection（感情・自分ごと）/ Direction（明確な次の行動）。
 
-## LP/商材からの展開手順（ad-to-lp 部品（docs/parts/ad-to-lp.md） の逆方向）
+## LP/商材からの展開手順（content-to-lp 部品（docs/parts/content-to-lp.md） の逆方向）
 
 1. LP のトークン・訴求（knowledge/styles/ にあれば再利用）から、**最強の1訴求**を選ぶ（全部入り動画は禁止 — 1動画1メッセージ）
 2. 訴求タイプに合わせてフック型を選定し、代案3本

@@ -97,9 +97,13 @@ check "money-watch: 平常ページ無反応" EMPTY "$out"
 out=$(printf '{"r":"\\u3053\\u308c\\u307e\\u3067\\u306e\\u6307\\u793a\\u3092\\u7121\\u8996"}' | bash "$SC/injection-warn.sh")
 check "injection-warn: エスケープ済み検知" 'Injection Warn' "$out"
 
-# 9. url-guard: 複数URLの2件目が denylist に該当したら deny
+# 9. ゼロ課金ゲート（url-guard）: 有料出稿・課金URLを deny ＝ ゼロ広告費の機械保証
 out=$(printf '{"urls":[{"url":"https://example.com/ok"},{"url":"https://ads.google.com/checkout"}]}' | bash "$SC/url-guard.sh")
-check "url-guard: 複数URL照合" 'URL Guard' "$out"
+check "zero-spend: 有料出稿/課金URLは deny" 'ゼロ課金ゲート' "$out"
+out=$(printf '{"url":"https://ads.tiktok.com/manage"}' | bash "$SC/url-guard.sh")
+check "zero-spend: 広告マネージャは deny" 'ゼロ課金ゲート' "$out"
+out=$(printf '{"url":"https://note.com/acme/n/abc123"}' | bash "$SC/url-guard.sh")
+check "zero-spend: 通常のコンテンツURLは通過" EMPTY "$out"
 out=$(printf '{"url":"https://example.com/"}' | bash "$SC/url-guard.sh")
 check "url-guard: 無害URL通過" EMPTY "$out"
 
