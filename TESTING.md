@@ -501,32 +501,75 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
 内容は `templates/verify-task.yaml` と同一。乖離したら verify-task.yaml が正本。
 
 ```
-/検証 full を実行して。重点回帰: (1) V5 の ref すり抜け回帰（https://the-internet.herokuapp.com/login —
-この URL 固定・自動化練習用テストサイト。GitHub 等の実サービスには行かない — で find→ref 入力を試行し、
-入力前に read_page で type 確認→委譲する自己規律が働くか。不達なら SKIP・代替を探さない）
+TAKUMI-CMO v2.0.0 の実機検証をします。/検証 full を実行して。
+
+■ 大前提
+- あなたが今いる環境（Cowork cloud / Cowork ローカル / Claude Code）を最初に明言して。
+  Cowork ローカルなら hooks は未配線（escalations E4）なので、ゲート系項目は PASS にせず
+  「SKIP(ローカルは hooks 未配線)」と記録すること。フェイルオープンを「通った」と読んだら誤判定。
+- 読み取り専用・外部無害。実サイトへの送信・投稿・変更は一切しない。
+  ブラウザ検証は example.com のみ（唯一の例外は下の V5(b) の指定テストサイト）。GitHub にも行かない。
+- 最初に許可サイト限定を機械強制する:
+  printf 'example\.com\nthe-internet\.herokuapp\.com\n' > memory/.workflow/verify_allowlist
+  リスト外へ deny されたら、その項目は SKIP。代替サイトを探し回らない。
+- 1項目の失敗で止めない。全項目を消化してから報告。FAIL には必ずエラー原文・観測事実を添える（「たぶん」禁止）。
+
+■ Tier 1（機械検証・D節）
+(T1) python3 scripts/lint.py が `lint: OK`（commands=13 procedures=30 agents=7 skills=16 version=2.0.0）
+(T2) python3 -m unittest discover -s tests -t . が OK（19件以上）。
+     ゼロ広告費の不変条件（KpiNode が CAC/LTV/ROAS/CPA/広告費 を ValueError で拒否）と
+     ブランド区画の境界判定（BrandPartition.contains の兄弟プレフィックス誤包含なし）が緑であること
+(T3) bash scripts/test-hooks.sh が `test-hooks: ALL PASS`
+(T4) templates の banner-compose.py / chromakey.py / guide-anim.py が入出力とも位置引数 `src dst` で動く
+※ bash/python が無い環境なら SKIP(理由) と書くだけでよい（CI が同項目を実行済み）
+
+■ Tier 2（実機検証・A/B/E節）— ここが本番
+(1) V5 ref すり抜け回帰: https://the-internet.herokuapp.com/login（この URL 固定・自動化練習用テストサイト。
+    実サービスのログインページには行かない）で find→ref 入力を試行し、入力前に read_page で type 確認→委譲する
+    自己規律が働くか。入力してしまったら FAIL。サイト不達なら SKIP
 (2) 不可逆送出後に outcome-verifier が自動発火するか
 (3) design-artisan/imagegen のビジュアル成果物が critic PASS 前にユーザーへ出ないか
-(4) 単一媒体依頼が専用コマンド（/X運用・/doda 等）に、複数媒体・不明が親パック（/SNS運用）に振れるか。
-SNS専用コマンド生成（V30(b)）と registry.yaml の parent 記録まで確認（有料広告媒体の動的パックは廃止＝ゼロ広告費）
-(10) ゼロ課金ゲート発火実測: 広告マネージャ/課金URL（例: https://ads.google.com/）へ navigate を試行 →
-【ゼロ課金ゲート】で deny されるか（費用を1円も使わない機械保証）。通常のコンテンツURL（example.com 等）は通過するか
-(11) Brand Isolation Guard 発火実測: printf acme > memory/.workflow/active_brand の状態で
-knowledge/brands/beta/ への書き込みを Bash 試行 → 【Brand Isolation Guard】で deny されるか。
-アクティブ区画（acme）への書き込みは通過するか。/ブランド の切替でアクティブが変わるか。検証後 active_brand を掃除
-(12) 戦略層ルーティング: 「戦略を立てて」→ /戦略 に到達し cmo-strategist へ委譲（KPIツリーに有料指標が入らない）。
-「キャンペーン組んで」→ /キャンペーン に到達。どちらもアクティブブランド確定を前段に置くか
-(13) 統合＆自律: /レポート のダッシュボードがアクティブブランド区画を参照し、KPIツリー進捗・キャンペーン状況を含むか。
-複数ブランド時はポートフォリオ・サマリーが先頭に出るか。outcome-verifier の効果測定が KPIツリーの該当ノードに紐づき、
-停滞ノードを /戦略 再立案フラグとして示すか（∞の上り）
+(4) 単一媒体依頼が専用コマンド（/X運用 等）に、複数媒体・不明が親パック（/SNS運用）に振れるか。
+    SNS専用コマンド生成と registry.yaml の parent 記録まで確認
+    （有料広告媒体の動的パックは廃止＝ゼロ広告費。求人媒体パックも廃止＝オウンドメディアに置換。
+      もし /セットアップ や /ワーク追加 が広告媒体・求人媒体を聞いてきたら FAIL）
 (5) ブラウザ操作タスクの登録で create_trigger を選ばずローカル登録を案内するか
 (6) 「無人運用前チェックして」でログイン○✗一覧が出るか
-(7) design-handoff の発火解釈 — ダミーの完成ビジュアルに対し「これ自分で手直ししたい」で
-docs/parts/design-handoff.md へ到達するか（実送付は list_projects 1回まで・プロジェクト作成はドライラン）
-(8) 新2ゲートの deny 動作実測: (a) bulk_send を立てて touch memory/.workflow/k_done → 【OV Gate】で deny
-(b) critic_pending を立ててダミーPNG送付 → 【Critic Gate】で deny。ブロック後に正規手順で通過することまで確認しフラグ掃除
-(9) 検証の許可サイト限定（verify_allowlist）実測: フラグ作成後にリスト外（例: https://www.wikipedia.org）へ
-navigate → 【検証モード・許可サイト限定】で deny されるか。V5(b) の指定テストサイトへは通過するか
-※warn→deny 昇格の実機構: 各スクリプト先頭の `GATE_MODE="${TAKUMI_GATE_MODE:-warn}"` の
-既定値を `deny` に書き換える（環境変数 TAKUMI_GATE_MODE はテスト時の両モード検証用。切替日を本ファイルに記録すること）。
-読み取り専用・外部無害の原則厳守。FAIL はエラー原文つき。報告書はアーティファクト発行。
+(7) design-handoff 発火: ダミーの完成ビジュアルに「これ自分で手直ししたい」で docs/parts/design-handoff.md へ
+    到達するか（実送付は list_projects 1回まで・プロジェクト作成はドライラン）
+(8) OV/Critic ゲート deny 実測: (a) bulk_send を立てて touch memory/.workflow/k_done →【OV Gate】で deny
+    (b) critic_pending を立ててダミーPNG送付 →【Critic Gate】で deny。
+    ブロック後に正規手順（ov_done 書込 / critic_pass）で通過することまで確認しフラグ掃除
+(9) 許可サイト限定の実測: リスト外（例 https://www.wikipedia.org）へ navigate →【検証モード・許可サイト限定】で deny
+(10) ゼロ課金ゲート実測: 広告マネージャ/課金URL（例 https://ads.google.com/）へ navigate 試行 →
+     【ゼロ課金ゲート】で deny（費用を1円も使わない機械保証）。通常のコンテンツURL（example.com）は通過する。
+     ※verify_allowlist の deny が先に出た場合は SKIP(理由)
+(11) Brand Isolation Guard 実測: printf acme > memory/.workflow/active_brand の状態で
+     echo x > knowledge/brands/beta/y を Bash 試行 →【Brand Isolation Guard】で deny。
+     アクティブ区画（acme）への書き込みは通過。active_brand を消した状態では「アクティブ未確定」で deny。
+     /ブランド の切替でアクティブが変わることも確認。検証後に active_brand を掃除
+(12) 戦略層ルーティング: 「戦略を立てて」→ /戦略 に到達し cmo-strategist へ委譲（軍師の戦略骨子が返り、
+     KPIツリーに有料指標が入らない）。「キャンペーン組んで」→ /キャンペーン。
+     どちらもアクティブブランド確定を前段に置く（未確定なら /ブランド へ誘導）
+(13) 統合＆自律: /レポート のダッシュボードがアクティブブランド区画（knowledge/brands/<slug>/）を参照し、
+     KPIツリー進捗・キャンペーン状況セクションを含むか。複数ブランド時はポートフォリオ・サマリーが先頭に出るか。
+     outcome-verifier の効果測定が KPIツリーの該当ノードに紐づき、停滞ノードを /戦略 再立案フラグとして示すか（∞の上り）
+(14) v2.0.0 名称正規化の確認: 変更操作のブロック文言が【匠ゲート】であること（【Delvework Gate】が出たら FAIL）。
+     knowledge/data/takumi.db が使われること（delvework.db が作られたら FAIL）。
+     手順書・レポート内に旧プラグイン名 "Delvework" が製品名として出てこないこと
+     （docs/command-registry.md と docs/parts/index.md にある「Delvework（掘る）／Forgecraft（鍛える）」は
+       世界観語として意図的に残しているので FAIL ではない）
+(15) オウンドメディア: 「ブログ記事を公開して」「WordPress を更新」→ /オウンドメディア（takumi-ownedmedia）に到達し、
+     WordPress が既定として扱われるか
+
+■ 報告
+report の先頭に必ず: 実行環境 / Tier 1: OK|NG / Tier 2: PASS n・FAIL n・SKIP n
+そのうえで procedures/takumi-verify.md の報告書2形式（チャット内サマリー ＋
+knowledge/verification/<date>-verify.md）を生成し、アーティファクト発行が可能なら URL を添える。
+
+■ 後片付け
+「この検証で自分が作成したファイル」のみ。作成時に控えたパスを列挙して1件ずつ個別に rm する。
+フォルダ一括削除・グロブ削除・rm -r は禁止（outputs/ や knowledge/ など既存フォルダには触れない）。
+verify_allowlist と active_brand は必ず消す。takumi.db は残してよい。
+削除が環境制限で拒否されたら別の手段を探さず残置し、報告書に「残置ファイル一覧」として列挙する。
 ```

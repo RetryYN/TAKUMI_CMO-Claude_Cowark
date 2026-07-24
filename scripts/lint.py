@@ -158,8 +158,13 @@ OLD_IDENTS = [
     (re.compile(r"Delvework"), "旧プラグイン名 Delvework（TAKUMI-CMO にリネームすること。"
                                "世界観語としての用法は WORLDVIEW_OK の正本のみ）"),
 ]
-# 世界観語「Delvework（掘る）／Forgecraft（鍛える）」を定義する正本だけ Delvework を許す
-WORLDVIEW_OK = {"docs/command-registry.md", "docs/parts/index.md"}
+# 旧名を書いてよい例外は2種類だけ:
+#  (a) 世界観語「Delvework（掘る）／Forgecraft（鍛える）」を定義する正本
+#  (b) 「旧名が出たら FAIL」を検証項目として明記する検証の正本（旧名を名指しできないと項目が書けない）
+IDENT_EXEMPT = {
+    "docs/command-registry.md", "docs/parts/index.md",          # (a)
+    "procedures/takumi-verify.md", "templates/verify-task.yaml",  # (b) V43
+}
 ident_targets = (
     list(ROOT.glob("hooks/scripts/*")) + list(ROOT.glob("scripts/*"))
     + list(ROOT.glob("templates/*")) + list(ROOT.glob("commands/*.md"))
@@ -176,7 +181,9 @@ for f in ident_targets:
     except UnicodeDecodeError:
         continue
     for pat, msg in OLD_IDENTS:
-        if rel in WORLDVIEW_OK and pat.pattern == "Delvework":
+        # 例外は「旧DBファイル名」「旧プラグイン名」の2パターンのみ。
+        # 環境変数（DELVEWORK_*）と旧コマンド呼称は例外ファイルでも禁止のまま。
+        if rel in IDENT_EXEMPT and pat.pattern in (r"\bdelvework\.db\b", "Delvework"):
             continue
         if pat.search(body):
             err(f"{rel}: {msg}")
