@@ -235,6 +235,25 @@ for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + 
             err(f"{f.relative_to(ROOT)}: references の本数が実体と不一致"
                 f"（記述={m.group(1)} / 実体={_ref_count}）")
 
+# --- 14. docs/parts/ の実体と index.md の突合（2026-07-25 合議で検出: parts は台帳突合の対象外だった） ---
+_parts_dir = ROOT / "docs/parts"
+if _parts_dir.is_dir():
+    _index = ROOT / "docs/parts/index.md"
+    _index_text = read(_index) if _index.is_file() else ""
+    for f in sorted(_parts_dir.glob("*.md")):
+        if f.name == "index.md":
+            continue
+        if f.name not in _index_text:
+            err(f"docs/parts/index.md: 部品 {f.name} が地図に載っていない（新設したら index.md に1行追加すること）")
+    # 逆方向: index が挙げる部品名の実在。docs/直下の正本（media-pipeline.md 等）と
+    # ワークスペース側のファイル（queue.md 等）は部品ではないので除外する
+    _not_parts = {"index.md", "queue.md", "lessons.md", "pending.md"}
+    for ref in sorted(set(re.findall(r"\b([a-z0-9-]+\.md)\b", _index_text))):
+        if ref in _not_parts or (ROOT / "docs" / ref).is_file():
+            continue
+        if not (_parts_dir / ref).is_file():
+            err(f"docs/parts/index.md: 実体のない部品を参照 {ref}")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'references').glob('*/SKILL.md')))} "
