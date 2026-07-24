@@ -56,11 +56,38 @@ window.dataLayer = window.dataLayer || [];
 window.dataLayer.push({ 'gtm.blocklist': ['customScripts'] });
 ```
 
-`customScripts` を blocklist に入れると、**カスタムHTMLタグ・カスタムJavaScript変数・DOM直接アクセスがコンテナ側の設定を無視して発火しなくなる**。
-GTM アカウントが乗っ取られても任意 JS の注入が効かない。**計測基盤の構築を AI に任せるなら、まずこれを提案すること。**
+### 何がブロックされるか（一次情報で確認済み）
 
-副作用も正直に伝える: この設定を入れると、カスタムHTMLに依存している既存タグは動かなくなる。
-先にエクスポートした JSON でカスタムHTMLタグの有無を数え、**あるなら移行計画（カスタムテンプレートへの置き換え）とセットで**提案する。
+`customScripts` クラスは「ユーザーが提供する JavaScript コードの実行が可能」な機能を指し、対象は次の2つ:
+
+- **カスタムHTMLタグ**（ID: `html`）
+- **カスタムJavaScript変数**（ID: `jsm`）
+
+> **DOM要素変数は `customScripts` の対象ではない**（`google` クラスに分類される）。
+> 「DOM直接アクセスも止まる」は誤り。止めたいなら別途 ID を指定すること。
+
+クラスは他に `google`（Google ホスト済みスクリプト）/ `customPixels` / `nonGoogleScripts` / `nonGooglePixels` /
+`nonGoogleIframes` / `sandboxedScripts`（カスタムテンプレート用）がある。
+
+### 適用ルール（一次情報で確認済み。ここを外すと事故る）
+
+- **blocklist は allowlist に優先する。** 「allowlist で特定タグをブロック、blocklist で特定タグを許可」という逆方向はできない
+- **クラス間に依存関係がある。** 例: `nonGooglePixels` をブロックすると `nonGoogleScripts` も自動的にブロックされる
+- 両リストとも **Array 型・値は String 型**で、**タグが発火する前に**データレイヤーへ push される必要がある
+
+### 併用の罠（テンプレート移行を勧めるなら必ずセットで伝える）
+
+Google 公式は「セキュリティ管理の改善のため、**カスタムテンプレートとテンプレートポリシーへの移行**」を推奨している。
+ただし**カスタムテンプレートを使っている状態で任意のタグクラスを blocklist に入れると、
+`sandboxedScripts` を明示的に allowlist へ追加しないとテンプレートが動かなくなる**。
+
+つまり「customScripts を封じる」と「カスタムテンプレートへ移行する」は**同時に成立させるのに1手余分に要る**。
+移行を提案するなら、この1手を必ず添えること。
+
+### 副作用と伝え方
+
+この設定を入れると、カスタムHTMLに依存している既存タグは動かなくなる。
+先にエクスポートした JSON でカスタムHTMLタグの有無を数え、**あるなら移行計画とセットで**提案する。
 
 CSP を運用しているサイトでは、GTM のカスタムHTML/カスタムJSは `unsafe-eval` 相当を要求する。
 blocklist を入れることは **CSP を厳しく保てる**ことでもある。この文脈で DevOps に説明すると通りやすい。
@@ -102,10 +129,13 @@ GTM 単体に同意取得の機能はない。**Consent Mode を機能させる�
 | プレビューをつけっぱなし | 検証後に終了する |
 | PII をパラメータに載せた | メールアドレス・氏名・電話番号・ユーザーIDに使える生の値を送らない（→ `ga4-jp`） |
 
-## 出典（主要）
+## 出典
 
-- Container export and import — Tag Manager Help
-- Restrict tag deployment（`gtm.allowlist` / `gtm.blocklist`）— Google for Developers, Tag Platform
+**【一次情報・確認済み】**
+- タグの配信を制限する（`gtm.allowlist` / `gtm.blocklist`・クラス定義・優先順位）— Google for Developers, Tag Platform `developers.google.com/tag-platform/tag-manager/restrict`
+
+**【二次情報のみ】** 以下は解説記事・セキュリティベンダー記事由来。事実関係は各自で裏取りすること
+- Container export and import — Tag Manager Help（未フェッチ）
 - Google Tag Manager Preview Mode ガイド — Analytics Mania
 - GTM Container Versions and publishing workflow — nicelookingdata
 - GTM セキュリティ（カスタムHTML経由の e-skimmer / Magecart）— ThreatNG Security, Crystallize
