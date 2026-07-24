@@ -188,6 +188,53 @@ for f in ident_targets:
         if pat.search(body):
             err(f"{rel}: {msg}")
 
+# --- 11. 旧プラグイン名 browser-worker のパス参照（別プラグインの実体を読む事故の元。
+#         2026-07-24 実機検証 F1: 旧 browser-worker が併存インストールされた環境で顕在化） ---
+BW_EXEMPT = {
+    "templates/task-template.yaml",      # 移植元の由来メモ
+    "procedures/takumi-status.md",       # 併存環境での取り違え注意として意図的に名指し
+}
+for f in (list(ROOT.glob("agents/*.md")) + list(ROOT.glob("procedures/*.md"))
+          + list(ROOT.glob("docs/**/*.md")) + list(ROOT.glob("commands/*.md"))
+          + list(ROOT.glob("templates/*")) + [ROOT / "README.md"]):
+    if not f.is_file():
+        continue
+    rel = str(f.relative_to(ROOT))
+    if rel in BW_EXEMPT:
+        continue
+    try:
+        if "browser-worker" in read(f):
+            err(f"{rel}: 旧プラグイン名 browser-worker への参照（takumi-cmo にすること。"
+                f"併存インストール環境で別プラグインの実体を読む事故になる）")
+    except UnicodeDecodeError:
+        pass
+
+# --- 12. 廃止カテゴリーがテンプレの見本データに残っていないか
+#         （2026-07-24 実機検証 F3: ダッシュボード雛形に求人媒体・広告分析タブが残存） ---
+for f in ROOT.glob("templates/*"):
+    # verify-task.yaml は「聞いてきたら FAIL」を書くために廃止語を名指しする（V44）
+    if not f.is_file() or f.name == "verify-task.yaml":
+        continue
+    try:
+        body = read(f)
+    except UnicodeDecodeError:
+        continue
+    for word in ("求人媒体", "広告分析"):
+        if word in body:
+            err(f"templates/{f.name}: 廃止カテゴリー『{word}』が残存"
+                f"（現行カテゴリーは docs/command-registry.md が正本）")
+
+# --- 13. references の本数を書いた記述が実体と一致するか（2026-07-24 実機検証 F5） ---
+_ref_count = len(list((ROOT / "references").glob("*/SKILL.md")))
+_ref_pat = re.compile(r"references/（(\d+)本）")
+for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
+    if not f.is_file():
+        continue
+    for m in _ref_pat.finditer(read(f)):
+        if int(m.group(1)) != _ref_count:
+            err(f"{f.relative_to(ROOT)}: references の本数が実体と不一致"
+                f"（記述={m.group(1)} / 実体={_ref_count}）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'references').glob('*/SKILL.md')))} "

@@ -53,7 +53,7 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V10 | design-artisan モデル | design-artisan を最小タスクで起動 | fable で起動できたか、sonnet フォールバックか記録 |
 | V11 | ダッシュボード | /レポート を実行（トップのダッシュボード生成まで） | dashboard-template（浮世絵ヘッダー+旅人）準拠で生成（説明書はテンプレ実態どおり「生成物」セクション内の注記1行でよい。専用セクションは不要）、タブ=全体+カテゴリー、停留点数=タブ数、アラート+場所とタスク一覧が実データ。アーティファクト発行（2回目なら同一URL更新）。**検証での発行は必ず検証専用 ID（例: `<id>-verify-test`）を使い、本番運用中の ID を update しない**（conventions の「already exists → update」規約を検証がなぞると実運用アーティファクトをダミーデータで上書きする — 2026-07-24 に衝突未遂を実測） |
 | V12 | 部品庫到達 | docs/parts/index.md を Read し、表の部品から3つ（imagegen / design-sync / design-handoff）を Read | 部品に到達でき、実行粒度3段の原則が読める。design-sync 冒頭に認可なし時の design-handoff フォールバックポインタがあり、design-handoff に経路選択（list_projects を1回だけ試す）・消費確認・回収フローの節がある |
-| V13 | Pack制御 | packs.conf を**書き換える前に `cp` でバックアップコピーを取り**、deep=off を書き→挙動確認→**バックアップから cp で復元**（記憶で書き直さない）→バックアップ削除 | 無効通知が次セッションに出る（今セッションでは conf の読み書きのみ確認） |
+| V13 | Pack制御 | packs.conf を**書き換える前に `cp` でバックアップコピーを取り**、実在するパック名で `sns-tiktok=off` を書き→挙動確認→**バックアップから cp で復元**（記憶で書き直さない）→バックアップ削除 | session-start が `【タスクPack】無効: sns-tiktok` を注入する（実在しないパック名を書いても通知は出ないので、必ず実在パック — core/sns/research/ownedmedia/strategy/creative または `sns-<媒体>` — で試す） |
 | V14 | 日本語コマンド | /レポート を実行 | 日本語名で発火する。あわせて内部手順（「今どうなってる？」→ takumi-status）が自然文で発火することを確認 |
 | V15 | スキル化 | ダミー手順（「検証用: example.comを開いて閉じる」）を「これ覚えて」で内部スキル化手順に | .claude/skills/ に生成され、frontmatter が規約通り |
 | V16 | Slack | Slack ツールの有無を確認、あればテスト通知1件 | 到達 or 「コネクタ未接続」を記録 |
@@ -68,11 +68,14 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V41 | Brand Isolation Guard 発火実測 | (a) `printf acme > memory/.workflow/active_brand` の状態で `echo x > knowledge/brands/beta/y` を Bash 実行 →【Brand Isolation Guard】で deny (b) アクティブ区画への書込（`echo x > knowledge/brands/acme/y`）は通過 (c) `rm memory/.workflow/active_brand` 後に区画書込を試行 → 「アクティブ未確定」で deny。検証後にフラグ掃除（active_brand は検証手順のみが作成・削除） | (a)(c) deny 実測 (b) 誤爆ゼロ。別ブランド区画への書き込みが機械遮断され、相互汚染が防がれる |
 | V43 | v2.0.0 名称正規化 | (a) 変更操作をブロックさせ、文言が【匠ゲート】であることを確認 (b) knowledge/data/ に作られる計測DBが `takumi.db` であることを確認 (c) 手順書・生成レポート内に旧プラグイン名 "Delvework" が製品名として現れないか確認 | (a)【匠ゲート】（【Delvework Gate】が出たら FAIL） (b) `takumi.db`（`delvework.db` が作られたら FAIL） (c) 製品名としての出現ゼロ。**docs/command-registry.md と docs/parts/index.md の「Delvework（掘る）／Forgecraft（鍛える）」は世界観語として意図的に保持しており FAIL ではない** |
 | V44 | オウンドメディア経路 | 「ブログ記事を公開して」「WordPress を更新」と依頼 | /オウンドメディア（procedures/takumi-ownedmedia.md）に到達し、WordPress が既定（原則）として扱われる。**/セットアップ・/ワーク追加 が求人媒体・有料広告媒体を聞いてきたら FAIL**（どちらも廃止済み） |
+
 ### C. 後片付け
 
 - 削除対象は「**この検証で自分が作成したファイルのみ**」: 作成時に控えたパスを列挙し、**1件ずつ個別に rm** する。対象はフラグ（**memory/.workflow/verify_allowlist 含む**）・ダミースキル/コマンド・テストデータ（takumi.db は残してよい）
 - **フォルダ一括削除・グロブ削除・`rm -r` は禁止**（outputs/ や knowledge/ など既存フォルダに触れるのは検証の破壊 — RM Guard の機械ガード対象。2026-07-24 に Opus/Sonnet 両方が「後片付け」を一括削除と解釈した実例あり）
 - **削除が環境制限で拒否されたら**（例: Cowork のマウント制限で rm 不可）**別の削除手段を探さない** — そのまま残置し、報告書に「残置ファイル一覧」として列挙してユーザーに委ねる
+- **削除の順序**: ブランド区画（`knowledge/brands/<slug>/`）の掃除を先に済ませ、**`memory/.workflow/active_brand` は最後に消す**。
+  先に active_brand を消すと Brand Isolation Guard が「アクティブ未確定」で区画の削除まで deny する（**削除もガード対象＝設計どおり**。2026-07-24 実機検証で観測）
 - session-log に検証実施を1行記録
 
 ### D. 機械チェック（**Tier 1** — quick/full 共通・環境に bash/python があれば）

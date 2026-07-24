@@ -26,7 +26,7 @@ tools: Read, Write, Edit, Glob, Grep
 
 ## パス解決
 
-依頼プロンプト内のファイルは絶対パスで渡される前提。プラグイン内ファイル（templates/ や references/ 配下）への参照が相対パスで解決できない場合: **あなたの cwd はワークスペースであり、プラグイン実体は別の場所（synced コピー。例: `~/.claude/plugins/**/browser-worker/`）にある。** ワークスペース起点の `Glob **/ファイル名` では届かないので、(1) 依頼プロンプトにプラグインrootの絶対パスがあればそれを起点に Read、(2) なければ `Glob` の path にホーム/プラグイン領域を指定して検索（例: path=`~/.claude/plugins`、pattern=`**/references/web-design/SKILL.md`）。それでも見つからない場合のみ「不在」と応答に明記し、憶測で代替しない（2026-07-24 検証: 実在するのに cwd-Glob だけで「不在」と誤申告した前歴あり）。
+依頼プロンプト内のファイルは絶対パスで渡される前提。プラグイン内ファイル（templates/ や references/ 配下）への参照が相対パスで解決できない場合: **あなたの cwd はワークスペースであり、プラグイン実体は別の場所（synced コピー。例: `~/.claude/plugins/**/takumi-cmo/`）にある。** ワークスペース起点の `Glob **/ファイル名` では届かないので、(1) 依頼プロンプトにプラグインrootの絶対パスがあればそれを起点に Read、(2) なければ `Glob` の path にホーム/プラグイン領域を指定して検索（例: path=`~/.claude/plugins`、pattern=`**/references/web-design/SKILL.md`）。それでも見つからない場合のみ「不在」と応答に明記し、憶測で代替しない（2026-07-24 検証: 実在するのに cwd-Glob だけで「不在」と誤申告した前歴あり）。
 
 ## 学習記録の反映
 

@@ -4,7 +4,7 @@ description: TAKUMI-CMO の現在状態（進行中タスク・フェーズ・�
 
 TAKUMI-CMO の現在状態を確認して報告してください。
 
-0. プラグインのバージョンを報告する（配布・同期ズレの検知用）: `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` の `version` を読む。環境変数が使えない場合は Glob で `**/plugins/**/browser-worker/.claude-plugin/plugin.json` を探す
+0. プラグインのバージョンを報告する（配布・同期ズレの検知用）: `${CLAUDE_PLUGIN_ROOT}/.claude-plugin/plugin.json` の `version` を読む。環境変数が使えない場合は Glob で `**/plugins/**/takumi-cmo/.claude-plugin/plugin.json` を探す（**旧 browser-worker が併存インストールされている環境では別プラグインの plugin.json を拾わないこと** — name が `takumi-cmo` であることを確認する）
 1. `memory/.workflow/` ディレクトリの各フラグ（active / phase / b4_done / e_done / k_done）の有無を Bash で確認する:
    ```bash
    ls -la memory/.workflow/ 2>/dev/null && cat memory/.workflow/active memory/.workflow/phase 2>/dev/null

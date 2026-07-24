@@ -30,7 +30,10 @@ HTML成果物（レポート・モックアップ・ガイド・ダッシュボ�
 
 - **パス解決**: 指示されたプラグイン内ファイルが相対で見つからなければ Glob `**/<filename>` で探す
 - **学習記録**: 成果物へのユーザー評価は `knowledge/feedback/lessons.md` に記録・参照する（NG再発は重大）
-- design-artisan が fable で起動できない場合は sonnet で**同エージェントを再起動**（deliverable-writer への振替は禁止）
+- design-artisan が fable で起動できない場合は sonnet で**同エージェントを再起動**（deliverable-writer への振替は禁止）。
+  **これは自動化されていない — 呼び出し側の責務**: fable 起動が失敗（月次上限 `You've hit your monthly spend limit` / モデル不達 / 即時終了）したら、
+  エラーを握りつぶさず `model: sonnet` を明示して同じプロンプトで再委譲し、**どちらのモデルで生成したかを成果物の報告に1行記す**。
+  沈黙終了をそのまま「生成できなかった」と報告するのは規約違反（2026-07-24 実機検証 V10 で観測）。
 
 ## 5. コマンド追加・変更時
 

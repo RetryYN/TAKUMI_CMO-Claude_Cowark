@@ -1,10 +1,10 @@
 <!--
-  ブラウザワーカー ダッシュボード（正本テンプレート v8・階層 = 全体/媒体/サイト）
+  TAKUMI-CMO ダッシュボード（正本テンプレート v9・階層 = 全体/カテゴリー/場所）
   =====================================================================
   情報設計（2026-07-22 ユーザー指摘で確定）:
     - 実体の階層は「場所（サイト/媒体）→ その中のタスク」。タスクを場所からはがして
-      トップタブに並べない（スカウトは媒体Bの内蔵機能、競合ウォッチはサイト監視の内蔵機能）
-    - トップタブは大分類のみ: 全体 / 媒体（媒体A掲載・媒体Bスカウト・SNS）/ サイト（自社・競合）
+      トップタブに並べない（記事のSEO改善はブログの内蔵機能、競合ウォッチはリサーチの内蔵機能）
+    - トップタブはカテゴリー（正本: docs/command-registry.md）: 全体 / リサーチ / SNS運用 / オウンドメディア / 戦略
     - フェーズ①〜④は「場所の攻略度」。場所ごとの状態カードに付ける
   その他の原則（継承）:
     - 各場所に状態カード（フェーズ/現在ステップ/次回実行/状態）。承認が絡む場所は工程の飛び石図（A〜K・関所）
@@ -14,7 +14,7 @@
   実例=雛形。数値・文言（見本データ）を knowledge/ の実データに差し替えて使う。
   CSS・構造・演出は変更しない（例外: タブ数変更時の stops/.taboji 再生成のみ）。単一テーマ。外部読込なし。
 -->
-<title>ブラウザワーカー ダッシュボード</title>
+<title>TAKUMI-CMO ダッシュボード</title>
 <style>
   :root{
     --washi:#F7F1E1; --washi-2:#EFE5CC; --sumi:#2A211A; --sumi-70:rgba(42,33,26,.72);
@@ -488,7 +488,7 @@
     <circle class="taboji" cx="950" cy="276" r="4"/>
     <circle class="taboji" cx="1238" cy="276" r="4"/>
 
-    <!-- 旅人（ブラウザワーカー） -->
+    <!-- 旅人（匠） -->
     <g id="tabibito" style="transform:translateX(86px)">
       <g class="muki">
         <g class="karada">
@@ -535,17 +535,17 @@
     </g>
   </svg>
   <div class="washi-me"></div>
-  <div class="hero-dai"><h1>ブラウザワーカー ダッシュボード</h1></div>
+  <div class="hero-dai"><h1>TAKUMI-CMO ダッシュボード</h1></div>
 </header>
 
 <!-- ============ タブ（全体 / 媒体 / サイト） ============ -->
 <nav class="fudaretsu" aria-label="表示切り替え">
   <div class="naka" role="tablist">
     <button class="fuda-tab ima" role="tab" aria-selected="true" data-pane="p-zentai" id="t-zentai">全体<span class="kazu-chip">2</span></button>
-    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-kikaku" id="t-kikaku">企画リサーチ</button>
+    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-kikaku" id="t-kikaku">リサーチ</button>
     <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-sns" id="t-sns">SNS運用<span class="kazu-chip">1</span></button>
-    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-kyujin" id="t-kyujin">求人媒体<span class="kazu-chip">1</span><span class="kazu-chip ki">3</span></button>
-    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-kokoku" id="t-kokoku">広告分析</button>
+    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-owned" id="t-owned">オウンドメディア<span class="kazu-chip">1</span><span class="kazu-chip ki">3</span></button>
+    <button class="fuda-tab" role="tab" aria-selected="false" data-pane="p-senryaku" id="t-senryaku">戦略</button>
     <span class="koshin-mini">最終更新 2026-07-22 17:04・見本データ</span>
   </div>
 </nav>
@@ -568,8 +568,8 @@
           <ul class="alert komon">
             <li>
               <span class="omo">急ぎ</span>
-              <span class="naiyo">求人媒体Aの残り掲載枠が <strong>2件</strong>（契約期限 7/31 まで9日）→ 求人媒体タブへ</span>
-              <span class="iu" data-iu="媒体Aの掲載枠の状況を見せて">媒体Aの掲載枠の状況を見せて</span>
+              <span class="naiyo">自社ブログの公開待ち記事が <strong>2本</strong>（予約枠 7/31 まで9日）→ オウンドメディアタブへ</span>
+              <span class="iu" data-iu="自社ブログの公開待ち記事を見せて">自社ブログの公開待ち記事を見せて</span>
             </li>
             <li>
               <span class="omo">今週中</span>
@@ -589,12 +589,12 @@
           <div class="sec-sita"></div>
           <div class="hyo-maki"><table class="hyo">
             <tr><th>ドメイン</th><th>場所</th><th>タスク</th><th>フェーズ</th><th>次回実行</th><th>状態</th></tr>
-            <tr><td><span class="tobu-t" data-tobu="t-kikaku">企画リサーチ</span></td><td>競合サイト 3社</td><td>変更検知の巡回</td><td>④ 最適化</td><td>明朝 9:00</td><td><span class="shirushi yo">正常</span></td></tr>
-            <tr><td><span class="tobu-t" data-tobu="t-kikaku">企画リサーチ</span></td><td>自社サイト</td><td>診断（速度・リンク）</td><td>① 初回</td><td>毎週月曜</td><td><span class="shirushi yo">正常</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-kikaku">リサーチ</span></td><td>競合サイト 3社</td><td>変更検知の巡回</td><td>④ 最適化</td><td>明朝 9:00</td><td><span class="shirushi yo">正常</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-kikaku">リサーチ</span></td><td>自社サイト</td><td>診断（速度・リンク）</td><td>① 初回</td><td>毎週月曜</td><td><span class="shirushi yo">正常</span></td></tr>
             <tr><td><span class="tobu-t" data-tobu="t-sns">SNS運用</span></td><td>X・IG・note</td><td>予約投稿・ストック補充</td><td>④ 最適化</td><td>明朝 7:30</td><td><span class="shirushi chu">ストック不足</span></td></tr>
-            <tr><td><span class="tobu-t" data-tobu="t-kyujin">求人媒体</span></td><td>求人媒体A</td><td>掲載枠・応募の確認</td><td>② 再訪問</td><td>毎朝 8:30</td><td><span class="shirushi dai">要対応</span></td></tr>
-            <tr><td><span class="tobu-t" data-tobu="t-kyujin">求人媒体</span></td><td>求人媒体B</td><td>スカウト送信</td><td>④ 最適化</td><td>平日 10:00</td><td><span class="shirushi chu">承認待ち 3通</span></td></tr>
-            <tr><td><span class="tobu-t" data-tobu="t-kokoku">広告分析</span></td><td>競合LP・動画広告</td><td>LP/動画の分析（依頼時）</td><td>① 初回</td><td>依頼時</td><td><span class="shirushi yo">正常</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-owned">オウンドメディア</span></td><td>自社ブログ（WordPress）</td><td>記事公開・順位確認</td><td>② 再訪問</td><td>毎朝 8:30</td><td><span class="shirushi dai">要対応</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-owned">オウンドメディア</span></td><td>自社ブログ（WordPress）</td><td>既存記事のSEO改善</td><td>④ 最適化</td><td>平日 10:00</td><td><span class="shirushi chu">承認待ち 3本</span></td></tr>
+            <tr><td><span class="tobu-t" data-tobu="t-senryaku">戦略</span></td><td>KPIツリー・キャンペーン</td><td>進捗の突合と再立案（∞の上り）</td><td>① 初回</td><td>毎週金曜</td><td><span class="shirushi yo">正常</span></td></tr>
           </table></div>
         </div>
       </section>
@@ -653,43 +653,44 @@
 
     </div>
 
-    <!-- ======== タブ: 求人媒体（媒体A掲載・媒体Bスカウトを内蔵） ======== -->
-    <div class="pane" id="p-kyujin" role="tabpanel" aria-labelledby="t-kyujin" hidden>
+    <!-- ======== タブ: オウンドメディア（記事公開・SEO改善を内蔵） ======== -->
+    <div class="pane" id="p-owned" role="tabpanel" aria-labelledby="t-owned" hidden>
 
       <section class="bu">
         <div class="sho">
           <div class="sec-head">
-            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="11.5" y="10.5" width="11" height="14" rx="5.5"/><path class="sen" d="M11.5 15 h11 M11.5 20 h11 M14.5 8.5 h5 M14.5 26.5 h5"/></svg>
-            <h2>求人媒体A ── 掲載</h2><span class="sode">攻略度 ②再訪問・毎朝巡回</span>
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="11.5" y="10.5" width="11" height="14" rx="1.5"/><path class="sen" d="M14 14 h6 M14 17.5 h6 M14 21 h4"/></svg>
+            <h2>自社ブログ ── 記事公開</h2><span class="sode">WordPress・攻略度 ②再訪問・毎朝巡回</span>
           </div>
           <div class="sec-sita"></div>
           <div class="joho">
             <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase p1">② 再訪問</span></p></div>
             <div class="ko"><p class="t">現在ステップ</p><p class="v">J レポート <span class="chii">今朝分</span></p></div>
             <div class="ko"><p class="t">次回実行</p><p class="v">明朝 8:30 <span class="chii">自動</span></p></div>
-            <div class="ko"><p class="t">状態</p><p class="v aka">要対応 <span class="chii">残枠あと2件</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v aka">要対応 <span class="chii">公開待ち2本</span></p></div>
           </div>
           <div class="hyo-maki" style="margin-top:22px"><table class="hyo">
             <tr><th>指標</th><th class="su">今回</th><th class="su">前回比</th><th>備考</th></tr>
-            <tr><td>応募</td><td class="su">12件</td><td class="su">+3</td><td>直近3日で伸び</td></tr>
-            <tr><td>掲載枠</td><td class="su">残り 2件</td><td class="su">−1</td><td class="kei">契約期限 7/31（あと9日）</td></tr>
+            <tr><td>公開記事</td><td class="su">8本</td><td class="su">+3</td><td>今月の累計</td></tr>
+            <tr><td>公開待ち</td><td class="su">2本</td><td class="su">−1</td><td class="kei">予約枠 7/31（あと9日）</td></tr>
+            <tr><td>自然検索の流入</td><td class="su">1,240</td><td class="su">+18%</td><td>直近28日・広告費0円</td></tr>
           </table></div>
-          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="媒体Aの残枠2件に出す求人を決めよう">媒体Aの残枠2件に出す求人を決めよう</span></p>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="公開待ちの2本を仕上げて予約投稿して">公開待ちの2本を仕上げて予約投稿して</span></p>
         </div>
       </section>
 
       <section class="bu">
         <div class="sho">
           <div class="sec-head">
-            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M9.5 12.5 h15 v10 h-15 z M9.5 12.5 L17 19 L24.5 12.5"/></svg>
-            <h2>求人媒体B ── スカウト送信</h2><span class="sode">攻略度 ④最適化・7月第4週 実行中</span>
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M14.5 21.5 a5.5 5.5 0 1 1 4-4"/><path class="sen" d="M18.5 18.5 L24.5 24.5"/></svg>
+            <h2>自社ブログ ── 既存記事のSEO改善</h2><span class="sode">攻略度 ④最適化・7月第4週 実行中</span>
           </div>
           <div class="sec-sita"></div>
           <div class="joho">
             <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase">④ 最適化</span></p></div>
             <div class="ko"><p class="t">現在ステップ</p><p class="v">H 承認 <span class="chii">（人の承認待ち）</span></p></div>
             <div class="ko"><p class="t">次回実行</p><p class="v">平日 10:00 <span class="chii">自動</span></p></div>
-            <div class="ko"><p class="t">状態</p><p class="v aka">承認待ち 3通</p></div>
+            <div class="ko"><p class="t">状態</p><p class="v aka">承認待ち 3本</p></div>
           </div>
           <div class="kotei" style="margin-top:22px">
             <div class="ishi sumi-i"><span class="maru">A</span><span class="na">指令</span></div>
@@ -705,23 +706,23 @@
             <div class="ishi"><span class="maru">K</span><span class="na">成果報告</span></div>
           </div>
 
-          <p class="naka-dai">承認待ちの3通 <span class="chii">承認されるまで送信しない</span></p>
+          <p class="naka-dai">承認待ちの3本 <span class="chii">承認されるまで公開・更新しない</span></p>
           <div class="hyo-maki"><table class="hyo">
-            <tr><th>宛先（属性）</th><th>件名（13字以内）</th><th>テンプレ</th></tr>
-            <tr><td>営業職・26卒・関東</td><td>週3リモートで営業を</td><td>営業 draft-3</td></tr>
-            <tr><td>マーケ職・26卒・関西</td><td>企画から任せる新規事業</td><td>マーケ draft-4</td></tr>
-            <tr><td>マーケ職・27卒・首都圏</td><td>学生発の企画が通る会社</td><td>マーケ draft-4</td></tr>
+            <tr><th>対象記事</th><th>改善の要点</th><th>下書き</th></tr>
+            <tr><td>リモート勤務の始め方</td><td>タイトルを検索意図に寄せる・H2を再構成</td><td>seo draft-3</td></tr>
+            <tr><td>社内制度のつくり方</td><td>導入文を結論先出しに・内部リンク3本追加</td><td>seo draft-4</td></tr>
+            <tr><td>事例インタビュー #2</td><td>アイキャッチとOGPを更新（年次表記の古さ）</td><td>seo draft-4</td></tr>
           </table></div>
-          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="承認待ちの3通を本文つきで見せて">承認待ちの3通を本文つきで見せて</span><span class="iu" data-iu="3通ともOK、送って">3通ともOK、送って</span></p>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="承認待ちの3本を差分つきで見せて">承認待ちの3本を差分つきで見せて</span><span class="iu" data-iu="3本ともOK、公開して">3本ともOK、公開して</span></p>
 
           <p class="naka-dai">今週の成果</p>
           <div class="stat">
-            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="24">0</span><span class="tan">通</span></div><div class="mei">送信</div><div class="sa onaji">先週 26通</div></div>
-            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="38">0</span><span class="tan">%</span></div><div class="mei">開封率</div><div class="sa yoi">+5pt</div></div>
-            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="4">0</span><span class="tan">件</span></div><div class="mei">返信</div><div class="sa yoi">+1</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="24">0</span><span class="tan">本</span></div><div class="mei">改善</div><div class="sa onaji">先週 26本</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="38">0</span><span class="tan">%</span></div><div class="mei">クリック率</div><div class="sa yoi">+5pt</div></div>
+            <div class="fuda-t"><div class="kazu"><span class="kazoeru" data-kazu="4">0</span><span class="tan">件</span></div><div class="mei">問い合わせ</div><div class="sa yoi">+1</div></div>
           </div>
           <ul class="maki" style="margin-top:16px">
-            <li><span class="shirushi yo">OK</span><span class="koto">件名13字以内 + 大学名なしの方が開封が高い（この媒体の学習）</span></li>
+            <li><span class="shirushi yo">OK</span><span class="koto">タイトルは32字以内 + 数字を1つ入れた方がクリック率が高い（このブログの学習）</span></li>
           </ul>
         </div>
       </section>
@@ -765,7 +766,7 @@
 
     </div>
 
-    <!-- ======== タブ: 企画リサーチ（競合ウォッチ・自社診断=構想抽出を内蔵） ======== -->
+    <!-- ======== タブ: リサーチ（競合ウォッチ・自社診断=構想抽出を内蔵） ======== -->
     <div class="pane" id="p-kikaku" role="tabpanel" aria-labelledby="t-kikaku" hidden>
 
       <section class="bu">
@@ -806,9 +807,9 @@
           </div>
           <p class="naka-dai">直近の検知 <span class="chii">重要度順</span></p>
           <ul class="maki">
-            <li><span class="shirushi dai">重要</span><span class="moto">競合C社</span><span class="koto">求人の給与レンジを上方改定（+2万円）。同職種で当社と逆転</span><span class="itsu">7/21</span></li>
+            <li><span class="shirushi dai">重要</span><span class="moto">競合C社</span><span class="koto">主要キーワードで自社より上位に浮上（解説記事を大幅加筆）</span><span class="itsu">7/21</span></li>
             <li><span class="shirushi chu">変化</span><span class="moto">競合D社</span><span class="koto">採用LPを刷新。社員インタビューを冒頭に移動</span><span class="itsu">7/20</span></li>
-            <li><span class="shirushi yo">変化なし</span><span class="moto">競合E社</span><span class="koto">7日間、掲載内容に変化なし</span><span class="itsu">7/22</span></li>
+            <li><span class="shirushi yo">変化なし</span><span class="moto">競合E社</span><span class="koto">7日間、記事の追加・更新なし</span><span class="itsu">7/22</span></li>
           </ul>
           <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="C社の給与改定の詳細と当社への影響をまとめて">C社の給与改定の詳細と当社への影響をまとめて</span></p>
         </div>
@@ -816,42 +817,44 @@
 
     </div>
 
-    <!-- ======== タブ: 広告分析（LP/動画分析を内蔵） ======== -->
-    <div class="pane" id="p-kokoku" role="tabpanel" aria-labelledby="t-kokoku" hidden>
+    <!-- ======== タブ: 戦略（KPIツリー・キャンペーンを内蔵。∞の上り＝計測から再立案へ） ======== -->
+    <div class="pane" id="p-senryaku" role="tabpanel" aria-labelledby="t-senryaku" hidden>
 
       <section class="bu">
         <div class="sho">
           <div class="sec-head">
-            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="10.5" y="10.5" width="13" height="16"/><path class="sen" d="M10.5 15.5 h13 M13 19 h8 M13 22.5 h5"/></svg>
-            <h2>競合LP ── 分析</h2><span class="sode">攻略度 ①初回・依頼時に実行</span>
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M17 9 v6 M17 15 L11 21 M17 15 L23 21"/><circle class="nuri" cx="17" cy="8.5" r="1.8"/><circle class="nuri" cx="11" cy="22" r="1.8"/><circle class="nuri" cx="23" cy="22" r="1.8"/></svg>
+            <h2>KPIツリー ── 進捗</h2><span class="sode">ブランド acme・毎週金曜に突合</span>
           </div>
           <div class="sec-sita"></div>
           <div class="joho">
             <div class="ko"><p class="t">フェーズ（攻略度）</p><p class="v"><span class="phase p1">① 初回</span></p></div>
-            <div class="ko"><p class="t">最終分析</p><p class="v">7/18 <span class="chii">競合C社LP</span></p></div>
-            <div class="ko"><p class="t">次回実行</p><p class="v">依頼時 <span class="chii">定常化も可</span></p></div>
-            <div class="ko"><p class="t">状態</p><p class="v">正常 <span class="chii">閲覧のみ</span></p></div>
+            <div class="ko"><p class="t">最終突合</p><p class="v">7/18 <span class="chii">実測KPIを反映</span></p></div>
+            <div class="ko"><p class="t">次回実行</p><p class="v">毎週金曜 <span class="chii">自動</span></p></div>
+            <div class="ko"><p class="t">状態</p><p class="v">正常 <span class="chii">停滞ノード1件</span></p></div>
           </div>
-          <p class="naka-dai">直近の分析</p>
-          <ul class="maki">
-            <li><span class="shirushi dai">重要</span><span class="moto">競合C社 LP</span><span class="koto">ファーストビューの訴求が「価格」→「スピード」に変更。CTAを画面上部へ移動</span><span class="itsu">7/18</span></li>
-            <li><span class="shirushi chu">参考</span><span class="moto">競合D社 LP</span><span class="koto">社員インタビュー動画を冒頭に配置。滞在時間狙いの構成</span><span class="itsu">7/15</span></li>
-          </ul>
-          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="このLPを分析して改善案を出して">このLPを分析して改善案を出して</span></p>
+          <div class="hyo-maki" style="margin-top:22px"><table class="hyo">
+            <tr><th>ノード</th><th>種別</th><th class="su">実測</th><th class="su">目標</th><th>状態</th></tr>
+            <tr><td>問い合わせ数</td><td>遅行</td><td class="su">14</td><td class="su">20</td><td><span class="shirushi chu">未達</span></td></tr>
+            <tr><td>自然検索の流入</td><td>先行</td><td class="su">1,240</td><td class="su">1,000</td><td><span class="shirushi yo">達成</span></td></tr>
+            <tr><td>記事あたり回遊率</td><td>先行</td><td class="su">18%</td><td class="su">30%</td><td><span class="shirushi dai">停滞 → 再立案</span></td></tr>
+          </table></div>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="停滞している回遊率のノードで戦略を立て直して">停滞している回遊率のノードで戦略を立て直して</span></p>
         </div>
       </section>
 
       <section class="bu">
         <div class="sho">
           <div class="sec-head">
-            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><rect class="sen" x="9.5" y="12" width="15" height="11" rx="1.5"/><path class="nuri" d="M15 15 L20.5 17.5 L15 20 Z"/></svg>
-            <h2>動画広告 ── 構成案</h2><span class="sode">台本・字コンテの下書き</span>
+            <svg class="mon" viewBox="0 0 34 34" aria-hidden="true"><circle class="waku" cx="17" cy="17" r="15.5"/><path class="sen" d="M10 17 a3.5 3.5 0 1 1 7 0 a3.5 3.5 0 1 0 7 0 a3.5 3.5 0 1 0 -7 0 a3.5 3.5 0 1 1 -7 0"/></svg>
+            <h2>キャンペーン ── 進行中</h2><span class="sode">複数のオーガニック媒体を1目標で統括</span>
           </div>
           <div class="sec-sita"></div>
           <ul class="maki">
-            <li><span class="shirushi yo">下書き</span><span class="moto">採用動画 15秒</span><span class="koto">構成案 v1（フック: 「休日に仕事を思い出さない」）── knowledge/drafts/ に保存済み</span><span class="itsu">7/15</span></li>
+            <li><span class="shirushi dai">進行中</span><span class="moto">夏の事例特集</span><span class="koto">ブログ3本 → X/note で分割配信 → 問い合わせ導線に集約（7/15〜8/15・広告費0円）</span><span class="itsu">7/21</span></li>
+            <li><span class="shirushi chu">準備中</span><span class="moto">導入ガイド改訂</span><span class="koto">既存記事の束ね直し + LP化。KPIツリーの「回遊率」ノードに紐づく</span><span class="itsu">7/18</span></li>
           </ul>
-          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="15秒の採用動画の構成案を仕上げて">15秒の採用動画の構成案を仕上げて</span></p>
+          <p class="te"><span class="te-mei">次の一手</span><span class="iu" data-iu="夏の事例特集の進捗と次の配信予定を見せて">夏の事例特集の進捗と次の配信予定を見せて</span></p>
         </div>
       </section>
 

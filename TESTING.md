@@ -490,6 +490,37 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
   - **アーティファクト ID 衝突未遂**: conventions の「already exists → update」を検証がなぞると本番 dashboard をダミーデータで上書きし得た（エージェントが自主回避）→ V11 に「検証は専用 ID（`<id>-verify-test`）・本番 ID を update しない」を明文化（v1.2.0）
 - **RM Guard を deny に昇格（2026-07-24・v1.2.0）**: 2ランで warn 発火実測・誤爆ゼロ。OV/Critic と同じ段階導入完了。これで hook 9本全て本稼働
 
+## 実機 /検証 full 第7ラン 2026-07-25（**v2.0.0** / Cowork cloud × Opus 5 / 実タスク形式）
+
+**v2.0.0（TAKUMI-CMO）初の実機ラン。Tier 1 OK(4/4) / Tier 2 PASS 24・FAIL 0・SKIP 4。**
+`templates/verify-task.yaml` を `tasks/plugin-verify.yaml` にコピーした実タスク経路で実行（takumi-start → A〜K）。
+
+- **v2.0.0 で新設したゲート・項目がすべて実機で発火**: V41 Brand Isolation Guard は (a) 別ブランド区画への書込 deny (b) アクティブ区画は誤爆ゼロ (c) アクティブ未確定でも deny の3経路を実測。V43 の【匠ゲート】表示・`takumi.db` も確認
+- **V42（ドメイン層ユニットテスト）が Tier 1 に定着**: 19件 OK。ゼロ広告費の不変条件とブランド区画の境界判定が hook 非依存で緑
+- **SKIP 4件はいずれも環境起因で妥当**: V8（明示起動のみで自然文発火が未観測）/ V11・G7（新規ワークスペースに実データが無く差し替え検証が原理的に不能）/ V16（Slack コネクタなし）/ V40（`verify_allowlist` の deny が先勝ち＝手順書の規定どおり。ゼロ課金ゲート自体は Tier 1 の V25 で3ケース緑）
+- **V5(b) の実弾 FAIL 前歴は再発せず**: `ref_12: textbox "Password" (password)` を read_page で確認したうえで**入力せず委譲**
+
+### この ラン で検出した項目外の欠陥（→ v2.0.1 で全件修正）
+
+検証項目の合否とは別に、報告者が整合性の欠陥を8件検出した。**FAIL 0 でも負債は出る**という good example。
+
+| # | 深刻度 | 内容 | v2.0.1 での対応 |
+|---|---|---|---|
+| F1 | 高 | agents 3本の探索例パスが旧名 `**/browser-worker/` のまま。**旧 browser-worker が併存インストールされた環境では別プラグインの references/ を読む事故になりうる** | 3本 + takumi-status.md を `takumi-cmo` へ。**lint #11 で再混入を機械禁止** |
+| F2 | 中 | dashboard-template.html に旧ブランド名「ブラウザワーカー ダッシュボード」が残存 | タイトル・H1・コメントを TAKUMI-CMO へ |
+| F3 | 中 | 同テンプレの見本タブに廃止済みの**求人媒体・広告分析**が残存 | オウンドメディア（記事公開・SEO改善）/ 戦略（KPIツリー・キャンペーン）へ全面差し替え。**lint #12 で機械禁止**（タブ5↔ペイン5↔停留点5 の構造は不変） |
+| F4 | 中 | evals.md の golden タスク G2/G4/G8/G9 がスカウト・求人票前提のまま | ブログタイトル・メルマガ・LP・記事へ置換（PASS基準は緩めず、G2 は機械カウント必須を追記） |
+| F5 | 低 | takumi-skillify.md の「references/（17本）」が実体16と不一致 | 16 に修正。**lint #13 で本数の記述と実体を突合** |
+| F6 | 低 | fable 起動不可時の sonnet 再起動が規約に書いてあるだけで自動でない（沈黙終了しうる） | conventions §4 に「呼び出し側の責務・使用モデルを報告に明記・沈黙終了は規約違反」を追記 |
+| F7 | 低 | V13 が実在しないパック名 `deep=off` を指示 | 実在パック `sns-tiktok=off` に修正し、PASS基準を実際の注入文言に |
+| F8 | 低 | 後片付けで `active_brand` を先に消すと区画の削除まで deny される | C節に「区画の掃除が先・active_brand は最後」を明記（**削除もガード対象＝設計どおり**） |
+
+### 環境所見（プラグイン外・ユーザー対応事項）
+
+- **⚠ プラグイン併存**: 同一セッションに **browser-worker(Delvework) v1.2.0** と **takumi-cmo v2.0.0** が両方同期されており、**両者の hooks が二重発火**した。実測: navigate 時に警告が2本注入され、変更ゲートの deny は先に評価された旧プラグインの文言で返った。防御は「どちらかが deny すれば止まる」ため弱まらないが、(1) コンテキストの二重消費 (2) **どちらのゲートが効いたか判別できず検証の証跡価値が落ちる** (3) Brand Isolation Guard は takumi-cmo にしかないため挙動差が読みにくい。**旧 browser-worker のアンインストールを推奨**（F1 の事故リスクも併存が前提）
+- **fable が月次上限**: `model: fable` の design-artisan は既定設定で起動不可 → F6 の運用でしのぐ
+- ワークスペースはフォルダ未接続（`/home/claude`）。実データ前提の項目（V11・G7）は原理的に検証不能
+
 ### 検証の渡し方（Cowork 最新版）
 
 **推奨: 実タスク形式** — `templates/verify-task.yaml` をワークスペースの `tasks/plugin-verify.yaml` にコピーし
