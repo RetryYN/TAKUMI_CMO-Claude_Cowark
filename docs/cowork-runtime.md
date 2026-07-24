@@ -35,7 +35,7 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 
 - ゲートの実体は `memory/.workflow/` のフラグファイル（例: `bulk_send` / `k_done` / `ov_done` / `critic_pending` / `critic_pass` / `money_alert` / `verify_allowlist`）。hook スクリプトがフラグを読んで allow / warn / deny を返す。
 - 各 hook 先頭の `GATE_MODE="${DELVEWORK_GATE_MODE:-deny}"` が既定モード（2026-07-24 に warn→deny 昇格済み）。環境変数 `DELVEWORK_GATE_MODE` はテスト時の両モード検証用。
-- **hook 9本**（`hooks/scripts/`）: workflow-gate / ov-gate / rm-guard / critic-gate / url-guard / navigate-warn / injection-warn / money-watch / session-start。
+- **hook 10本**（`hooks/scripts/`）: workflow-gate / ov-gate / rm-guard / brand-isolation-guard / critic-gate / url-guard（ゼロ課金ゲート）/ navigate-warn / injection-warn / money-watch / session-start。
 - **限界（自己規律で補う領域）**: hook はツール引数の文字列しか見えない。`ref_150` 等の参照IDの解決先（type=password か）は判定できない（escalations E1）。フラグは Bash から直接 touch/rm で技術的に迂回可能（意図的迂回ではなく手順飛ばしへの防御）。硬い防御は Money Watch・URL Guard・人間承認が担う。
 
 ## 4. commands / agents / MCP の供給

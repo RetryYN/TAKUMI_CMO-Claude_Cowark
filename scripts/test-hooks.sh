@@ -198,6 +198,27 @@ check "critic: critic_pass後は通過" EMPTY "$out"
 rm -f "$DELVEWORK_WF_DIR/critic_pending" "$DELVEWORK_WF_DIR/critic_pass"
 unset DELVEWORK_GATE_MODE
 
+# --- Brand Isolation Guard（マルチブランド区画の書き込み隔離） ---
+export DELVEWORK_GATE_MODE=deny
+echo "acme" > "$DELVEWORK_WF_DIR/active_brand"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo x > knowledge/brands/acme/strategy/kpi.yaml"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: アクティブ区画への書込は通過" EMPTY "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo x > knowledge/brands/beta/brand.yaml"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: 別ブランド区画への書込は deny" 'Brand Isolation' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat knowledge/brands/beta/brand.yaml"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: 別ブランドの読み取りは通過" EMPTY "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo x > knowledge/logs/x.md"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: 非ブランドパスは通過" EMPTY "$out"
+rm -f "$DELVEWORK_WF_DIR/active_brand"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo x > knowledge/brands/acme/x"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: アクティブ未確定の区画書込は deny" 'Brand Isolation' "$out"
+export DELVEWORK_GATE_MODE=warn
+echo "acme" > "$DELVEWORK_WF_DIR/active_brand"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo x > knowledge/brands/beta/y"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: warnモードは注入のみ" 'additionalContext.*Brand Isolation' "$out"
+rm -f "$DELVEWORK_WF_DIR/active_brand"
+unset DELVEWORK_GATE_MODE
+
 rm -rf "$CLAUDE_PROJECT_DIR"
 [ "$FAIL" = 0 ] && echo "test-hooks: ALL PASS" || echo "test-hooks: FAILURES"
 exit "$FAIL"
