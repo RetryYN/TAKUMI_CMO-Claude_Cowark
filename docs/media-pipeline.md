@@ -62,3 +62,10 @@ ffmpeg -framerate 24 -i f%04d.png -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 0 -crf 
 - 取り込み・生成物はすべて `knowledge/assets/` + 出典台帳（sources.md）に記録
 - Downloads 本体は接続しない（専用DLフォルダ原則）
 - **前提: フル解像度素材の加工には専用DLフォルダ接続が必須**（README「メディア制作を使う場合」の3手順）。未接続で加工依頼が来たら、Downloads→手動アップロードで代替せず（**レンダリング失敗の実測あり 2026-07-23**）、先にセットアップを依頼して止まる。blob fetch が使える場面（URL露出）のみ例外
+
+> **委譲の失敗時の作法（2026-07-25 ローカル実機検証 F2 で実測。自動フォールバックは存在しない）**:
+> `design-artisan` は既定 `model: fable`。fable が月次上限・不達だと **`Agent terminated early due to an API error` で即終了**する。
+> このとき**そのまま「生成できなかった」と報告してはならない** — `model: sonnet` を明示して同じプロンプトで再委譲し、
+> **どちらのモデルで生成したかを成果物の報告に1行添える**（`deliverable-writer` への振替は禁止＝別の役割）。
+> 同様に、委譲先が規範ファイル（`references/**`）に到達できなかったと申告したら、
+> 呼び出し側が正本を Read して**本文を委譲プロンプトに同梱**して再委譲する（E6）。
