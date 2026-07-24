@@ -12,7 +12,7 @@
 
 | タスク型 | 部品 |
 |---|---|
-| 計画 | content-calendar.md（投稿カレンダー・配信/送信計画・制作スケジュール — 作って終わりでなく queue.md と定常タスクへの接続まで） |
+| 計画 | content-calendar.md（投稿カレンダー・配信/送信計画・制作スケジュール — 作って終わりでなく queue.md と定常タスクへの接続まで） / **pre-setup-council.md（設定前の合議）**— 計測基盤・ワークフロー・指標の新設など「後から直すのが高くつく」変更の**直前に必ず通す関所** |
 | リサーチ | style-research.md（デザイン・配色） / deep-research.md（徹底洗い出し） / sns-research.md（SNSトレンド・競合） |
 | 収集 | asset-collect.md（画像素材・ライセンス証跡） / video-asset-collect.md（動画素材） |
 | クリエイティブ | imagegen.md（画像生成・Gemini実証） / videogen.md（動画生成・Gemini実証） / image-edit.md（バナー合成・クロマキー） / video-edit.md（WebM・アルファ・注釈アニメ） / page-improve.md（ページ改善モック） / content-to-lp.md（コンテンツ/ビジュアル→LP） / video-content-script.md（オーガニック動画コンテンツ台本） |
@@ -33,5 +33,5 @@
 | クリエイティブ（画像・動画・ページ） | web-design + **psych-ux-jp**（心理根拠）+ **design-evidence-jp**（実証数値基準）+ 公開物は ad-compliance-jp 必須 | ビジュアル成果物（モックアップ・カルーセル・バナー等）は **design-artisan**（生成）→ **design-critic**（審査）のループ。**artisan が既定モデル（fable）で起動できず即終了したら、`model: sonnet` を明示して再委譲する**（自動フォールバックは無い＝呼び出し側の責務。docs/media-pipeline.md 末尾が正本）。**critic の PASS を得るまでユーザーに引き渡さない**（REVISE なら FIX を artisan に戻して再審査、最大2周。依頼経路を問わずこの順序は省略不可） |
 | 分析 | logical-writing / **seo-jp**（SEO診断）/ **cro-jp**（転換率のボトルネック分析） | 効果測定（返信率・エンゲージ集計）は **outcome-verifier** |
 | 掃き出し | —（不可逆送出の規律が規範） | 不可逆な一括送出は **pre-send-verifier**（敵対的監査）必須 → ユーザー承認 → 完了後に **outcome-verifier**（証跡検証） |
-| （横断）設計判断 | — | 長く効く判断・確信のない分岐は **strategy-advisor** に壁打ち（session-rules (11)(12)） |
+| （横断）設計判断 | — | 長く効く判断・確信のない分岐は **strategy-advisor** に壁打ち（session-rules (11)(12)）。**計測基盤（GTM/GA4/GSC）の変更・指標の新設は単独の壁打ちではなく docs/parts/pre-setup-council.md の3体並列合議**（**risk-forecaster**（構造由来の破綻を先読み）／**privacy-auditor**（PII・同意）／**strategy-advisor**（運用継続性・ロールバック）を1ターンで同時委譲し、統合はメインループが行う） |
 
