@@ -22,7 +22,7 @@ argument-hint: [register <タスク名> | list | remove <タスク名>]（省略
 - **ブラウザ操作を含むタスクの steps 先頭に「knowledge/config/browser.md を読み、優先ブラウザが記録されていれば選択する」interact ステップを標準装備する**（複数 Chrome 接続時の選択待ちで無人実行が停止する実測事故の防止。正本は docs/unattended-ops.md §ブラウザの一意化）
 - 送信/公開/投稿/保存を含むステップは **destructive を明示**（Step H で人の承認を必ず通る設計にする）
 - `generate_text` にはスキル台帳（docs/command-registry.md）からドメインに合うスキルを割当
-  （スカウト本文=recruit-writing、投稿=content-design+sns-jp、コピー=copywriting 等）
+  （投稿=content-design+sns-jp、コピー=copywriting 等）
 - 同種の文面生成を高頻度で行うタスクなら、あわせて /スキル化 でのワークスペーススキル化を提案する
 
 ### 3. ナレッジの足場

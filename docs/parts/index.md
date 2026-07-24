@@ -15,9 +15,9 @@
 | 計画 | content-calendar.md（投稿カレンダー・配信/送信計画・制作スケジュール — 作って終わりでなく queue.md と定常タスクへの接続まで） |
 | リサーチ | style-research.md（デザイン・配色） / deep-research.md（徹底洗い出し） / sns-research.md（SNSトレンド・競合） |
 | 収集 | asset-collect.md（画像素材・ライセンス証跡） / video-asset-collect.md（動画素材） |
-| クリエイティブ | jobpost-writing.md（求人票） / scoutmail-writing.md（スカウト文面） / imagegen.md（画像生成・Gemini実証） / videogen.md（動画生成・Gemini実証） / image-edit.md（バナー合成・クロマキー） / video-edit.md（WebM・アルファ・注釈アニメ） / page-improve.md（ページ改善モック） / content-to-lp.md（コンテンツ/ビジュアル→LP） / video-content-script.md（オーガニック動画コンテンツ台本） |
+| クリエイティブ | imagegen.md（画像生成・Gemini実証） / videogen.md（動画生成・Gemini実証） / image-edit.md（バナー合成・クロマキー） / video-edit.md（WebM・アルファ・注釈アニメ） / page-improve.md（ページ改善モック） / content-to-lp.md（コンテンツ/ビジュアル→LP） / video-content-script.md（オーガニック動画コンテンツ台本） |
 | 分析 | site-audit.md（速度・SEO・品質） / sns-research.md（数値読み） / 各媒体パックの分析タスク |
-| 掃き出し | design-sync.md（Claude Design 同期・既定ルート） / design-handoff.md（**人間編集ハンドオフ** — DesignSync 認可なし環境のUIルート。critic PASS 後に「Design に送って手直ししますか？」→ 編集後回収。**発火は広く解釈**: 「手直ししたい」「自分で調整」「いじれるようにして」等、完成済みビジュアルに人間が手を入れたい意図が読めれば全部ここ） / canva-export.md（Canva 書き出し） / 各媒体の投稿・配信・入稿（必ず /タスク開始 経由 + 不可逆なら pre-send-verifier） |
+| 掃き出し | wp-publish.md（WordPress記事公開・下書き→承認→公開） / design-sync.md（Claude Design 同期・既定ルート） / design-handoff.md（**人間編集ハンドオフ** — DesignSync 認可なし環境のUIルート。critic PASS 後に「Design に送って手直ししますか？」→ 編集後回収。**発火は広く解釈**: 「手直ししたい」「自分で調整」「いじれるようにして」等、完成済みビジュアルに人間が手を入れたい意図が読めれば全部ここ） / canva-export.md（Canva 書き出し） / 各媒体の投稿・配信・入稿（必ず /タスク開始 経由 + 不可逆なら pre-send-verifier） |
 
 メディア系の技術地図（ffmpegレシピ・形式カバレッジ・素材パック規約）は docs/media-pipeline.md が正本。
 
@@ -29,7 +29,7 @@
 |---|---|---|
 | リサーチ | logical-writing（レポート化するとき） | 大規模並列調査のみ調査系サブエージェントに分割 |
 | 収集 | —（ライセンスCPが規範） | — |
-| クリエイティブ（文章） | recruit / copy / sales / logical / business / storytelling / sns-jp / content-design / video-ad / **seo-jp**（SEO記事）を依頼内容で選択 + **psych-nudge-jp**（訴求フレーム）・**psych-target-jp**（読み手別の書き分け） | 本格執筆は **deliverable-writer** へ委譲 |
+| クリエイティブ（文章） | copy / sales / logical / business / storytelling / sns-jp / content-design / video-ad / **seo-jp**（SEO記事）を依頼内容で選択 + **psych-nudge-jp**（訴求フレーム）・**psych-target-jp**（読み手別の書き分け） | 本格執筆は **deliverable-writer** へ委譲 |
 | クリエイティブ（画像・動画・ページ） | web-design + **psych-ux-jp**（心理根拠）+ **design-evidence-jp**（実証数値基準）+ 公開物は ad-compliance-jp 必須 | ビジュアル成果物（モックアップ・カルーセル・バナー等）は **design-artisan**（生成）→ **design-critic**（審査）のループ。**critic の PASS を得るまでユーザーに引き渡さない**（REVISE なら FIX を artisan に戻して再審査、最大2周。依頼経路を問わずこの順序は省略不可） |
 | 分析 | logical-writing / **seo-jp**（SEO診断）/ **cro-jp**（転換率のボトルネック分析） | 効果測定（返信率・エンゲージ集計）は **outcome-verifier** |
 | 掃き出し | —（不可逆送出の規律が規範） | 不可逆な一括送出は **pre-send-verifier**（敵対的監査）必須 → ユーザー承認 → 完了後に **outcome-verifier**（証跡検証） |

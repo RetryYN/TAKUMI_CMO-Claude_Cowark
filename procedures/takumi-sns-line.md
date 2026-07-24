@@ -13,5 +13,4 @@
 - **従量課金**: 無料枠（月200通）超は費用発生 — 配信数×友だち数の見積もりを承認材料に必ず添える
 
 - タスクの最小単位は tasks/*.yaml に登録（/カスタマイズ のタスク登録）。変更操作（投稿・予約・設定変更）は /タスク開始 のゲート下で実行
-- 文面は references/ の該当規範（sns-jp / content-design、採用系は recruit-writing）を Read してから生成。公開前に ad-compliance-jp チェック
 - ナレッジ置き場: knowledge/sns/line/（ネタ帳は queue.md）

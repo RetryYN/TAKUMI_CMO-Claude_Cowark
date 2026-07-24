@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS schema_meta (
 );
 INSERT OR IGNORE INTO schema_meta VALUES ('version', '1');
 
--- 媒体ステータス履歴（/takumi-media status が追記）
+-- 媒体ステータス履歴（/takumi-ownedmedia status が追記）
 CREATE TABLE IF NOT EXISTS media_status (
   id INTEGER PRIMARY KEY,
   measured_at TEXT NOT NULL,          -- ISO8601

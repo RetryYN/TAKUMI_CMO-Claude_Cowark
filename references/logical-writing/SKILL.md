@@ -16,7 +16,6 @@ description: ロジカルライティング — データと論理で意思決�
 
 ## Do not use this skill when
 - 感情に訴えるストーリー記事を求められたとき（-> storytelling）
-- 求人票のライティングを求められたとき（-> recruit-writing）
 - セールス目的のLP・スクリプトを求められたとき（-> sales-writing）
 - 短いコピーを求められたとき（-> copywriting）
 
@@ -29,7 +28,6 @@ description: ロジカルライティング — データと論理で意思決�
 
 ## 📚 必須参照リソース
 タスク実行時、必要に応じて以下のリソースファイルを読み込んで前提知識を揃えること。
-- `../recruit-writing/resources/job-role-profiles.md` （候補者推薦レポート作成時の評価軸として活用）
 
 ## なぜ人材業界にロジカルライティングが必要か
 

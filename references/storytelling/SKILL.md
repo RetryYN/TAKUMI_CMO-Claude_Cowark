@@ -1,6 +1,6 @@
 ---
 name: storytelling
-description: ストーリーテリング — 共感と行動を生む物語コンテンツ。Use when 社員インタビュー記事/社員ストーリー、転職成功事例、企業の創業ストーリー/ミッション紹介、採用広報・オウンドメディアの長文記事、採用ブランディング用のナラティブ。Not for 募集要項や求人票（→recruit-writing）、データ報告（→logical-writing）。
+description: ストーリーテリング — 共感と行動を生む物語コンテンツ。Use when 社員インタビュー記事/社員ストーリー、転職成功事例、企業の創業ストーリー/ミッション紹介、採用広報・オウンドメディアの長文記事、採用ブランディング用のナラティブ。Not for 募集要項や求人票、データ報告（→logical-writing）。
 ---
 
 # ストーリーテリング スキル
@@ -15,7 +15,6 @@ description: ストーリーテリング — 共感と行動を生む物語コ�
 - 採用ブランディング用のナラティブコンテンツを求められたとき
 
 ## Do not use this skill when
-- 求人票の募集要項（給与・勤務地等）を書くとき（-> recruit-writing）
 - 短いキャッチコピーだけを求められたとき（-> copywriting）
 - 論理的な提案書やレポートを求められたとき（-> logical-writing / sales-writing）
 - メール文面を求められたとき（-> business-writing）
@@ -29,8 +28,6 @@ description: ストーリーテリング — 共感と行動を生む物語コ�
 
 ## 📚 必須参照リソース
 ストーリー作成時は、ターゲット読者が共感できるよう以下のリソースを読み込むこと。
-- `../recruit-writing/resources/job-seeker-needs.md` （ターゲットのインサイト・悩みを抽出）
-- `../recruit-writing/resources/job-role-profiles.md`
 
 ## なぜ人材業界にストーリーが必要か
 

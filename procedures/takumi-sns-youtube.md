@@ -13,5 +13,4 @@
 - 競合チャンネルのトーク構成分析・台本リバースエンジニアリングは字幕読みで行う（video-content-script 部品の下調べと相性が良い）
 
 - タスクの最小単位は tasks/*.yaml に登録（/カスタマイズ のタスク登録）。変更操作（投稿・予約・設定変更）は /タスク開始 のゲート下で実行
-- 文面は references/ の該当規範（sns-jp / content-design、採用系は recruit-writing）を Read してから生成。公開前に ad-compliance-jp チェック
 - ナレッジ置き場: knowledge/sns/youtube/（ネタ帳は queue.md）

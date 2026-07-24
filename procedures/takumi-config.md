@@ -11,11 +11,11 @@ argument-hint: [list | on <pack> | off <pack>]（省略時は list）
 |---|---|---|
 | core | start / status / demo / dashboard / feedback / skillify / ゲート・Credential Guard | **常時ON（無効化不可）** |
 | research | style（スタイル調査）/ audit（サイト診断）/ watch（競合ウォッチ） | ON |
-| creative | improve（ページ改善）/ adlp（広告→LP）/ adscript（動画広告台本）+ design-artisan / design-critic | ON |
+| creative | improve（ページ改善）/ content-to-lp（コンテンツ→LP）/ video-content-script（動画コンテンツ台本）+ design-artisan / design-critic | ON |
 | sns | sns（SNS運用バッチ）+ sns-jp スキル | ON |
-| media | media（媒体管理） | ON |
+| ownedmedia | ownedmedia（オウンドメディア・自社ブログ） | ON |
 | deep | deep（徹底モード） | ON |
-| writing-hr | 人材ライティング6スキル（recruit/copy/sales/logical/business/storytelling） | ON |
+| writing | ライティング5スキル（copy/sales/logical/business/storytelling） | ON |
 | compliance | ad-compliance-jp（広告法規チェック） | ON ※OFF時はその旨を成果物に明記 |
 | slack | Slack通知・非同期承認キュー | ON（コネクタ無ければ自動フォールバック） |
 

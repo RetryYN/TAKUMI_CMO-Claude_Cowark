@@ -13,5 +13,4 @@
 - 投稿は取り消し可能だが、予約投稿の実行前に内容確認を挟む
 
 - タスクの最小単位は tasks/*.yaml に登録（/カスタマイズ のタスク登録）。変更操作（投稿・予約・設定変更）は /タスク開始 のゲート下で実行
-- 文面は references/ の該当規範（sns-jp / content-design、採用系は recruit-writing）を Read してから生成。公開前に ad-compliance-jp チェック
 - ナレッジ置き場: knowledge/sns/x/（ネタ帳は queue.md）

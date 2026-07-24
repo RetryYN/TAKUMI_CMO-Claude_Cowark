@@ -1,0 +1,31 @@
+# /オウンドメディア — 自社ブログの運営（takumi-ownedmedia）
+
+TAKUMI-CMO の集客・ブランディングの中核＝**オウンドメディア（自社ブログ）**。**WordPress を既定**とし（brand.yaml / setup で別プラットフォーム＝note/Ghost 等が指定されていればそれに従う）、記事の公開・更新・構造設計・SEO・更新巡回を担う。ゼロ広告費。
+
+> **前段**: アクティブブランドを確定する（未確定なら /ブランド）。記憶は `knowledge/brands/<slug>/channels/ownedmedia/` にスコープ（原則4）。
+> **役割分担**: 記事の中身（本文・アイキャッチ・図解）は **/コンテンツ** が作る。このパックは**媒体としてのブログ運営**（公開・構造・SEO・巡回）を担う。
+
+## WordPress の前提（既定）
+
+- ログインは人間が行う（Credential Guard）。管理画面 URL は brand.yaml / `knowledge/config` に記録。
+- 投稿・更新・公開は**変更操作** → takumi-start のゲート下。**公開（publish）は不可逆送出** → pre-send-verifier 監査 + ユーザー承認。まずは**下書き保存を既定**にし、公開はユーザー承認後。
+- 通常のエディタ操作（ブロック/クラシック）。SEOプラグイン（Yoast / RankMath 等）があればメタ・スラッグ・OGPを設定。**有料プラン・課金・広告は触らない**（ゼロ課金ゲート）。
+
+## 要望の振り分け（タスク5型）
+
+| 要望の型 | タスク | 部品 / 接続先 |
+|---|---|---|
+| 「競合ブログ/検索意図を調べて」 | リサーチ | docs/parts/deep-research.md / docs/parts/sns-research.md |
+| 「記事を書いて/アイキャッチ作って」 | クリエイティブ | /コンテンツ（procedures/takumi-content.md）へ。SEO記事は references/seo-jp/SKILL.md |
+| 「WordPressに公開/更新して」 | 掃き出し | docs/parts/wp-publish.md（下書き→承認→公開・SEOメタ・内部リンク） |
+| 「記事カレンダー/更新計画」 | 計画 | docs/parts/content-calendar.md（公開スケジュール→queue→定常タスク） |
+| 「流入/回遊を測って」 | 分析 | outcome-verifier（オーガニック流入・回遊・CV→KPIツリー反映） |
+
+## 定常運用
+
+- **更新巡回**（週次等）: 公開済み記事の順位・流入の変化、リライト候補、内部リンクの穴を点検（seo-jp / cro-jp）。締めに /レポート のダッシュボード更新。
+- **記事カレンダー**: KPIツリーのドライバー（オーガニック流入・指名検索）に効くテーマを /戦略 のロードマップから落として計画化。
+
+## 執筆・診断リファレンス
+
+seo-jp（検索意図・E-E-A-T・AEO・診断）/ content-design（記事設計）/ storytelling（物語記事）/ cro-jp（回遊・CV導線）/ logical-writing。公開物は ad-compliance-jp（景表法・ステマ規制・PR表記）チェック必須。
