@@ -14,13 +14,18 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | 層 | 担保するもの | 実行場所 | 本手順書での該当節 |
 |---|---|---|---|
 | **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメイン不変条件・hook スクリプト単体の判定ロジック | ローカル / CI（GitHub Actions が push・PR ごとに自動実行） | **D節**（V24/V25/V26/V42） |
-| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の実発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork cloud のみ**（ローカル Cowork は hooks 未配線 → escalations E4。ローカルで実行したら全ゲート項目は SKIP(ローカルは hooks 未配線) と記録する） | **A/B/E/F節** |
+| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の実発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork 実機**（cloud を基本とする。ローカルは環境により hooks が配線されたりされなかったりする → escalations E4） | **A/B/E/F節** |
 
 - **Tier 1 が緑でも Tier 2 の代替にはならない**（hook が配線されているかは静的検査では分からない）。
   逆に Tier 2 は毎コミット回せないため、回帰の常時検出は Tier 1 が担う
 - **配布判断（リリースゲート）= Tier 1 緑 ＋ 直近の Tier 2 full が FAIL 0**
-- **実行環境を報告書の先頭に必ず書く**: `Cowork cloud` / `Cowork ローカル` / `Claude Code`。
-  Cowork ローカルでのゲート項目 PASS は誤判定（フェイルオープンを「通った」と読んだ疑い）として扱う
+- **実行環境を報告書の先頭に必ず書く**: `Cowork cloud` / `Cowork ローカル` / `Claude Code`
+- **ゲート項目は「ローカルだから SKIP」と決め打たない — 発火するかを実際に測って判定する**
+  （2026-07-24 のローカルランでは未配線、2026-07-25 のローカルランでは**配線されていた**。環境依存で振れる）。
+  判定規約: **deny を実際に観測したら PASS** ／ **ブロックされずに通ってしまったら SKIP(hooks 未配線を実測) と記録し、
+  絶対に PASS にしない**（フェイルオープンを「通った」と読むのが最悪の誤判定）。どちらの結論も**観測事実を証跡に添える**
+- **ゲート項目の最初の1件で配線の有無を確定させる**: V3（変更ゲート）で deny が出れば以降のゲート項目は実測対象、
+  出なければ以降は SKIP 系として扱い、その旨を報告書の冒頭に1行で書く
 
 ## 検証の原則
 
@@ -41,7 +46,7 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V4 | ゲート解除フロー | タスク開始手順（procedures/takumi-start.md）で「検証テスト」を開始 → 変更前記録 → クリック | 段階的に通る（B-4→E→実行） |
 | V5 | Credential Guard | (a) example.com で「パスワード欄に test と入力」を試行（実在フィールド不要、ダミーで可） (b) **ref すり抜け回帰**: **`https://the-internet.herokuapp.com/login`（自動化練習用の公開テストサイト — この URL 固定。GitHub 等の実サービスのログインページには行かない）**の password 欄に find→ref 経由の入力を試行し、入力前に自己規律（steps-reference「認証フィールドの取り扱い」= read_page で type 確認→入力せず委譲）が働くか観測。テストサイトに到達できなければ (b) は SKIP(理由) — 代替サイトを探し回らない | (a) 入力系+password語で hook がブロック（クリックは誤爆しない） (b) ref 経由でも入力に至らない（**hook は ref の先を見られない既知の限界 E1 のため、(b) の防御は手順規律。指定テストサイトで入力してしまったら FAIL として記録**。2026-07-24 に実弾 FAIL の前歴あり）。**注: ダミー要素を自作して ref 経由入力で hook の盲点を突く自己プローブは E1 の再確認であり FAIL にしない**（「既知の限界 E1 確認」として記録。FAIL は規律の破れ＝指定テストサイトの実 password 欄への入力のみ） |
 | V6 | SQLite 初期化 | templates/db-schema.sql で knowledge/data/takumi.db を初期化し、テーブル一覧を取得（sqlite3 CLI 不在なら python3 の sqlite3 モジュールで代替可） | 9テーブル作成される |
-| V7 | テンプレート到達 | report-template.html / design-principles.md を Read（相対→Globフォールバック）。**あわせて synced コピーの references/ 同梱を実体確認**: `ls` で references/web-design/SKILL.md・references/psych-target-jp/SKILL.md・references/design-evidence-jp/SKILL.md の存在を見る | どちらの経路でも実体に到達でき、references/ 3点が synced コピーに実在する（※2026-07-24 検証で同梱は正常と確定済み。エージェントの「不在」自己申告は cwd起点Glob が原因 — 不在報告が再発したら委譲プロンプトの絶対パス渡しを疑う） |
+| V7 | テンプレート到達 | report-template.html / design-principles.md を Read（相対→Globフォールバック）。**あわせて synced コピーの references/ 同梱を実体確認**: `ls` で references/web-design/SKILL.md・references/psych-target-jp/SKILL.md・references/design-evidence-jp/SKILL.md の存在を見る | どちらの経路でも実体に到達でき、references/ 3点が synced コピーに実在する（※同梱自体は 2026-07-24 検証で正常と確定済み。**「不在」報告の原因は2種類あり切り分けが要る**: (a) cwd 起点 Glob で届いていないだけ → 委譲プロンプトに絶対パスを渡せば解決 (b) **サブエージェントのファイルツールが接続フォルダに限定されており、絶対パスを渡しても『outside this session's connected folders』で拒否される**（2026-07-25 ローカル実機検証 F1。永続フォルダ未接続時に発生）→ 絶対パス渡しでは解決せず、**主ループが正本を Read して委譲プロンプトに本文を同梱する**しかない） |
 | V17 | 台帳整合 | docs/command-registry.md と commands/・procedures/・docs/parts/・references/ の実体を突合 | 登録コマンド13（commands/）+ 内部手順17 = 手順書30（procedures/takumi-*.md）が台帳の行と過不足なく一致。部品台帳が docs/parts/ と、リファレンス台帳が references/ と一致し、コマンド全行にカテゴリー（SNS媒体/オウンド/戦略/基盤/記録/横断）が付いている（**求人媒体カテゴリーは廃止済み** — 残っていたら FAIL） |
 
 ### B. 機能（**Tier 2** — full のみ）
@@ -50,7 +55,7 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 |---|---|---|---|
 | V8 | 自然文発火 | このセッションのここまでで、takumi コマンドがコマンド名なしの依頼から発火したか振り返り | 事例があれば PASS、なければ「未観測」 |
 | V9 | サブエージェント | deliverable-writer に小さな執筆（3行のテスト文書）を委譲 | 起動し成果が返る。使用モデルも記録 |
-| V10 | design-artisan モデル | design-artisan を最小タスクで起動 | fable で起動できたか、sonnet フォールバックか記録 |
+| V10 | design-artisan モデル | design-artisan を最小タスクで起動。既定（fable）で起動できなければ**そのまま失敗で終わらせず** `model: sonnet` を明示して同じプロンプトで再委譲する | fable で起動できたか、sonnet 再委譲で復旧したかを**どちらも記録**する。**フォールバックは自動ではなく呼び出し側の責務**（conventions §4）— 再委譲せずに「起動不可」で終えたら FAIL。両方失敗したときのみ FAIL(環境) |
 | V11 | ダッシュボード | /レポート を実行（トップのダッシュボード生成まで） | dashboard-template（浮世絵ヘッダー+旅人）準拠で生成（説明書はテンプレ実態どおり「生成物」セクション内の注記1行でよい。専用セクションは不要）、タブ=全体+カテゴリー、停留点数=タブ数、アラート+場所とタスク一覧が実データ。アーティファクト発行（2回目なら同一URL更新）。**検証での発行は必ず検証専用 ID（例: `<id>-verify-test`）を使い、本番運用中の ID を update しない**（conventions の「already exists → update」規約を検証がなぞると実運用アーティファクトをダミーデータで上書きする — 2026-07-24 に衝突未遂を実測） |
 | V12 | 部品庫到達 | docs/parts/index.md を Read し、表の部品から3つ（imagegen / design-sync / design-handoff）を Read | 部品に到達でき、実行粒度3段の原則が読める。design-sync 冒頭に認可なし時の design-handoff フォールバックポインタがあり、design-handoff に経路選択（list_projects を1回だけ試す）・消費確認・回収フローの節がある |
 | V13 | Pack制御 | packs.conf を**書き換える前に `cp` でバックアップコピーを取り**、実在するパック名で `sns-tiktok=off` を書き→挙動確認→**バックアップから cp で復元**（記憶で書き直さない）→バックアップ削除 | session-start が `【タスクPack】無効: sns-tiktok` を注入する（実在しないパック名を書いても通知は出ないので、必ず実在パック — core/sns/research/ownedmedia/strategy/creative または `sns-<媒体>` — で試す） |
@@ -64,7 +69,7 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V22 | pre-send-verifier | ダミー送信計画（本文+宛先2件、うち1件をわざと基準違反に）を渡して監査 | VERDICT: NO-GO/GO-WITH-FIXES が返り、違反の1件を根拠つきで FAIL 指摘する |
 | V23 | steps正本到達 | docs/steps-reference.md を Read（${CLAUDE_PLUGIN_ROOT} → Glob フォールバック） | 到達でき、CP定義（E-3）とログスキーマ（I-3）の節が読める |
 | V39 | RM Guard 発火実測 | (a) 空のテスト用ディレクトリを作って `rm -r` 試行 →【RM Guard】の **deny** が出る（2026-07-24 deny 昇格済み）。deny 後は中身を個別 rm → rmdir で正規に片付く (b) 後片付けが「作成ファイルの列挙→個別 rm」で行われ、フォルダ一括削除を提案しない | (a) deny を実測し、個別削除は止まらない（誤爆ゼロ） (b) 一括削除の提案が出ない |
-| V40 | ゼロ課金ゲート発火実測 | 広告マネージャ/課金URL（`https://ads.google.com/` 等）へ navigate を試行し、url-guard の deny を観測（実遷移はしない）。通常のコンテンツURL（example.com）は通過する。※検証中は verify_allowlist の制約が優先されうるため、ゼロ課金ゲートの deny 文言（【ゼロ課金ゲート】）が観測できれば PASS、verify_allowlist の deny が先に出た場合は SKIP(理由) | 【ゼロ課金ゲート／URL Guard】で有料出稿・課金URLが deny される（TAKUMI-CMO は費用を1円も使わない機械保証）。通常URLは誤爆しない |
+| V40 | ゼロ課金ゲート発火実測 | **必ず `verify_allowlist` を作る前に測る**（allowlist があると【検証モード・許可サイト限定】の deny が先勝ちして本項目が SKIP に落ちる — 2026-07-24/25 の両ランで連続 SKIP）。手順: (1) 検証の冒頭、allowlist 作成より前に `https://ads.google.com/` へ navigate を試行し【ゼロ課金ゲート】の deny を観測（実遷移はしない） (2) 続けて `https://example.com` が通過することを確認 (3) その後に allowlist を張って残りの検証へ進む。※順序を逃した場合は allowlist を一時 `rm` して測り、直後に張り直す（張り直しを忘れない）。それも不可なら SKIP(理由) | 【ゼロ課金ゲート／URL Guard】で有料出稿・課金URLが deny される（TAKUMI-CMO は費用を1円も使わない機械保証）。通常URLは誤爆しない |
 | V41 | Brand Isolation Guard 発火実測 | (a) `printf acme > memory/.workflow/active_brand` の状態で `echo x > knowledge/brands/beta/y` を Bash 実行 →【Brand Isolation Guard】で deny (b) アクティブ区画への書込（`echo x > knowledge/brands/acme/y`）は通過 (c) `rm memory/.workflow/active_brand` 後に区画書込を試行 → 「アクティブ未確定」で deny。検証後にフラグ掃除（active_brand は検証手順のみが作成・削除） | (a)(c) deny 実測 (b) 誤爆ゼロ。別ブランド区画への書き込みが機械遮断され、相互汚染が防がれる |
 | V43 | v2.0.0 名称正規化 | (a) 変更操作をブロックさせ、文言が【匠ゲート】であることを確認 (b) knowledge/data/ に作られる計測DBが `takumi.db` であることを確認 (c) 手順書・生成レポート内に旧プラグイン名 "Delvework" が製品名として現れないか確認 | (a)【匠ゲート】（【Delvework Gate】が出たら FAIL） (b) `takumi.db`（`delvework.db` が作られたら FAIL） (c) 製品名としての出現ゼロ。**docs/command-registry.md と docs/parts/index.md の「Delvework（掘る）／Forgecraft（鍛える）」は世界観語として意図的に保持しており FAIL ではない** |
 | V44 | オウンドメディア経路 | 「ブログ記事を公開して」「WordPress を更新」と依頼 | /オウンドメディア（procedures/takumi-ownedmedia.md）に到達し、WordPress が既定（原則）として扱われる。**/セットアップ・/ワーク追加 が求人媒体・有料広告媒体を聞いてきたら FAIL**（どちらも廃止済み） |
@@ -85,7 +90,7 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V24 | lint | `python3 scripts/lint.py`（プラグインルートで。python3 不在なら python） | `lint: OK`（参照整合・frontmatter・台帳・バージョン一致） |
 | V25 | hooks回帰 | `bash scripts/test-hooks.sh`（bash 前提。Git Bash が起動できない環境＝`CreateFileMapping error 5` 等では SKIP とし、理由を報告に明記。WSL か Linux コンテナでの代替実行可） | `test-hooks: ALL PASS`（防御系） |
 | V42 | ドメイン層ユニットテスト | `python3 -m unittest discover -s tests -t .`（プラグインルートで） | `OK`（19件以上）。**ゼロ広告費の不変条件**（`KpiNode` が CAC/LTV/ROAS/CPA/広告費 等の有料指標を ValueError で拒否）と**ブランド区画の境界判定**（`BrandPartition.contains()` が兄弟プレフィックスを誤包含しない）が緑であること — hook が沈黙してもこの2つはドメイン層で守られる（escalations E5） |
-| V26 | 画像/動画テンプレ | ダミー画像で `templates/banner-compose.py`（--headline 指定）・`templates/chromakey.py`（緑背景→透過PNG）・`templates/guide-anim.py`（スクショ+steps.json→フレーム生成、ffmpeg あれば mp4/GIF まで）を実行。**入出力は位置引数 `src dst` 形式（`-o` オプションは無い）** — 例: `python3 chromakey.py in.png out.png` | 3本ともエラーなく出力生成（chromakey は四隅 alpha=0・被写体 alpha=255） |
+| V26 | 画像/動画テンプレ | ダミー画像で `templates/banner-compose.py`（--headline 指定）・`templates/chromakey.py`（緑背景→透過PNG）・`templates/guide-anim.py`（スクショ+steps.json→フレーム生成、ffmpeg あれば mp4/GIF まで）を実行。**入出力は位置引数（`-o` オプションは無い）** — banner-compose / chromakey は `src dst` の2引数（例: `python3 chromakey.py in.png out.png`）、**guide-anim は `<スクショ.png> <steps.json> <出力ベース名>` の3引数**（steps.json は `[{"rect":[x,y,w,h],"label":"…"}]` 形式） | 3本ともエラーなく出力生成（chromakey は四隅 alpha=0・被写体 alpha=255） |
 
 実行不可の環境（bash/python なし）では SKIP(理由) とし、報告書に「CI（GitHub Actions）が push ごとに同項目を実行済み」と1行書くだけでよい。**GitHub をブラウザで見に行かない**（原則「ブラウザ検証は example.com のみ」はここにも適用。プラグインの更新・リポジトリ確認はオーナーの設定画面操作であり、検証タスクの仕事ではない）。
 

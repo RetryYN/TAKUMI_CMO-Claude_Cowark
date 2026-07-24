@@ -213,6 +213,14 @@ check "brand-iso: 非ブランドパスは通過" EMPTY "$out"
 rm -f "$TAKUMI_WF_DIR/active_brand"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo x > knowledge/brands/acme/x"}}' | bash "$SC/brand-isolation-guard.sh")
 check "brand-iso: アクティブ未確定の区画書込は deny" 'Brand Isolation' "$out"
+# --- brand-iso ヒアドキュメント誤爆回帰（2026-07-25 ローカル実機検証 F3） ---
+out=$(printf '%s' '{"tool_name": "Bash", "tool_input": {"command": "cat > knowledge/verification/report.md <<'\''EOF'\''\nknowledge/brands/beta/ への書き込みは deny された\nEOF"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: 本文が区画パスを引用しても書込先が区画外なら通過" EMPTY "$out"
+out=$(printf '%s' '{"tool_name": "Bash", "tool_input": {"command": "cat > knowledge/brands/beta/report.md <<'\''EOF'\''\nhello\nEOF"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: ヒアドキュメントでも書込先が他区画なら deny" 'Brand Isolation' "$out"
+out=$(printf '%s' '{"tool_name": "Bash", "tool_input": {"command": "bash <<'\''EOF'\''\necho x > knowledge/brands/beta/y\nEOF"}}' | bash "$SC/brand-isolation-guard.sh")
+check "brand-iso: シェル解釈系のヒアドキュメント内の他区画書込は deny" 'Brand Isolation' "$out"
+
 export TAKUMI_GATE_MODE=warn
 echo "acme" > "$TAKUMI_WF_DIR/active_brand"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo x > knowledge/brands/beta/y"}}' | bash "$SC/brand-isolation-guard.sh")

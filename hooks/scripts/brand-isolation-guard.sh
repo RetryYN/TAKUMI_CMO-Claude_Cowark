@@ -10,12 +10,39 @@ source "$SCRIPT_DIR/_common.sh"
 
 GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 
+# ヒアドキュメント本文を除去した「コマンドの骨格」を判定対象にする。
+# 検証報告・ナレッジ・lessons.md など、区画パスを**引用するだけ**の文書を書けなくなる誤爆を防ぐ
+# （2026-07-25 ローカル実機検証 F3 で実測）。ただしヒアドキュメントをシェル解釈系
+# （bash/sh/zsh/dash/ksh/eval）に食わせている場合は本文がコマンドなので除去しない。
+# hook ペイロードは JSON なので改行が literal な \n（2文字）で来る。行単位で見るため実改行へ戻す。
+CMD_TEXT="$(printf '%s' "$STDIN_TEXT" | sed 's/\\n/\
+/g')"
+CMD_SKELETON="$(printf '%s' "$CMD_TEXT" | awk '
+  BEGIN { skip = 0; term = "" }
+  {
+    if (skip) {
+      line = $0
+      gsub(/^[ \t]+|[ \t]+$/, "", line)
+      if (line == term) { skip = 0; term = "" }
+      next
+    }
+    print
+    if (match($0, /<<-?[ \t]*['"'"'"]?[A-Za-z_][A-Za-z0-9_]*['"'"'"]?/)) {
+      # シェル解釈系に食わせるヒアドキュメントは本文もコマンド → 除去しない
+      if ($0 ~ /(^|[^[:alnum:]_-])(bash|sh|zsh|dash|ksh|eval)([ \t]|$)/) next
+      tag = substr($0, RSTART, RLENGTH)
+      sub(/<<-?[ \t]*/, "", tag)
+      gsub(/['"'"'"]/, "", tag)
+      skip = 1; term = tag
+    }
+  }')"
+
 # ブランド区画パスに触れていなければ即通過
-printf '%s' "$STDIN_TEXT" | grep -qE 'knowledge/brands/[a-z0-9][a-z0-9-]*' || exit 0
+printf '%s' "$CMD_SKELETON" | grep -qE 'knowledge/brands/[a-z0-9][a-z0-9-]*' || exit 0
 
 # 書き込み系の指標がなければ通過（読み取りには干渉しない）
 # 書き込み: リダイレクト > >> / tee / cp mv touch mkdir rmdir rm install dd / sed -i
-if ! printf '%s' "$STDIN_TEXT" | grep -qE '(>>?|[[:space:]]tee[[:space:]]|(^|[^[:alnum:]_-])(cp|mv|touch|mkdir|rmdir|rm|install|dd)[[:space:]]|sed[[:space:]]+-i)'; then
+if ! printf '%s' "$CMD_SKELETON" | grep -qE '(>>?|[[:space:]]tee[[:space:]]|(^|[^[:alnum:]_-])(cp|mv|touch|mkdir|rmdir|rm|install|dd)[[:space:]]|sed[[:space:]]+-i)'; then
   exit 0
 fi
 
@@ -31,7 +58,7 @@ while IFS= read -r slug; do
     VIOLATION="$slug"; break
   fi
 done <<EOF
-$(printf '%s' "$STDIN_TEXT" | grep -oE 'knowledge/brands/[a-z0-9][a-z0-9-]*' | sed -E 's#knowledge/brands/##' | sort -u)
+$(printf '%s' "$CMD_SKELETON" | grep -oE 'knowledge/brands/[a-z0-9][a-z0-9-]*' | sed -E 's#knowledge/brands/##' | sort -u)
 EOF
 
 [ -z "$VIOLATION" ] && exit 0

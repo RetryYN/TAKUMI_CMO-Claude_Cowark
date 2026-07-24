@@ -13,7 +13,7 @@ hooks はローカル Cowork では未配線（→ escalations E4）のため、
 | 層 | 何を担保するか | 実行場所 | コマンド／手段 | 誰が回すか |
 |---|---|---|---|---|
 | **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメインモデル不変条件・hook スクリプト単体の判定ロジック | ローカル / GitHub Actions | `python3 scripts/lint.py` ／ `python3 -m unittest discover -s tests -t .` ／ `bash scripts/test-hooks.sh` ／ `shellcheck` | CI（push・PR で自動） |
-| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork cloud のみ** | `templates/verify-task.yaml` を `tasks/plugin-verify.yaml` にコピー →「plugin-verify やって」（代替: 末尾の貼り付けプロンプト） | 人間（リリース前ゲート） |
+| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork 実機**（cloud 基本／ローカルは配線が環境依存 → E4。ゲート項目は発火を実測して判定） | `templates/verify-task.yaml` を `tasks/plugin-verify.yaml` にコピー →「plugin-verify やって」（代替: 末尾の貼り付けプロンプト） | 人間（リリース前ゲート） |
 
 **Tier 1 が緑でも Tier 2 は代替できない**（hook の配線有無は静的検査では分からない）。逆に Tier 2 は
 毎コミット回せないため、回帰の常時検出は Tier 1 が担う。配布判断は「Tier 1 緑 ＋ 直近の Tier 2 が FAIL 0」で行う。
@@ -520,6 +520,43 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
 - **⚠ プラグイン併存**: 同一セッションに **browser-worker(Delvework) v1.2.0** と **takumi-cmo v2.0.0** が両方同期されており、**両者の hooks が二重発火**した。実測: navigate 時に警告が2本注入され、変更ゲートの deny は先に評価された旧プラグインの文言で返った。防御は「どちらかが deny すれば止まる」ため弱まらないが、(1) コンテキストの二重消費 (2) **どちらのゲートが効いたか判別できず検証の証跡価値が落ちる** (3) Brand Isolation Guard は takumi-cmo にしかないため挙動差が読みにくい。**旧 browser-worker のアンインストールを推奨**（F1 の事故リスクも併存が前提）
 - **fable が月次上限**: `model: fable` の design-artisan は既定設定で起動不可 → F6 の運用でしのぐ
 - ワークスペースはフォルダ未接続（`/home/claude`）。実データ前提の項目（V11・G7）は原理的に検証不能
+
+## 実機 /検証 full 第8ラン 2026-07-25（v2.0.0 / **Cowork ローカル**（Windows・isLocal=true）× Opus 5）
+
+**Tier 1 OK(4/4) / Tier 2 PASS 22・FAIL 3・SKIP 9・部分/未観測 4。** 第7ラン（cloud）との差分ランとして実施。
+
+### ★ 最重要の発見: ローカル Cowork で hooks が**配線されていた**
+
+E4「ローカル Cowork で plugin hooks が未配線」は **本環境では成立しなかった**。PreToolUse
+（workflow-gate / rm-guard / ov-gate / critic-gate / brand-isolation-guard / url-guard）が
+`mcp__workspace__bash`・`mcp__claude-in-chrome__*`・`mcp__cowork__present_files` のいずれでも実発火。
+WF_DIR は `<outputs>/memory/.workflow` に解決されていた。
+
+**→ 検証規約を変更した（v2.0.2）**: 「ローカルなら全ゲート項目 SKIP」という決め打ちを撤回し、
+**毎ラン発火を実測して判定する**（deny を観測できたら PASS ／ ブロックされず通ってしまったら
+`SKIP(hooks 未配線を実測)`。**通ったことを PASS と読むのが最悪の誤判定**）。V3 を配線有無の判定点に置く。
+E4 は「解決済み」にはせず、環境依存で振れる課題として追記のみ（E5 の発火非保証が残るため）。
+
+### FAIL 3件 → v2.0.2 での対応
+
+| # | 深刻度 | 内容 | 対応 |
+|---|---|---|---|
+| **F1** | **最高** | **サブエージェントが `references/**` を一切 Read できない**。永続フォルダ未接続だとファイルツールが接続フォルダに限定され、**絶対パスを渡しても `outside this session's connected folders` で拒否**。web-design / ad-compliance-jp / psych-* の規範が委譲先で一切適用されず、design-critic の審査も法規チェックも記憶頼りになる（運用ルール (3)(4)(13) の根が抜ける） | **escalations E6 を新設**。agents 3本に「到達できなかったら応答冒頭で1行申告する」義務を明記（黙って自己流で書かせない）＋ conventions §4 に「申告を見たら呼び出し側が正本を Read して本文を同梱し再委譲する」を規定。**V7 の原因記述も修正** — 従来の「cwd起点Glob が原因／絶対パス渡しで解決」は本ランに当てはまらないため、原因を(a)Glob 到達不足と(b)接続フォルダ制限の2種に切り分けた |
+| **F2** | 高 | **design-artisan が既定 `model: fable` で起動不能**（月次上限）。sonnet への自動フォールバックは働かず、明示指定の再委譲でのみ起動。ビジュアル生成経路が丸ごと止まる | v2.0.1 で conventions §4 に書いたが**委譲元に届いていなかった**ため、`docs/media-pipeline.md` 末尾・`docs/parts/index.md`・`agents/design-artisan.md` の description に「即終了したら `model: sonnet` を明示して再委譲・使用モデルを報告に1行」を落とした。**V10 の PASS 基準も厳格化**（再委譲せず「起動不可」で終えたら FAIL） |
+| **F3** | 中 | **Brand Isolation Guard の誤爆**: ヒアドキュメント**本文**に区画パスが出てくるだけで deny。検証報告・lessons.md など**区画パスを引用する文書が書けない** | `brand-isolation-guard.sh` を修正。判定対象をヒアドキュメント本文を除いた**コマンドの骨格**に限定（JSON の literal `\n` を実改行に戻してから除去）。ただし `bash`/`sh`/`eval` 等**シェル解釈系に食わせるヒアドキュメントは本文もコマンド**なので除去しない。TDD で3ケース追加（誤爆通過／書込先が他区画なら deny／解釈系は deny）— 赤を確認してから修正 |
+
+### 環境所見（プラグイン外）
+
+- **outputs マウントで `rm` 不可**（`Operation not permitted`）→ 手順書 C節の規定どおり残置し一覧化された（**規約が正しく機能**）
+- **`Write` は outputs 直下のみ**。サブディレクトリへの書込は bash 経由が必要
+- **V6 が outputs 上で `sqlite3.OperationalError: disk I/O error`**（VM の /tmp では9テーブル成功）→ 実運用の `knowledge/data/takumi.db` が作れない環境がある
+- 永続フォルダ未接続のため knowledge/ 蓄積ゼロ。V11・V13・V15・V18/V19・G7 は「作ると消せない」ため見送り（妥当）
+- **⚠ 次ラン前の手動掃除が必要**: `memory/.workflow/verify_allowlist` が残っている間は example.com と the-internet.herokuapp.com 以外へ navigate できない。`bulk_send` も残っており次タスクの変更操作が psv ゲートに当たる
+
+### ドキュメント整合の修正（同ランの指摘）
+
+- V26 の引数記述: `guide-anim.py` は `<スクショ.png> <steps.json> <出力ベース名>` の**3引数**（banner-compose / chromakey は `src dst` の2引数）→ 修正
+- **V40 が2ラン連続 SKIP** した構造的原因（`verify_allowlist` の deny が先勝ち）に対処 — **allowlist を張る前に測る**手順へ変更し、`verify-task.yaml` のステップ順も入れ替えた
 
 ### 検証の渡し方（Cowork 最新版）
 
