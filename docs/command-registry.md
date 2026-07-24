@@ -22,7 +22,7 @@
 |---|---|---|
 | **心** | ユーザー行動を心理学から読み解き、市場を開拓する。手法は**心理プロファイリング**（意思決定スタイル・不安・関係段階の3軸判定）と**CBT の認知の歪み**（全か無か／破局視／べき思考を特定し、購買・応募のブレーキを文面で外す） | `references/psych-target-jp`（プロファイリング3軸判定表・CBT応用・倫理境界）/ `psych-nudge-jp`（訴求フレーム選択・禁忌表・EAST自己審査）/ `psych-ux-jp`（視線・情報密度・配色・EFOの心理根拠）/ `takumi-research`（背景の掘り起こし）。**倫理境界**: 心理学は不安の解消に使い増幅（恐怖訴求・偽の希少性）は禁止（session-rules (3)）／読み手を「診断」する物言いをせずプロファイルは書き手側の内部判断に留める／判定基準は「事実を分かりやすく伝えた結果か、事実を歪めて作った感情か」／送信前は pre-send-verifier がこの基準への適合も監査する |
 | **技** | ユーザーにも AI にも届く形に磨き上げ、伝わることを実現する。*ユーザーに届く*＝**品質**／*AI に届く*＝**面**（マルチメディアの包囲網） | **品質**: `references/seo-jp`（検索意図）/ `cro-jp`（転換率）/ `design-evidence-jp`（可読性・コントラスト等の実証基準）/ `web-design` / 執筆スキル群 ＋ **design-artisan → design-critic の審査ループ**（Critic Gate が PASS 前の引き渡しを機械遮断）。**面**: テキスト（`takumi-ownedmedia`）× 画像・動画（`takumi-content` ＋ `docs/parts/imagegen`・`image-edit`・`video-content-script`、`templates/banner-compose.py`・`chromakey.py`・`guide-anim.py`）× SNS 7媒体（`takumi-sns`）を横断し、**`takumi-campaign` が複数媒体を1目標で束ねて包囲網を形成する** |
-| **体** | データを取り、仮説を裏付け、AI の実行力で加速する。**指標を読むだけでなく計測基盤そのものを組む**（ただし設定前に必ず合議で立ち止まる） | A〜K ワークフロー（実ブラウザでの計測・公開・変更前記録）/ `knowledge/data/takumi.db`（計測DB）/ `outcome-verifier`（証跡のある確定数だけを成果に数える）/ `knowledge/sites/`（攻略済みサイトの地図）／**計測基盤の構築**: `docs/parts/pre-setup-council.md`（設定前の並列合議＝関所。顔ぶれは案件で選ぶ）・`references/gtm-jp`（独自指標の設計・公開の関所）・`ga4-jp`（AI経由流入の可視化）・`search-console-jp`（AI検索での露出を一次情報で取得）。GTM の公開は**不可逆送出**として pre-send-verifier 監査＋人間承認、カスタムHTMLタグは AI 自律禁止 |
+| **体** | データを取り、仮説を裏付け、AI の実行力で加速する。**指標を読むだけでなく計測基盤そのものを組む** | A〜K ワークフロー（実ブラウザでの計測・公開・変更前記録）/ `knowledge/data/takumi.db`（計測DB）/ `outcome-verifier`（証跡のある確定数だけを成果に数える）/ `knowledge/sites/`（攻略済みサイトの地図）／**計測基盤の構築**: `references/gtm-jp`（タグ・トリガー・変数・データレイヤーの設定／SNS からの CV 計測）・`ga4-jp`（キーイベント・カスタムディメンション・探索・アトリビューション）・`search-console-jp`（AI検索での露出を一次情報で取得）。GTM の公開は人間承認（ロールバック可）、カスタムHTMLタグは AI 自律禁止。**指標の定義そのものを新設するときだけ** `docs/parts/pre-setup-council.md`（合議＝関所。顔ぶれは案件で選ぶ） |
 
 **三徳をつなぐのがデータ**: 心が立てた仮説を技が形にし、体が実測する。実測は KPIツリー（∞の上り）へ返り、次の仮説の材料になる。データは目的ではなく三徳をつなぐ血流であり、**KPIツリーが三徳と∞ループの共通の背骨**になる。
 
@@ -133,8 +133,8 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 | psych-target-jp | オウンドメディア・SNS媒体（文面の書き分け） | 読み手の心理プロファイル×CBT健全応用 — 3軸判定（不安の核/意思決定スタイル/関係段階） |
 | design-evidence-jp | Webサイト・広告・全HTML成果物 | 実証デザイン数値基準 — タイポ/配色/LPレイアウト/グラフ選択の具体値（DADS・JIS・WACUL・NN/g・Cleveland-McGill） |
 | sales-writing | 基盤 | 受注目的の提案書・テレアポ |
-| gtm-jp | Webサイト・レポート（計測基盤） | GTM のブラウザ操作 — 独自指標の設計、公開の関所（不可逆送出扱い）、カスタムHTML禁止と `gtm.blocklist`、同意管理 |
-| ga4-jp | Webサイト・レポート・戦略（計測） | GA4 のブラウザ操作 — AI経由流入のカスタムチャネル、キーイベント、PII禁止、データ保持は触らない |
+| gtm-jp | Webサイト・レポート（計測基盤） | GTM の設定 — トリガー全種と発火順序、組み込み/ユーザー定義変数、データレイヤー、GA4 イベントタグ、SNS からの CV 計測、プレビュー、バージョンとロールバック、カスタムHTML禁止と `gtm.blocklist` |
+| ga4-jp | Webサイト・レポート・戦略（計測） | GA4 の設定と分析 — 拡張計測機能、キーイベント、カスタムディメンション（上限・24〜48h・カーディナリティ）、チャネルグループ、DebugView、探索7手法、アトリビューション、データのしきい値、PII禁止、データ保持は触らない |
 | search-console-jp | Webサイト・オウンドメディア・戦略（計測） | GSC / Bing WMT のブラウザ操作 — 生成AIパフォーマンスレポート（AI Overviews・AI Mode・Copilot引用）の取得、削除ツール禁止 |
 
 ## 定常ループ台帳（標準セット。実運用の正本はワークスペースの `knowledge/config/loops.yaml` — /カスタマイズ のタスク登録が管理）
