@@ -46,7 +46,7 @@
 | /コンテンツ | 「記事のアイキャッチ作って」「サムネ作って」「Geminiで画像/動画作って」「バナーにして」「WebMにして」「このビジュアルからLP」（オウンド/オーガニック制作。**有料出稿は行いません＝ゼロ広告費**） |
 | /SNS運用 | 「Xの投稿ストック埋めて」「noteを書いて」（X/Instagram/Threads/TikTok/note/YouTube/LINE対応。単一媒体は /X運用 等が第一入口） |
 | /リサーチ | 「競合を分析して」「トレンド調べて」（SNS/サイト/市場 — 対象に合わせて最適な調査へ振り分け） |
-| /媒体管理 | 「全媒体の状況見せて」「求人票作って」「スカウト文面作って」（登録済みの単一媒体は /doda 等が第一入口） |
+| /オウンドメディア | 「ブログ記事を公開して」「WordPressを更新」「記事のSEO見直し」（自社ブログ運営。**WordPress 既定**） |
 | /ワーク追加 | 「dodaを追加して」— 登録 + 管理画面を初期マッピング + 専用コマンドを自動生成 |
 | /セットアップ | 導入直後に1回 — 運用媒体・アカウント・素材サイト等をチェックリストで回答。済んだ質問は聞かれない |
 | /カスタマイズ | 「毎朝これやって」「このやり方覚えて」— タスク登録・スキル化・好み記憶・機能ON/OFF |
@@ -103,11 +103,11 @@ Browser Worker 基盤から匠CMOへの作り替え。各フェーズは原子�
 
 | 種類 | 内容 |
 |---|---|
-| コマンド 13（日本語・カテゴリーレベル） | /戦略 /キャンペーン /ブランド + /SNS運用 /リサーチ /媒体管理 /Webサイト /コンテンツ + /セットアップ /ワーク追加 /カスタマイズ /レポート + /検証。台帳: [docs/command-registry.md](docs/command-registry.md) |
+| コマンド 13（日本語・カテゴリーレベル） | /戦略 /キャンペーン /ブランド + /SNS運用 /リサーチ /オウンドメディア /Webサイト /コンテンツ + /セットアップ /ワーク追加 /カスタマイズ /レポート + /検証。台帳: [docs/command-registry.md](docs/command-registry.md) |
 | 手順書 27 | `procedures/takumi-*.md` — 登録10+内部17 の手順の正本（コマンド/ルールが Read して実行） |
 | 共有部品庫 | `docs/parts/` — タスク型の部品。パックのタスクが Read して使う（index.md が地図） |
 | フック 10 | 変更操作ゲート（送出監査 psv 含む）/ Money Watch / URL Guard（ゼロ課金ゲート）/ ナビゲーション警告 / インジェクション検知 / セッション開始通知 / OV Gate / Critic Gate / RM Guard / **Brand Isolation Guard**（別ブランド区画への書き込みを遮断）。**cloud セッションで有効・発火は環境依存**（[検証と安全設計](#検証と安全設計)） |
-| 執筆リファレンス 17 | `references/` 配下の内部教科書。web-design / sns-jp / content-design / seo-jp / cro-jp / copy / storytelling / logical / business / sales / recruit + 心理3部作（psych-nudge/ux/target-jp）+ design-evidence-jp ほか。業界を問わず使える執筆規範 |
+| 執筆リファレンス 16 | `references/` 配下の内部教科書。web-design / sns-jp / content-design / seo-jp / cro-jp / copy / storytelling / logical / business / sales / video-ad / ad-compliance-jp + 心理3部作（psych-nudge/ux/target-jp）+ design-evidence-jp。業界を問わず使える執筆規範 |
 | エージェント 7 | cmo-strategist（**上流ループの戦略立案＝軍師**）/ deliverable-writer（執筆）/ design-artisan（生成）/ design-critic（審査）/ strategy-advisor（設計壁打ち）/ pre-send-verifier（送信前監査）/ outcome-verifier（送信後の証跡・効果測定） |
 | ドメインモデル | `takumi/` — dev-side の DDD 集約（Brand 等）。[docs/domain-model.md](docs/domain-model.md) が正本、`tests/` が単体テスト |
 | 正本ドキュメント | [docs/cowork-runtime.md](docs/cowork-runtime.md)（Cowork実行仕様）/ [docs/steps-reference.md](docs/steps-reference.md)（A〜K手順）/ [docs/開発ワークフロー.md](docs/開発ワークフロー.md)（開発規約） |

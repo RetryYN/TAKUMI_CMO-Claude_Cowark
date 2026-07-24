@@ -38,7 +38,7 @@ steps:
   - action: login
     place: "{{place}}"
   - action: generate_text
-    skill: recruit-writing
+    skill: content-design
     instruction: "何を生成するかの指示（テンプレート変数可）"
   - action: interact
     description: |

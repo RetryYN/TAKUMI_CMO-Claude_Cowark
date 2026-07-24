@@ -13,7 +13,7 @@
 
 ### 2. 台帳登録
 
-`knowledge/media/registry.yaml`（正本・スキーマは procedures/takumi-media.md）に1エントリ追記。id は英語ケバブケース（例: onecareer, doda）。
+`knowledge/media/registry.yaml`（正本・スキーマは procedures/takumi-ownedmedia.md）に1エントリ追記。id は英語ケバブケース（例: onecareer, doda）。
 
 ### 3. 初期マッピング（フェーズ① First Delve — 読み取り専用）
 
@@ -35,7 +35,7 @@ description: <媒体名> — この媒体専用パック。Use when ユーザー
 argument-hint: <要望>
 ---
 knowledge/media/registry.yaml の該当媒体と knowledge/sites/<id>/ のナレッジを Read し、
-プラグインの procedures/takumi-media.md（タスク分解表）に従って実行してください。引数: $ARGUMENTS
+プラグインの procedures/takumi-ownedmedia.md（タスク分解表）に従って実行してください。引数: $ARGUMENTS
 ```
 
 **親パックの判定（マトリョーシカ）** — 生成する専用コマンドは必ず親の配下に置き、親の共通フロー（ゲート・部品・規範）をポインタで継承する。子に手順を複製しない:
@@ -43,11 +43,10 @@ knowledge/media/registry.yaml の該当媒体と knowledge/sites/<id>/ のナレ
 | 媒体の種類 | 親 | 子コマンドの参照先 | 命名 |
 |---|---|---|---|
 | SNS | /SNS運用 | procedures/takumi-sns-<媒体>.md | `<媒体名>運用`（/X運用） |
-| 求人 | /媒体管理 | procedures/takumi-media.md（媒体固定） | `<媒体名>`（/doda） |
 | 自社サイト | /Webサイト | procedures/takumi-website.md（サイト固定） | `<サイト名>` |
 | **どれにも該当しない完全別ワーク** | **「その他ワーク」= 非表示の親**（メニューコマンドは作らない） | docs/parts/index.md のタスク5型 + procedures/takumi-start.md のゲート（共通フローは直書きせずポインタ） | `<ワーク名>` |
 
-registry.yaml のエントリに `parent: sns|recruit|website|other` を必ず記録する（ダッシュボード・/カスタマイズ list のグルーピングに使う）。/セットアップ の媒体選択（SNS・求人）も同じ表で生成する。**有料広告媒体の追加（旧 ads）は廃止**（ゼロ広告費）。アカウント単位で分けたい場合はアカウント名コマンド（例: /IT就活大学）でもよい。
+registry.yaml のエントリに `parent: sns|website|other` を必ず記録する（ダッシュボード・/カスタマイズ list のグルーピングに使う）。/セットアップ の媒体選択（SNS）も同じ表で生成する。**有料広告媒体・求人媒体の追加は廃止**（ゼロ広告費／オウンドメディアに集約）。アカウント単位で分けたい場合はアカウント名コマンド（例: /IT就活大学）でもよい。
 
 ### 5. 締め
 

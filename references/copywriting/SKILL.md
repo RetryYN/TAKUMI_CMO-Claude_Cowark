@@ -1,6 +1,6 @@
 ---
 name: copywriting
-description: コピーライティング — 短く刺さるキャッチコピー/タグライン/見出しの作成。Use when キャッチコピー・タグライン、求人バナーやSNS投稿の短文、スカウトメールの件名（13文字以内）、LPの見出し。Not for 求人票本体や本文構成（→recruit-writing）、長文の提案書（→sales-writing）、SNS/採用広報の長文記事（→storytelling）。
+description: コピーライティング — 短く刺さるキャッチコピー/タグライン/見出しの作成。Use when キャッチコピー・タグライン、求人バナーやSNS投稿の短文、スカウトメールの件名（13文字以内）、LPの見出し。Not for 求人票本体や本文構成、長文の提案書（→sales-writing）、SNS/採用広報の長文記事（→storytelling）。
 ---
 
 # コピーライティング スキル
@@ -15,7 +15,6 @@ description: コピーライティング — 短く刺さるキャッチコピ�
 - LP（ランディングページ）の見出しを求められたとき
 
 ## Do not use this skill when
-- 求人票の全体構成（仕事内容・募集要項含む）を求められたとき（-> recruit-writing）
 - 長文のストーリー記事を求められたとき（-> storytelling）
 - BtoB向けの提案書やメールを求められたとき（-> sales-writing）
 
@@ -28,8 +27,6 @@ description: コピーライティング — 短く刺さるキャッチコピ�
 
 ## 📚 必須参照リソース
 タスク実行時、必要に応じて以下のリソースファイルを読み込んでターゲット解像度を上げること。
-- `../recruit-writing/resources/job-seeker-needs.md` （求職者の検索キーワード・心理）
-- `../recruit-writing/resources/job-role-profiles.md` （4職種の特徴と適性）
 
 ## コピーの2大分類
 

@@ -29,7 +29,7 @@
 
 新しい媒体を増やす＝パック1個追加。できることを増やす＝部品（docs/parts/）の追加。**エンジン側（ワークフロー層）は一切変えない。**
 
-**動的パック**: 媒体の個別コマンド（例: /ワンキャリア /doda）は **/ワーク追加** で生成する — 登録 + 初期マッピング（フェーズ①・読み取り専用）+ ワークスペース `.claude/commands/` への専用コマンド生成を1コマンドで実行（プラグイン本体は増やさない）。**/セットアップ の媒体選択でも自動生成**する — SNS=`/<媒体名>運用`（/X運用 等）、求人媒体=/ワーク追加接続で `/<媒体名>`。以後の単一媒体依頼は専用コマンドが第一入口（/SNS運用 /媒体管理 は複数媒体・媒体不明時の受け皿に降格）。**有料広告媒体の動的パック（旧 /<媒体名>広告）は廃止**（ゼロ広告費のため出稿系の入口を持たない）。**既存パックに該当しない完全別ワークは非表示の親「その他ワーク」の配下**に生成する（親判定表の正本は procedures/takumi-add-work.md §4 — registry.yaml に `parent:` を記録）。
+**動的パック**: 媒体の個別コマンド（例: /ワンキャリア /doda）は **/ワーク追加** で生成する — 登録 + 初期マッピング（フェーズ①・読み取り専用）+ ワークスペース `.claude/commands/` への専用コマンド生成を1コマンドで実行（プラグイン本体は増やさない）。**/セットアップ の媒体選択でも自動生成**する — SNS=`/<媒体名>運用`（/X運用 等）。以後の単一媒体依頼は専用コマンドが第一入口（/SNS運用 は複数媒体・媒体不明時の受け皿）。**有料広告媒体の動的パック（旧 /<媒体名>広告）は廃止**（ゼロ広告費）。**求人媒体パックも廃止**（オウンドメディア＝自社ブログに置換）。**既存パックに該当しない完全別ワークは非表示の親「その他ワーク」の配下**に生成する（親判定表の正本は procedures/takumi-add-work.md §4 — registry.yaml に `parent:` を記録）。
 
 ## 命名ルール
 
@@ -44,7 +44,7 @@
 |---|---|---|---|---|
 | takumi-sns | SNS運用 | SNS媒体 | sns | 「Xの投稿作って」「noteを書いて」（媒体不明なら「どの媒体？」を選択式で。setup.yaml の選択媒体のみ提示） |
 | takumi-research | リサーチ | 横断 | research | 「競合を分析して」「トレンド調べて」（対象不明なら「どの媒体・対象？」を選択式で） |
-| takumi-media | 媒体管理 | 求人媒体 | media | 「全媒体の状況見せて」「スカウト送って」 |
+| takumi-ownedmedia | オウンドメディア | オウンド | ownedmedia | 「ブログ記事を公開」「WordPress更新」「記事のSEO見直し」（自社ブログ運営。WordPress既定） |
 | takumi-add-work | ワーク追加 | 基盤 | core | 「dodaを追加して」（登録+初期マッピング+専用コマンド生成） |
 | takumi-brand | ブランド | 基盤 | core | 「ブランドを追加」「acme に切り替え」「ブランド一覧」（マルチブランドの登録・切替・一覧・アーカイブ。区画分離） |
 | takumi-strategy | 戦略 | 戦略 | strategy | 「戦略立てて」「KPIツリー作って」「3C分析」（上流ループ＝cmo-strategist が立案。ゼロ広告費） |
@@ -89,9 +89,9 @@
 | 計画 | content-calendar（カレンダー・送信/配信計画 → queue・定常タスクへ接続） |
 | リサーチ | style-research / deep-research / sns-research |
 | 収集 | asset-collect / video-asset-collect |
-| クリエイティブ | jobpost-writing / scoutmail-writing / imagegen / videogen / image-edit / video-edit / page-improve / content-to-lp / video-content-script |
+| クリエイティブ | imagegen / videogen / image-edit / video-edit / page-improve / content-to-lp / video-content-script |
 | 分析 | site-audit / sns-research（数値読み） |
-| 掃き出し | design-sync / canva-export / design-handoff（成果物を Claude Design へ送って人間が編集→回収。critic PASS 後に「Design に送って手直ししますか？」） |
+| 掃き出し | wp-publish（WordPress記事公開）/ design-sync / canva-export / design-handoff（成果物を Claude Design へ送って人間が編集→回収。critic PASS 後に「Design に送って手直ししますか？」） |
 
 SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `docs/media-pipeline.md`、無人運用・承認キュー・クラウド→ローカル移行は `docs/unattended-ops.md`、プラットフォーム上申事項（プラグインで根治不可の課題と緩和策）は `docs/escalations.md` が正本。
 
@@ -104,18 +104,17 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 | logical-writing | Webサイト・全パックのレポート | 分析レポート・戦略提案 |
 | sns-jp | SNS媒体パック | 日本のSNS文化・ハッシュタグ・投稿時間帯・LINE配信設計 |
 | content-design | SNS媒体パック | 投稿コンテンツの設計・カレンダー |
-| storytelling | SNS媒体・求人媒体 | 社員ストーリー・採用広報記事 |
-| recruit-writing | 求人媒体（jobpost/scoutmail 部品） | 求人原稿・スカウト本文 |
-| copywriting | 広告・求人媒体・SNS | キャッチコピー・件名13字 |
+| storytelling | SNS媒体・オウンドメディア | ブランドストーリー・オウンドメディア記事 |
+| copywriting | コンテンツ・オウンドメディア・SNS | キャッチコピー・件名13字 |
 | video-ad | コンテンツ（動画） | 動画コンテンツの構成・台本（オーガニック動画。有料出稿はしない） |
 | ad-compliance-jp | コンテンツ・全公開物 | 景表法・ステマ規制・PR表記チェック（オーガニック含む全公開物の表現規制） |
 | web-design | Webサイト・広告 | LP/ページのデザイン実装 |
 | business-writing | 基盤 | 社内外メール・事務連絡・校正 |
 | seo-jp | Webサイト・SNS媒体 | 日本語SEO/AEO — 記事設計・既存ページ診断・AI検索対応 |
-| cro-jp | Webサイト・広告・求人媒体 | CRO/ABテスト — 転換率改善の仮説設計・文面ABテスト |
+| cro-jp | Webサイト・コンテンツ・オウンドメディア | CRO/ABテスト — 転換率改善の仮説設計・文面ABテスト |
 | psych-nudge-jp | 全パック（コピー・CTA設計） | 行動経済・ナッジの日本実証 — 訴求フレーム選択（損失/利得/規範/利他）とEASTチェック |
 | psych-ux-jp | Webサイト・広告 | UI/UX・社会心理の日本実務 — 視線/密度/配色/フォーム/実績表示の判断基準 |
-| psych-target-jp | 求人媒体・SNS媒体（文面の書き分け） | 読み手の心理プロファイル×CBT健全応用 — 3軸判定（不安の核/意思決定スタイル/関係段階） |
+| psych-target-jp | オウンドメディア・SNS媒体（文面の書き分け） | 読み手の心理プロファイル×CBT健全応用 — 3軸判定（不安の核/意思決定スタイル/関係段階） |
 | design-evidence-jp | Webサイト・広告・全HTML成果物 | 実証デザイン数値基準 — タイポ/配色/LPレイアウト/グラフ選択の具体値（DADS・JIS・WACUL・NN/g・Cleveland-McGill） |
 | sales-writing | 基盤 | 受注目的の提案書・テレアポ |
 
@@ -127,8 +126,7 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 | SNS媒体 | 予約投稿・実績記録 | 毎朝 | SNS運用 | 同上 |
 | SNS媒体 | ストック補充 | 週次 or 残量アラート時 | SNS運用 | 同上 |
 | SNS媒体 | カレンダー消化率チェック・翌週計画 | 週次（金曜） | SNS運用（content-calendar 部品） | 同上 |
-| 求人媒体 | 媒体ステータス巡回 | 毎朝 | 媒体管理 | 同上 |
-| 求人媒体 | スカウト送信 | 平日（承認後のみ送信） | 媒体管理 + タスク開始 | 同上 |
+| オウンド | ブログ更新巡回・記事公開 | 週次 or 記事完成時 | オウンドメディア（+ タスク開始） | 同上 |
 | コンテンツ | コンテンツ制作・競合コンテンツ調査 | 依頼時（定常化も可） | コンテンツ | 同上 |
 
 **原則1: 実行系（変更操作）は全カテゴリー共通で `takumi-start` が担う**（A〜Kワークフロー + 変更前記録/承認の関所）。パック別の実行コマンドは新設しない。
@@ -153,7 +151,7 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 | SNS媒体 | `knowledge/brands/<slug>/channels/sns/<platform>/`（ネタ帳 queue.md・調査 research/） |
 | コンテンツ（オウンド） | `knowledge/brands/<slug>/channels/content/`・styles/・mockups/・assets/・drafts/ |
 | Webサイト（オウンド） | `knowledge/brands/<slug>/channels/website/`・audits/・sites/ |
-| 求人媒体 | `knowledge/brands/<slug>/media/`・approvals/・drafts/ |
+| オウンドメディア | `knowledge/brands/<slug>/channels/ownedmedia/`・drafts/ |
 | ブランド固有の記録 | `knowledge/brands/<slug>/logs/`・reports/・analytics/・feedback/・queue/・tacit/ |
 | 横断（全ブランド共通） | `knowledge/brands.yaml`・`.active-brand` / `knowledge/config/`（allowlist等）/ `knowledge/verification/` / `artifacts-index.md` |
 
