@@ -22,6 +22,10 @@ steps:
       Bash で printf 'example\.com\nthe-internet\.herokuapp\.com\n' > memory/.workflow/verify_allowlist
       （url-guard がリスト外への遷移を deny。deny されたら該当項目を SKIP — 代替サイトを探さない）。
       その後 procedures/takumi-verify.md を Read し、full モードの全項目（A/B/D/E 節）を実行する。
+      冒頭「検証の二層構造」に従い、報告書の先頭に実行環境（Cowork cloud / Cowork ローカル / Claude Code）と
+      Tier 1（D節: lint / unittest / test-hooks / テンプレ）・Tier 2（A/B/E節: 実機ゲート・ルーティング）の
+      結果を分けて書く。Cowork ローカルで実行した場合、ゲート系項目は hooks 未配線（escalations E4）のため
+      PASS にせず SKIP(ローカルは hooks 未配線) と記録する。
       原則: 読み取り専用・外部無害（実サイトへの送信・投稿・変更は一切しない。ブラウザ検証は example.com のみ —
       GitHub・marketplace リポジトリにもブラウザで行かない。bash/python 不可なら該当項目は SKIP と書くだけ）。
       FAIL には必ずエラー原文・観測事実を添え、1項目の失敗で止めず全項目を消化する。

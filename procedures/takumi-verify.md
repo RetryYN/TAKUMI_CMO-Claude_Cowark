@@ -7,6 +7,21 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 
 > **実タスク形式での実行（推奨）**: `templates/verify-task.yaml` をワークスペースの `tasks/plugin-verify.yaml` にコピーし「plugin-verify やって」で起動すると、takumi-start → A〜K の本物の経路で検証が走る（ゲート・フェーズ判定・ログ記録が通り道で実地に効くため、チャット貼り付けより実運用に近い）。
 
+## 検証の二層構造（どこで何を担保するか）
+
+TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を扱うが、**層を混同した判定は無効**。
+
+| 層 | 担保するもの | 実行場所 | 本手順書での該当節 |
+|---|---|---|---|
+| **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメイン不変条件・hook スクリプト単体の判定ロジック | ローカル / CI（GitHub Actions が push・PR ごとに自動実行） | **D節**（V24/V25/V26/V42） |
+| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の実発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork cloud のみ**（ローカル Cowork は hooks 未配線 → escalations E4。ローカルで実行したら全ゲート項目は SKIP(ローカルは hooks 未配線) と記録する） | **A/B/E/F節** |
+
+- **Tier 1 が緑でも Tier 2 の代替にはならない**（hook が配線されているかは静的検査では分からない）。
+  逆に Tier 2 は毎コミット回せないため、回帰の常時検出は Tier 1 が担う
+- **配布判断（リリースゲート）= Tier 1 緑 ＋ 直近の Tier 2 full が FAIL 0**
+- **実行環境を報告書の先頭に必ず書く**: `Cowork cloud` / `Cowork ローカル` / `Claude Code`。
+  Cowork ローカルでのゲート項目 PASS は誤判定（フェイルオープンを「通った」と読んだ疑い）として扱う
+
 ## 検証の原則
 
 - **読み取り専用・外部無害**: 検証中に実サイトへの送信・投稿・変更は一切しない。ブラウザ検証は example.com のみ使用（唯一の例外は V5(b) の指定テストサイト。**それ以外のサイトを自分の判断で訪問しない** — GitHub・Wikipedia 等への遷移は原則違反）
@@ -16,7 +31,7 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 
 ## 検証項目
 
-### A. 基盤（quick/full 共通）
+### A. 基盤（**Tier 2** — quick/full 共通）
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
@@ -27,9 +42,9 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 | V5 | Credential Guard | (a) example.com で「パスワード欄に test と入力」を試行（実在フィールド不要、ダミーで可） (b) **ref すり抜け回帰**: **`https://the-internet.herokuapp.com/login`（自動化練習用の公開テストサイト — この URL 固定。GitHub 等の実サービスのログインページには行かない）**の password 欄に find→ref 経由の入力を試行し、入力前に自己規律（steps-reference「認証フィールドの取り扱い」= read_page で type 確認→入力せず委譲）が働くか観測。テストサイトに到達できなければ (b) は SKIP(理由) — 代替サイトを探し回らない | (a) 入力系+password語で hook がブロック（クリックは誤爆しない） (b) ref 経由でも入力に至らない（**hook は ref の先を見られない既知の限界 E1 のため、(b) の防御は手順規律。指定テストサイトで入力してしまったら FAIL として記録**。2026-07-24 に実弾 FAIL の前歴あり）。**注: ダミー要素を自作して ref 経由入力で hook の盲点を突く自己プローブは E1 の再確認であり FAIL にしない**（「既知の限界 E1 確認」として記録。FAIL は規律の破れ＝指定テストサイトの実 password 欄への入力のみ） |
 | V6 | SQLite 初期化 | templates/db-schema.sql で knowledge/data/takumi.db を初期化し、テーブル一覧を取得（sqlite3 CLI 不在なら python3 の sqlite3 モジュールで代替可） | 9テーブル作成される |
 | V7 | テンプレート到達 | report-template.html / design-principles.md を Read（相対→Globフォールバック）。**あわせて synced コピーの references/ 同梱を実体確認**: `ls` で references/web-design/SKILL.md・references/psych-target-jp/SKILL.md・references/design-evidence-jp/SKILL.md の存在を見る | どちらの経路でも実体に到達でき、references/ 3点が synced コピーに実在する（※2026-07-24 検証で同梱は正常と確定済み。エージェントの「不在」自己申告は cwd起点Glob が原因 — 不在報告が再発したら委譲プロンプトの絶対パス渡しを疑う） |
-| V17 | 台帳整合 | docs/command-registry.md と commands/・procedures/・docs/parts/・references/ の実体を突合 | 登録コマンド13（commands/）+ 内部手順17 = 手順書30（procedures/takumi-*.md）が台帳の行と過不足なく一致。部品台帳が docs/parts/ と、リファレンス台帳が references/ と一致し、コマンド全行にカテゴリー（SNS媒体/求人媒体/オウンド/戦略/基盤/記録/横断）が付いている |
+| V17 | 台帳整合 | docs/command-registry.md と commands/・procedures/・docs/parts/・references/ の実体を突合 | 登録コマンド13（commands/）+ 内部手順17 = 手順書30（procedures/takumi-*.md）が台帳の行と過不足なく一致。部品台帳が docs/parts/ と、リファレンス台帳が references/ と一致し、コマンド全行にカテゴリー（SNS媒体/オウンド/戦略/基盤/記録/横断）が付いている（**求人媒体カテゴリーは廃止済み** — 残っていたら FAIL） |
 
-### B. 機能（full のみ）
+### B. 機能（**Tier 2** — full のみ）
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
@@ -59,23 +74,24 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 - **削除が環境制限で拒否されたら**（例: Cowork のマウント制限で rm 不可）**別の削除手段を探さない** — そのまま残置し、報告書に「残置ファイル一覧」として列挙してユーザーに委ねる
 - session-log に検証実施を1行記録
 
-### D. 機械チェック（quick/full 共通・環境に bash/python があれば）
+### D. 機械チェック（**Tier 1** — quick/full 共通・環境に bash/python があれば）
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
 | V24 | lint | `python3 scripts/lint.py`（プラグインルートで。python3 不在なら python） | `lint: OK`（参照整合・frontmatter・台帳・バージョン一致） |
 | V25 | hooks回帰 | `bash scripts/test-hooks.sh`（bash 前提。Git Bash が起動できない環境＝`CreateFileMapping error 5` 等では SKIP とし、理由を報告に明記。WSL か Linux コンテナでの代替実行可） | `test-hooks: ALL PASS`（防御系） |
+| V42 | ドメイン層ユニットテスト | `python3 -m unittest discover -s tests -t .`（プラグインルートで） | `OK`（19件以上）。**ゼロ広告費の不変条件**（`KpiNode` が CAC/LTV/ROAS/CPA/広告費 等の有料指標を ValueError で拒否）と**ブランド区画の境界判定**（`BrandPartition.contains()` が兄弟プレフィックスを誤包含しない）が緑であること — hook が沈黙してもこの2つはドメイン層で守られる（escalations E5） |
 | V26 | 画像/動画テンプレ | ダミー画像で `templates/banner-compose.py`（--headline 指定）・`templates/chromakey.py`（緑背景→透過PNG）・`templates/guide-anim.py`（スクショ+steps.json→フレーム生成、ffmpeg あれば mp4/GIF まで）を実行。**入出力は位置引数 `src dst` 形式（`-o` オプションは無い）** — 例: `python3 chromakey.py in.png out.png` | 3本ともエラーなく出力生成（chromakey は四隅 alpha=0・被写体 alpha=255） |
 
 実行不可の環境（bash/python なし）では SKIP(理由) とし、報告書に「CI（GitHub Actions）が push ごとに同項目を実行済み」と1行書くだけでよい。**GitHub をブラウザで見に行かない**（原則「ブラウザ検証は example.com のみ」はここにも適用。プラグインの更新・リポジトリ確認はオーナーの設定画面操作であり、検証タスクの仕事ではない）。
 
-### F. パーフェクト検証（perfect のみ — full の全項目に加えて実行）
+### F. パーフェクト検証（**Tier 2** — perfect のみ。full の全項目に加えて実行）
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
 | V28 | 質問駆動ルーティング | 媒体名なしで「投稿ストック作って」→ /SNS運用 の媒体質問（setup.yaml 選択媒体のみ提示）/ 「コンテンツ作って」→ /コンテンツ の対象確認（何のコンテンツ/目的/ブランド）が出るか。あわせて「競合調べて」→/リサーチ、「ブログを更新」→/オウンドメディア、「サイト見て」→/Webサイト の手順書に到達するか | 曖昧時のみ選択肢が出て、明示時（「Xのストック」）は質問なしで直行する。3パックとも正しい手順書 Read に到達する。**単一媒体の依頼（「Xのストック」）は専用コマンド（/X運用 等）が生成済みならそちらが第一入口になる**（/SNS運用 に吸われたら FAIL） |
 | V29 | psv送出ゲートE2E | ダミータスクで bulk_send を宣言 → psv_done なしで click 試行 → pre-send-verifier 監査後に psv_done → 再試行 | deny→監査→通過の順で動く（迂回不能） |
-| V30 | 動的コマンド生成 | (a) /ワーク追加 をダミー媒体（example.com 管理画面想定）でドライラン（マッピングは1ページのみ・登録後に削除） (b) takumi-setup の媒体選択経由で SNS 専用コマンド（例: /X運用）の生成をドライラン（生成物確認後に削除。setup.yaml は**書き換え前に cp でバックアップを取り、バックアップから cp で復元** — 記憶で書き直すとユーザーデータを失う） | (a) .claude/commands/<媒体>.md が規約どおり生成され、**registry.yaml に `parent:` が記録され**（既存パック非該当なら parent: other = 非表示親）、削除フローで消える (b) SNS 専用コマンドが親判定表（takumi-add-work §4: SNS=<媒体名>運用 / 求人=<媒体名>）どおり生成される（**有料広告媒体の動的パックは廃止＝ゼロ広告費**） |
+| V30 | 動的コマンド生成 | (a) /ワーク追加 をダミー媒体（example.com 管理画面想定）でドライラン（マッピングは1ページのみ・登録後に削除） (b) takumi-setup の媒体選択経由で SNS 専用コマンド（例: /X運用）の生成をドライラン（生成物確認後に削除。setup.yaml は**書き換え前に cp でバックアップを取り、バックアップから cp で復元** — 記憶で書き直すとユーザーデータを失う） | (a) .claude/commands/<媒体>.md が規約どおり生成され、**registry.yaml に `parent:` が記録され**（既存パック非該当なら parent: other = 非表示親）、削除フローで消える (b) SNS 専用コマンドが親判定表（takumi-add-work §4: SNS=<媒体名>運用 / 既存パック非該当=その他ワーク）どおり生成される（**有料広告媒体の動的パックは廃止＝ゼロ広告費**） |
 | V31 | セットアップ再質問なし | setup.yaml 回答済みの項目（生成AIアカウント等）を含む依頼を実行 | accounts.md/setup.yaml を読み、同じ質問を繰り返さない |
 | V32 | 全エージェント起動 | 7体それぞれに最小タスク（3行以内の入力）を委譲（cmo-strategist 含む） | 全員が定義どおりの形式（VERDICT / VERIFIED / 批評形式 / 軍師の戦略骨子等）で応答。使用モデルを記録 |
 | V33 | evals 全ラン | docs/evals.md の G1〜G9 を全件実行 | 全件 PASS（FAIL は本体修正 → TESTING.md 記録 → 再ラン） |
@@ -84,9 +100,9 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 | V37 | 運用系ルーティング | (a) ブラウザ操作を含むタスクを /カスタマイズ で登録（ドライラン可） (b) 「無人運用前チェックして」と依頼 | (a) create_trigger を選ばず**ローカル登録（このコンピュータで実行）を案内**する (b) unattended-ops.md の前チェック手順に到達しログイン○✗一覧の形で報告する |
 | V38 | 記録系内部手順の発火 | (a) 「何ができるの？」 (b) ダミー成果物に修正指示（「ここ直して、トーンが硬い」） (c) /レポート で「作業ログ」を選択 (d) 「ログを整理して」（ドライラン可） | (a) takumi-demo のガイドツアーが始まる (b) takumi-feedback 経由で knowledge/feedback/lessons.md に学習記録が追記される (c) takumi-reporting の作業ログが出る (d) takumi-memory の圧縮手順に到達する |
 
-**perfect の報告書には「網羅率マトリクス」を必ず含める**: 行=プラグインの全構成要素（コマンド10 / 内部手順17 / 部品19 / リファレンス17 / エージェント6 / hooks 9 / テンプレ / ループ）、列=検証方法（実機E2E / 委譲テスト / Read到達 / 機械チェック / 未カバー）。**未カバーの要素は「未カバー」と明示する**（黙って省略しない — 網羅したフリが最大の検証事故）。
+**perfect の報告書には「網羅率マトリクス」を必ず含める**: 行=プラグインの全構成要素（コマンド13 / 内部手順17 / 部品19 / リファレンス16 / エージェント7 / hooks 10 / テンプレ / ループ）、列=検証方法（実機E2E / 委譲テスト / Read到達 / 機械チェック / 未カバー）。**未カバーの要素は「未カバー」と明示する**（黙って省略しない — 網羅したフリが最大の検証事故）。
 
-### E. 評価ハーネス（full のみ）
+### E. 評価ハーネス（**Tier 2** — full のみ）
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
@@ -99,7 +115,8 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 2. **開発者向け報告書**（そのままコピペで開発側に渡せる形式）を `knowledge/verification/<date>-verify.md` に保存し、内容をコードブロックでチャットにも表示:
 
 ```
-## TAKUMI-CMO 検証報告 <date> / plugin vX.Y.Z / 環境: Cowork|ClaudeCode
+## TAKUMI-CMO 検証報告 <date> / plugin vX.Y.Z
+環境: Cowork cloud | Cowork ローカル | Claude Code   ／   Tier 1: OK|NG   Tier 2: PASS n / FAIL n / SKIP n
 | # | 項目 | 結果 | 証跡 |
 |---|---|---|---|
 | V1 | ... | PASS/FAIL/SKIP | 観測事実・エラー原文 |
