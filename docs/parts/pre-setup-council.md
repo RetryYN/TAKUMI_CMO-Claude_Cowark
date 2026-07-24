@@ -34,7 +34,7 @@
 | 相手 | 見るもの | 返るもの |
 |---|---|---|
 | **risk-forecaster**（fable / 上限時は opus 明示で再委譲） | 構成全体を俯瞰し、**この構成だとどこがどう壊れるか**を先読み。部品ではなく部品間の関係と時間経過 | `FORECAST` + 予測障害（確度・きっかけ・兆候・構造上の原因・打ち手） |
-| **privacy-auditor**（opus） | PII 混入・同意・第三者提供・データ規約。**GA4 の PII 違反はプロパティのデータ全削除を招く** | `VERDICT: GO / GO-WITH-FIXES / NO-GO` |
+| **privacy-auditor**（opus） | PII 混入・同意・第三者提供・データ規約。**止めるのは取り消せないものに限る**（日本法は EU より緩い — 法が求めていない同意を要求しない） | `VERDICT: GO / GO-WITH-FIXES / NO-GO` |
 | **strategy-advisor**（opus） | 運用継続性・ロールバック手段・この判断が長期に効くか | `VERDICT: GO / GO-WITH-CHANGES / RETHINK` |
 
 **各エージェントに正本の本文を同梱する。** 委譲先が接続フォルダ制限で `references/` に到達できない環境がある（escalations E6）。
