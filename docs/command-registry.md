@@ -137,14 +137,25 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 
 **原則3: 最適化（フェーズ④）は標準の裏側動作** — マッピングとタスク順序を記録し、成功の繰り返しで最短ルート整備・スクリプト化を自動で提案する（バックグラウンドエージェントへの委譲可）。ユーザーが頼まなくても走る。
 
-## カテゴリー → knowledge/ フォルダ対応
+**原則4: ブランド区画スコープ** — 全パックの読み書きはアクティブブランドの区画 `knowledge/brands/<slug>/` に閉じる（上のフォルダ対応表が正本）。単一ブランド運用でも1つ登録して区画に閉じる。別ブランド区画への書き込みは Brand Isolation Guard が遮断し、相互汚染を防ぐ。
 
-| カテゴリー | 主な保存先 |
+**原則5: ∞ループの自律フィードバック** — 下流（実行）の計測は outcome-verifier が集計し、`knowledge/brands/<slug>/analytics/` と KPIツリー（`strategy/kpi-tree.yaml`）の進捗へ反映する。KPIツリーが動いた/動かないは次の /戦略（上流）の再立案インプットになる（∞の上り）。ユーザーが頼まなくても、ループの締め（原則2 のダッシュボード）で「計測→KPI反映」を実行する — 戦略も実行も匠の技で磨き続ける。
+
+## カテゴリー → knowledge/ フォルダ対応（ブランド区画スコープ）
+
+**ブランド固有の記憶はすべてアクティブブランドの区画 `knowledge/brands/<slug>/` 配下に置く**（`<slug>` = アクティブブランド。Brand Isolation Guard が別区画書き込みを遮断）。横断（全ブランド共通）だけがトップレベルに残る。これにより1ブランドの戦略・媒体・計測が**1つの物語で統合**される。
+
+**パス解決の正本（全手順共通）**: 手順書に `knowledge/sns/` 等の短縮形が書かれていても、**ブランド固有の記憶は必ずアクティブブランド区画 `knowledge/brands/<slug>/` 配下へ解決する**（この対応表が正本。conventions §1 のプラグイン内パス解決規則と同じ位置づけ）。
+
+| カテゴリー | 主な保存先（`<slug>` = アクティブブランド） |
 |---|---|
-| SNS媒体 | knowledge/sns/<platform>/（ネタ帳は queue.md、調査は research/） |
-| 求人媒体 | knowledge/media/・approvals/・drafts/ |
-| オウンド | knowledge/audits/・styles/・mockups/・assets/・drafts/ |
-| 基盤・記録（横断） | knowledge/sites/・logs/・reports/・tacit/・feedback/・data/・config/・artifacts-index.md |
+| 戦略（上流） | `knowledge/brands/<slug>/strategy/`（strategy.md・kpi-tree.yaml・roadmap.md・campaigns/） |
+| SNS媒体 | `knowledge/brands/<slug>/channels/sns/<platform>/`（ネタ帳 queue.md・調査 research/） |
+| コンテンツ（オウンド） | `knowledge/brands/<slug>/channels/content/`・styles/・mockups/・assets/・drafts/ |
+| Webサイト（オウンド） | `knowledge/brands/<slug>/channels/website/`・audits/・sites/ |
+| 求人媒体 | `knowledge/brands/<slug>/media/`・approvals/・drafts/ |
+| ブランド固有の記録 | `knowledge/brands/<slug>/logs/`・reports/・analytics/・feedback/・queue/・tacit/ |
+| 横断（全ブランド共通） | `knowledge/brands.yaml`・`.active-brand` / `knowledge/config/`（allowlist等）/ `knowledge/verification/` / `artifacts-index.md` |
 
 ## 追加時のチェックリスト
 
