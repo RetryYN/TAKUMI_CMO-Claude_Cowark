@@ -1,10 +1,10 @@
-# /レポート — 状況確認とレポートの統合入口（delve-reporting）
+# /レポート — 状況確認とレポートの統合入口（takumi-reporting）
 
 ## 構成: トップは常にダッシュボード
 
-引数の指定がなければ、まず**運用全体の1枚サマリー**（procedures/delve-dashboard.md — アラート・進行中タスク・媒体状況・説明書・成果物リンク集）を生成/更新して提示する。そのうえで追加の生成を選択肢で提案する:
+引数の指定がなければ、まず**運用全体の1枚サマリー**（procedures/takumi-dashboard.md — アラート・進行中タスク・媒体状況・説明書・成果物リンク集）を生成/更新して提示する。そのうえで追加の生成を選択肢で提案する:
 
-1. **作業ログ** — 今日/期間にやった作業のHTML報告書 → procedures/delve-report.md
+1. **作業ログ** — 今日/期間にやった作業のHTML報告書 → procedures/takumi-report.md
 2. **運用レポート** — 期間の効果測定（スカウト送信→返信率 / SNS投稿→エンゲージ / LINE配信→開封）。outcome-verifier に集計させ、logical-writing + docs/conventions.md 準拠でレポート化。knowledge/analytics/ に記録
 3. **全体状況だけでよい** — ダッシュボードで終了
 

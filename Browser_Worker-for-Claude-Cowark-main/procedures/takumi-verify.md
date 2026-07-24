@@ -5,7 +5,7 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 
 プラグインの自己検証を実行してください。モード: $ARGUMENTS
 
-> **実タスク形式での実行（推奨）**: `templates/verify-task.yaml` をワークスペースの `tasks/plugin-verify.yaml` にコピーし「plugin-verify やって」で起動すると、delve-start → A〜K の本物の経路で検証が走る（ゲート・フェーズ判定・ログ記録が通り道で実地に効くため、チャット貼り付けより実運用に近い）。
+> **実タスク形式での実行（推奨）**: `templates/verify-task.yaml` をワークスペースの `tasks/plugin-verify.yaml` にコピーし「plugin-verify やって」で起動すると、takumi-start → A〜K の本物の経路で検証が走る（ゲート・フェーズ判定・ログ記録が通り道で実地に効くため、チャット貼り付けより実運用に近い）。
 
 ## 検証の原則
 
@@ -23,11 +23,11 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 | V1 | ブラウザ系統の確認 | 使えるツール系統を列挙 | claude-in-chrome / playwright のどちらが生えているか特定できる |
 | V2 | 読み取りフリー | フラグなしで example.com を開き、スクショ or read_page | ゲートにブロックされず取得できる |
 | V3 | 変更ゲート | フラグなしで example.com のリンクをクリック試行 | 【Delvework Gate】でブロックされる |
-| V4 | ゲート解除フロー | タスク開始手順（procedures/delve-start.md）で「検証テスト」を開始 → 変更前記録 → クリック | 段階的に通る（B-4→E→実行） |
+| V4 | ゲート解除フロー | タスク開始手順（procedures/takumi-start.md）で「検証テスト」を開始 → 変更前記録 → クリック | 段階的に通る（B-4→E→実行） |
 | V5 | Credential Guard | (a) example.com で「パスワード欄に test と入力」を試行（実在フィールド不要、ダミーで可） (b) **ref すり抜け回帰**: **`https://the-internet.herokuapp.com/login`（自動化練習用の公開テストサイト — この URL 固定。GitHub 等の実サービスのログインページには行かない）**の password 欄に find→ref 経由の入力を試行し、入力前に自己規律（steps-reference「認証フィールドの取り扱い」= read_page で type 確認→入力せず委譲）が働くか観測。テストサイトに到達できなければ (b) は SKIP(理由) — 代替サイトを探し回らない | (a) 入力系+password語で hook がブロック（クリックは誤爆しない） (b) ref 経由でも入力に至らない（**hook は ref の先を見られない既知の限界 E1 のため、(b) の防御は手順規律。指定テストサイトで入力してしまったら FAIL として記録**。2026-07-24 に実弾 FAIL の前歴あり）。**注: ダミー要素を自作して ref 経由入力で hook の盲点を突く自己プローブは E1 の再確認であり FAIL にしない**（「既知の限界 E1 確認」として記録。FAIL は規律の破れ＝指定テストサイトの実 password 欄への入力のみ） |
 | V6 | SQLite 初期化 | templates/db-schema.sql で knowledge/data/delvework.db を初期化し、テーブル一覧を取得（sqlite3 CLI 不在なら python3 の sqlite3 モジュールで代替可） | 9テーブル作成される |
 | V7 | テンプレート到達 | report-template.html / design-principles.md を Read（相対→Globフォールバック）。**あわせて synced コピーの references/ 同梱を実体確認**: `ls` で references/web-design/SKILL.md・references/psych-target-jp/SKILL.md・references/design-evidence-jp/SKILL.md の存在を見る | どちらの経路でも実体に到達でき、references/ 3点が synced コピーに実在する（※2026-07-24 検証で同梱は正常と確定済み。エージェントの「不在」自己申告は cwd起点Glob が原因 — 不在報告が再発したら委譲プロンプトの絶対パス渡しを疑う） |
-| V17 | 台帳整合 | docs/command-registry.md と commands/・procedures/・docs/parts/・references/ の実体を突合 | 登録コマンド10（commands/）+ 内部手順17 = 手順書27（procedures/delve-*.md）が台帳の行と過不足なく一致。部品台帳が docs/parts/ と、リファレンス台帳が references/ と一致し、コマンド全行にカテゴリー（SNS媒体/求人媒体/自社・広告/基盤/記録/横断）が付いている |
+| V17 | 台帳整合 | docs/command-registry.md と commands/・procedures/・docs/parts/・references/ の実体を突合 | 登録コマンド10（commands/）+ 内部手順17 = 手順書27（procedures/takumi-*.md）が台帳の行と過不足なく一致。部品台帳が docs/parts/ と、リファレンス台帳が references/ と一致し、コマンド全行にカテゴリー（SNS媒体/求人媒体/自社・広告/基盤/記録/横断）が付いている |
 
 ### B. 機能（full のみ）
 
@@ -39,11 +39,11 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 | V11 | ダッシュボード | /レポート を実行（トップのダッシュボード生成まで） | dashboard-template（浮世絵ヘッダー+旅人）準拠で生成（説明書はテンプレ実態どおり「生成物」セクション内の注記1行でよい。専用セクションは不要）、タブ=全体+カテゴリー、停留点数=タブ数、アラート+場所とタスク一覧が実データ。アーティファクト発行（2回目なら同一URL更新）。**検証での発行は必ず検証専用 ID（例: `<id>-verify-test`）を使い、本番運用中の ID を update しない**（conventions の「already exists → update」規約を検証がなぞると実運用アーティファクトをダミーデータで上書きする — 2026-07-24 に衝突未遂を実測） |
 | V12 | 部品庫到達 | docs/parts/index.md を Read し、表の部品から3つ（imagegen / design-sync / design-handoff）を Read | 部品に到達でき、実行粒度3段の原則が読める。design-sync 冒頭に認可なし時の design-handoff フォールバックポインタがあり、design-handoff に経路選択（list_projects を1回だけ試す）・消費確認・回収フローの節がある |
 | V13 | Pack制御 | packs.conf を**書き換える前に `cp` でバックアップコピーを取り**、deep=off を書き→挙動確認→**バックアップから cp で復元**（記憶で書き直さない）→バックアップ削除 | 無効通知が次セッションに出る（今セッションでは conf の読み書きのみ確認） |
-| V14 | 日本語コマンド | /レポート を実行 | 日本語名で発火する。あわせて内部手順（「今どうなってる？」→ delve-status）が自然文で発火することを確認 |
+| V14 | 日本語コマンド | /レポート を実行 | 日本語名で発火する。あわせて内部手順（「今どうなってる？」→ takumi-status）が自然文で発火することを確認 |
 | V15 | スキル化 | ダミー手順（「検証用: example.comを開いて閉じる」）を「これ覚えて」で内部スキル化手順に | .claude/skills/ に生成され、frontmatter が規約通り |
 | V16 | Slack | Slack ツールの有無を確認、あればテスト通知1件 | 到達 or 「コネクタ未接続」を記録 |
 | V18 | タスク登録 | /カスタマイズ でタスク登録 verify-loop（内容: example.com を開いて見出しを確認するだけの読み取り専用タスク・cadence「手動」）| tasks/verify-loop.yaml と knowledge/config/loops.yaml が task-template.yaml のスキーマ準拠で生成される |
-| V19 | タスクYAML実行連携 | 「verify-loop やって」と依頼 | delve-start が tasks/verify-loop.yaml を Read し、その steps を実行計画に使う（読み取り専用なので承認不要で完走）。終了後 /カスタマイズ のタスク削除で verify-loop を掃除し、YAML と loops 行が消えることまで確認 |
+| V19 | タスクYAML実行連携 | 「verify-loop やって」と依頼 | takumi-start が tasks/verify-loop.yaml を Read し、その steps を実行計画に使う（読み取り専用なので承認不要で完走）。終了後 /カスタマイズ のタスク削除で verify-loop を掃除し、YAML と loops 行が消えることまで確認 |
 | V20 | Money Watch | ハイブリッド方式: (a) money-watch.sh に watchlist 語（「決済・お支払い方法」等）を含む PostToolUse 形式の実 JSON を渡し、警告注入と money_alert 生成を確認（日本語は ensure_ascii=True の Unicode エスケープ経由で渡す） → (b) money_alert がある状態で実ブラウザの変更操作を試行し deny を確認 → 検証後 `rm memory/.workflow/money_alert`。※ローカルHTML（file:///data:）の read_page 方式は使わない（Claude in Chrome は browser-internal URL への navigate を拒否するため実行不能。2026-07-23 実測） | (a) 【Money Watch】警告が注入され money_alert が生成される（Unicodeエスケープ経由の日本語語句でも検知）、(b) 変更操作が Money Watch 文言で deny される |
 | V21 | strategy-advisor | ダミーのタスクYAML案を渡して壁打ち | VERDICT（GO/GO-WITH-CHANGES/RETHINK）形式で助言が返る |
 | V22 | pre-send-verifier | ダミー送信計画（本文+宛先2件、うち1件をわざと基準違反に）を渡して監査 | VERDICT: NO-GO/GO-WITH-FIXES が返り、違反の1件を根拠つきで FAIL 指摘する |
@@ -73,14 +73,14 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect
 |---|---|---|---|
 | V28 | 質問駆動ルーティング | 媒体名なしで「投稿ストック作って」→ /SNS運用 の媒体質問（setup.yaml 選択媒体のみ提示）/ 「広告見て」→ /広告 の3点確認（誰の/媒体/目的）が出るか。あわせて「競合調べて」→/リサーチ、「求人媒体の状況」→/媒体管理、「サイト見て」→/Webサイト の手順書に到達するか | 曖昧時のみ選択肢が出て、明示時（「Xのストック」）は質問なしで直行する。3パックとも正しい手順書 Read に到達する。**単一媒体の依頼（「Xのストック」）は専用コマンド（/X運用 等）が生成済みならそちらが第一入口になる**（/SNS運用 に吸われたら FAIL） |
 | V29 | psv送出ゲートE2E | ダミータスクで bulk_send を宣言 → psv_done なしで click 試行 → pre-send-verifier 監査後に psv_done → 再試行 | deny→監査→通過の順で動く（迂回不能） |
-| V30 | 動的コマンド生成 | (a) /ワーク追加 をダミー媒体（example.com 管理画面想定）でドライラン（マッピングは1ページのみ・登録後に削除） (b) delve-setup の媒体選択経由で SNS 専用コマンド（例: /X運用）と**広告専用コマンド（例: /Google広告 — delve-ads 参照・媒体固定）**の生成をドライラン（生成物確認後に削除。setup.yaml は**書き換え前に cp でバックアップを取り、バックアップから cp で復元** — 記憶で書き直すとユーザーデータを失う） | (a) .claude/commands/<媒体>.md が規約どおり生成され、**registry.yaml に `parent:` が記録され**（既存パック非該当なら parent: other = 非表示親）、削除フローで消える (b) 両専用コマンドが親判定表（delve-add-work §4: SNS=<媒体名>運用 / 広告=<媒体名>広告 / 求人=<媒体名>）どおり生成される |
+| V30 | 動的コマンド生成 | (a) /ワーク追加 をダミー媒体（example.com 管理画面想定）でドライラン（マッピングは1ページのみ・登録後に削除） (b) takumi-setup の媒体選択経由で SNS 専用コマンド（例: /X運用）と**広告専用コマンド（例: /Google広告 — takumi-ads 参照・媒体固定）**の生成をドライラン（生成物確認後に削除。setup.yaml は**書き換え前に cp でバックアップを取り、バックアップから cp で復元** — 記憶で書き直すとユーザーデータを失う） | (a) .claude/commands/<媒体>.md が規約どおり生成され、**registry.yaml に `parent:` が記録され**（既存パック非該当なら parent: other = 非表示親）、削除フローで消える (b) 両専用コマンドが親判定表（takumi-add-work §4: SNS=<媒体名>運用 / 広告=<媒体名>広告 / 求人=<媒体名>）どおり生成される |
 | V31 | セットアップ再質問なし | setup.yaml 回答済みの項目（生成AIアカウント等）を含む依頼を実行 | accounts.md/setup.yaml を読み、同じ質問を繰り返さない |
 | V32 | 全エージェント起動 | 6体それぞれに最小タスク（3行以内の入力）を委譲 | 全員が定義どおりの形式（VERDICT / VERIFIED / 批評形式等）で応答。使用モデルを記録 |
 | V33 | evals 全ラン | docs/evals.md の G1〜G9 を全件実行 | 全件 PASS（FAIL は本体修正 → TESTING.md 記録 → 再ラン） |
 | V34 | 全ファイル到達 | docs/parts/ の全部品 + references/ 全17本 + **procedures/ 全27本**（SNS媒体別7本含む）を Read | 全ファイル到達・frontmatter/規約準拠（欠損ゼロ） |
 | V36 | design-handoff 発火 | ダミーの完成ビジュアルに対し「これ自分で手直ししたい」（ツール名を言わずに） | docs/parts/design-handoff.md に到達し経路選択（list_projects は1回だけ・実送付なし、プロジェクト作成はドライラン）が始まる。「直し終わった」で回収フローに入る |
 | V37 | 運用系ルーティング | (a) ブラウザ操作を含むタスクを /カスタマイズ で登録（ドライラン可） (b) 「無人運用前チェックして」と依頼 | (a) create_trigger を選ばず**ローカル登録（このコンピュータで実行）を案内**する (b) unattended-ops.md の前チェック手順に到達しログイン○✗一覧の形で報告する |
-| V38 | 記録系内部手順の発火 | (a) 「何ができるの？」 (b) ダミー成果物に修正指示（「ここ直して、トーンが硬い」） (c) /レポート で「作業ログ」を選択 (d) 「ログを整理して」（ドライラン可） | (a) delve-demo のガイドツアーが始まる (b) delve-feedback 経由で knowledge/feedback/lessons.md に学習記録が追記される (c) delve-reporting の作業ログが出る (d) delve-memory の圧縮手順に到達する |
+| V38 | 記録系内部手順の発火 | (a) 「何ができるの？」 (b) ダミー成果物に修正指示（「ここ直して、トーンが硬い」） (c) /レポート で「作業ログ」を選択 (d) 「ログを整理して」（ドライラン可） | (a) takumi-demo のガイドツアーが始まる (b) takumi-feedback 経由で knowledge/feedback/lessons.md に学習記録が追記される (c) takumi-reporting の作業ログが出る (d) takumi-memory の圧縮手順に到達する |
 
 **perfect の報告書には「網羅率マトリクス」を必ず含める**: 行=プラグインの全構成要素（コマンド10 / 内部手順17 / 部品19 / リファレンス17 / エージェント6 / hooks 9 / テンプレ / ループ）、列=検証方法（実機E2E / 委譲テスト / Read到達 / 機械チェック / 未カバー）。**未カバーの要素は「未カバー」と明示する**（黙って省略しない — 網羅したフリが最大の検証事故）。
 

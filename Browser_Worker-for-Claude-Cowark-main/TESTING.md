@@ -6,7 +6,7 @@
 
 | # | 項目 | 結果 |
 |---|------|------|
-| T0 | プラグイン読み込み（/delve-status 実行） | ✅ 合格（2026-07-22） |
+| T0 | プラグイン読み込み（/takumi-status 実行） | ✅ 合格（2026-07-22） |
 | T0b | marketplace 更新検知（version フィールド） | ✅ 合格（version 明記で解決） |
 | T1 | プラグイン同梱 MCP（playwright）のチャット供給 | ❌ **不合格**（2026-07-22）: 設定画面のコネクタタブには表示されるが、チャットの「+」メニューに現れずツールとして供給されない。**回避策**: claude_desktop_config.json の mcpServers に playwright を直接登録（適用済み）。チャットでは Claude in Chrome を OFF にして playwright に限定する |
 
@@ -31,12 +31,12 @@
 
 | # | 手順 | 期待結果 |
 |---|------|---------|
-| T3 | `/delve-start テスト` | memory/.workflow/ にフラグ作成、フェーズ①判定 |
+| T3 | `/takumi-start テスト` | memory/.workflow/ にフラグ作成、フェーズ①判定 |
 | T4 | 再度クリック指示 | 今度は **Step E（変更前記録）未完了** のブロックに変わる |
 | T5 | snapshot 実行 → e_done 作成 → クリック指示 | 操作が通る（ゲート解除） |
 | T6 | 新しいセッションを開始 | session-start hook が「前回タスク未完了」を通知 |
 
-> ✅ **T3-T5 合格（2026-07-22, v0.9.0）**: /delve-start → フェーズ①自己判定 → read_page で Step E →
+> ✅ **T3-T5 合格（2026-07-22, v0.9.0）**: /takumi-start → フェーズ①自己判定 → read_page で Step E →
 > ゲート解除後にクリック成功（Clicked on element ref_4）→ k_done + セッションログ記録まで
 > ワークフロー一周が Cowork 上で自走完了。
 >
@@ -48,10 +48,10 @@
 
 | # | 手順 | 期待結果 |
 |---|------|---------|
-| T7 | `/delve-style <参考サイトURL>` | 巡回→トークンJSON生成→**deliverable-writer（sonnet）に委譲**→比較HTMLレポート生成 |
+| T7 | `/takumi-style <参考サイトURL>` | 巡回→トークンJSON生成→**deliverable-writer（sonnet）に委譲**→比較HTMLレポート生成 |
 | T8 | T7 の実行ログで委譲を確認 | Agent ツールで deliverable-writer が起動し、モデルが sonnet になっている（agents/deliverable-writer.md の frontmatter が正） |
-| T9 | `/delve-audit <自社サイトURL> 5` | 速度実測+品質チェック+診断HTMLレポート |
-| T10 | `/delve-report` | タスク成果のHTMLレポート生成 |
+| T9 | `/takumi-audit <自社サイトURL> 5` | 速度実測+品質チェック+診断HTMLレポート |
+| T10 | `/takumi-report` | タスク成果のHTMLレポート生成 |
 
 ## Phase 4: 永続化（本運用前に1回）
 
@@ -63,10 +63,10 @@
 
 | # | 手順 | 期待結果 |
 |---|------|---------|
-| T12 | コマンド名を言わず「〇〇のデザインを調べて」 | delve-style が自然文から自動発火 |
+| T12 | コマンド名を言わず「〇〇のデザインを調べて」 | takumi-style が自然文から自動発火 |
 | T13 | 曖昧に「このページを分析して」 | 観点の選択肢（デザイン/速度品質/コンテンツ/報告）が提示されルーティング |
 | T14 | 「/」入力 | 日本語コマンド（/サイト診断 等6本）が候補一覧に表示・実行可能 |
-| T15 | 「このLPを改善して」（delve-improve フルコース） | 計測再利用→診断→artisan生成→critic審査→修正ループ→アーティファクト発行→目視検証 |
+| T15 | 「このLPを改善して」（takumi-improve フルコース） | 計測再利用→診断→artisan生成→critic審査→修正ループ→アーティファクト発行→目視検証 |
 | T16 | T15 の実行ログ | design-artisan のモデルが fable（不可なら sonnet フォールバックが機能） |
 | T17 | HTMLレポート出力（経路問わず） | report-template.html 準拠の見た目 + knowledge/reports/ 保存（我流CSSでない） |
 | T18 | 画像を添付して「この写真を使ってモックアップ作って」 | knowledge/assets/ 保存→Pillow加工→埋め込み（VMにPillowがあるか要確認） |
@@ -77,23 +77,23 @@
 |---|------|---------|
 | T19 | 更新後、フラグなしでスクショ指示 | computer の screenshot がゲートを素通り（v0.34修正の確認） |
 | T20 | ログインフォームでパスワード入力を指示 | Credential Guard がブロック（type/fill のみ。クリックは誤爆しない） |
-| T21 | 「Xの投稿ストック埋めて」 | /delve-sns の3フェーズ（実態照合→分析→充足）が発火・knowledge/sns/ 初期化 |
+| T21 | 「Xの投稿ストック埋めて」 | /takumi-sns の3フェーズ（実態照合→分析→充足）が発火・knowledge/sns/ 初期化 |
 | T22 | 「媒体を登録して」→「全媒体の状況見せて」 | registry.yaml 作成→巡回→アラート表 |
 | T23 | 「ダッシュボード更新して」×2回 | 1回目 create、2回目は**同一URL**の update |
 | T24 | Slack コネクタ接続後、承認キューの一周 | pending.md 記録→Slack投稿→✅→次回実行で送信 |
 | T25 | 前回タスク未完了状態で新セッション開始 | 引き継ぎ通知**と**運用ルールの両方が注入される（v0.36修正の確認） |
 
-## /delve-verify 実施記録
+## /takumi-verify 実施記録
 
 ### 2026-07-22 初回実行（Cowork, v0.43+）
 
-- `/delve-verify` は Cowork で発火した（コマンド供給・引数 `full` の受理を確認。補完に出るのはコマンド名まで、`full` は手打ち引数）
+- `/takumi-verify` は Cowork で発火した（コマンド供給・引数 `full` の受理を確認。補完に出るのはコマンド名まで、`full` は手打ち引数）
 - ⚠️ **V9/V10 で委譲プロンプトがユーザーへ手渡しされた**: 本来 Agent ツールで deliverable-writer / design-artisan に内部委譲されるはずのタスク文（`/home/claude/tmp-verify/v9-test.md` 等）がチャット本文として出力された。**Cowork チャットで Agent（サブエージェント）ツールが未供給、または Fable が委譲経路を取れなかった**ことを示唆
-  - 影響: V9/V10（writer/artisan 起動・モデル確認）、delve-improve の審査ループ、delve-deep のオーケストレーションは Cowork では main ループ直執筆にフォールバックする前提で設計を見直す必要
+  - 影響: V9/V10（writer/artisan 起動・モデル確認）、takumi-improve の審査ループ、takumi-deep のオーケストレーションは Cowork では main ループ直執筆にフォールバックする前提で設計を見直す必要
   - 対処案: conventions.md の委譲規範に「Agent ツールが無い環境では main ループが直接執筆し、その旨を成果物に1行記録」を追記（次版）
 - PASS/FAIL 表形式の報告書（`knowledge/verification/<date>-verify.md`）の受領は未確認。以降の実行では報告書コードブロックの出力を必須とする
 
-## 検証ワークフロー v0.63 — ドメイン再編 + /delve-task + ダッシュボードv9 の総合検証
+## 検証ワークフロー v0.63 — ドメイン再編 + /takumi-task + ダッシュボードv9 の総合検証
 
 今日の大改修（v0.44→0.63: MCP撤去 / 台帳ドメイン再編 / ダッシュボード「秘湯紀行」タスク自動追加）を
 コワーク側で一括検証する手順。**開発側（このリポジトリ）とコワーク側（実行環境）の往復で完結する。**
@@ -102,7 +102,7 @@
 
 1. プラグインを **v0.63.0** に更新（プラグインを管理 → 更新）→ **新チャット**を開く
 2. 次を1行貼る:
-   > /delve-verify full を実行して。V18・V19（タスク登録・実行連携）とV11（ダッシュボードのテンプレ準拠）は特に丁寧に。最後に必ずPASS/FAIL表のコードブロックを出力して。
+   > /takumi-verify full を実行して。V18・V19（タスク登録・実行連携）とV11（ダッシュボードのテンプレ準拠）は特に丁寧に。最後に必ずPASS/FAIL表のコードブロックを出力して。
 3. 実行が終わったら、出力された **PASS/FAIL 表のコードブロックをそのままこのチャット（開発側）に貼り戻す**
 
 ### 重点確認（今回の変更に対応する項目）
@@ -111,8 +111,8 @@
 |---|---|
 | V11 | ダッシュボードが dashboard-template 準拠（浮世絵ヘッダー・旅人・タブ=全体+ドメイン・停留点数=タブ数）で、見本データでなく実データ |
 | V17 | 台帳20コマンド/20手順 + スキル台帳11件が実体と一致、全行にドメイン |
-| V18 | /delve-task register で YAML + loops.yaml が生成される（積み込み口の成立） |
-| V19 | delve-start が tasks/*.yaml を実行計画として読む（エンジンと荷物の接続） |
+| V18 | /takumi-task register で YAML + loops.yaml が生成される（積み込み口の成立） |
+| V19 | takumi-start が tasks/*.yaml を実行計画として読む（エンジンと荷物の接続） |
 | V14 | 日本語エイリアス（/定常タスク を含む）が発火する |
 
 ### 実施記録 2026-07-22（Cowork, v0.63.0）— ✅ 合格
@@ -120,7 +120,7 @@
 **PASS 17 / FAIL 0 / SKIP 2**（V8 自然文発火=未観測、V16 Slack=コネクタ未接続）
 
 - コア全通過: ゲート（V3/V4）・Credential Guard（V5・クリック誤爆なし）・DB 9テーブル（V6）・台帳20/20+スキル12一致（V17）
-- **新機能全通過**: V18 タスク登録（verify-loop.yaml + loops.yaml 生成・スキーマ機械確認）/ V19 YAML実行連携（delve-startが steps を計画の正に採用→読み取り完走→remove で消滅確認、navigate-warn.sh の警告も観測）/ V11 ダッシュボード（ドメイン5タブ・stops5点・旅人保持・実データ、攻略済みの峰の社が実数=1軒に連動）
+- **新機能全通過**: V18 タスク登録（verify-loop.yaml + loops.yaml 生成・スキーマ機械確認）/ V19 YAML実行連携（takumi-startが steps を計画の正に採用→読み取り完走→remove で消滅確認、navigate-warn.sh の警告も観測）/ V11 ダッシュボード（ドメイン5タブ・stops5点・旅人保持・実データ、攻略済みの峰の社が実数=1軒に連動）
 - サブエージェント: V9 deliverable-writer=sonnet-5 / V10 design-artisan=**fable-5で起動**（フォールバックなし）。チャットに委譲プロンプト文面が見えるのは Cowork の Agent 呼び出し表示仕様で、手渡しではない
 - 環境知見: ①プラグイン実体は `/root/.claude/plugins/synced/browser-worker`（相対 templates/ 不達 → Globフォールバック必須・現行記述で対応済み）②sqlite3 CLI 不在 → python3 標準ライブラリで代替可 ③create_artifact は一過性502あり（リトライで解消）・既存IDは update 経路が正
 - 生成物確認: user-guide.html は guide-template 準拠（定常タスク登録の言い方も掲載）。dashboard.html はドメインタブ+未運用ドメインの案内+「次の一手」導線まで正しく生成
@@ -170,7 +170,7 @@
 knowledge/verification/<date>-verify.md に保存してチャットにも表示して。
 ```
 
-期待: PASS 基準は procedures/delve-verify.md（V1〜V26）。FAIL があれば TESTING.md に追記して開発側に戻す。
+期待: PASS 基準は procedures/takumi-verify.md（V1〜V26）。FAIL があれば TESTING.md に追記して開発側に戻す。
 
 ---
 
@@ -182,14 +182,14 @@ knowledge/verification/<date>-verify.md に保存してチャットにも表示�
 
 ## 実施記録 2026-07-23（Cowork）— Gemini 画像生成 E2E ✅（生成◎・取り込み△）
 
-- ログイン済み Chrome で Gemini を操作: /delve-start→変更前記録→プロンプト入力→送信→**約10秒で生成成功**（Flash）。ゲート手続き一連通過、ref 指定クリック+タイプで安定
+- ログイン済み Chrome で Gemini を操作: /takumi-start→変更前記録→プロンプト入力→送信→**約10秒で生成成功**（Flash）。ゲート手続き一連通過、ref 指定クリック+タイプで安定
 - 取り込みは Downloads 未接続のためスクショ（zoom）経由 = **約565×330px で本番素材には粗い**。フレーミングずれで1回トリミング要
-- 結論: 案出し用途は現状で実用。本番用途は (a)Downloads フォルダ接続→保存ボタン回収 (b)Gemini API 切替。→ delve-imagegen（v0.71.0）の取り込み表に反映済み
+- 結論: 案出し用途は現状で実用。本番用途は (a)Downloads フォルダ接続→保存ボタン回収 (b)Gemini API 切替。→ takumi-imagegen（v0.71.0）の取り込み表に反映済み
 
 ## 実施記録 2026-07-23（Cowork）— 画像加工パイプライン（2勝1敗）
 
 - ✅ Gemini 生成画像 → 16:9センタートリミング → 1280×720 → 下部グラデーション → コピー焼き込み（Noto Sans CJK）を1スクリプトで全自動処理成功 → **templates/banner-compose.py としてテンプレ化**（v0.72.0、Windows ローカルでも機能テスト済み）
-- ❌ 背景除去（rembg）: インストール可だがモデル本体 u2net.onnx（GitHub/HF 配布）のDLがサンドボックスの許可リストでブロック。回避: (a)ユーザーPCでDLして接続フォルダ搬入 (b)Canva/Claude Design 側に寄せる → delve-imagegen 3b に記録済み
+- ❌ 背景除去（rembg）: インストール可だがモデル本体 u2net.onnx（GitHub/HF 配布）のDLがサンドボックスの許可リストでブロック。回避: (a)ユーザーPCでDLして接続フォルダ搬入 (b)Canva/Claude Design 側に寄せる → takumi-imagegen 3b に記録済み
 
 ## 実施記録 2026-07-23（Cowork）— グリーンバック + クロマキー切り抜き ✅
 
@@ -213,19 +213,19 @@ knowledge/verification/<date>-verify.md に保存してチャットにも表示�
 ## 実施記録 2026-07-23（Cowork）— 動画生成（Gemini 経由）✅
 
 - ✅ Gemini 経由での動画生成が実機で成功（画像生成と同じ UI 操作の型で到達）
-- → **delve-imagegen §2b（動画生成）として手順化**（v0.76.0）: 本数を先に合意 / wait で完了待機 / 採用本体のみ専用DLフォルダ or blob fetch で取り込み / 後段は media-pipeline の ffmpeg レシピへ接続
+- → **takumi-imagegen §2b（動画生成）として手順化**（v0.76.0）: 本数を先に合意 / wait で完了待機 / 採用本体のみ専用DLフォルダ or blob fetch で取り込み / 後段は media-pipeline の ffmpeg レシピへ接続
 - media-pipeline.md 部品一覧に「動画生成」行を追加
 
 ## 実施記録 2026-07-23（Cowork）— 動画フルライン + 取り込みルートの教訓 ✅/❌
 
 - ✅ **Gemini 動画生成 → 背景除去 → WebM 化のフルラインが実機で完走**（media-pipeline 定番ライン2が動画起点でも成立）
 - ❌ 取り込みが Downloads → チャット手動アップロード経由だとレンダリング（加工処理）に失敗する
-- → **専用DLフォルダ接続をメディア制作の必須セットアップに格上げ**（v0.77.0）: README に3手順の節を新設 / delve-imagegen §3 に失敗実測を明記 / media-pipeline 共通ルールに「未接続なら代替せず止まってセットアップ依頼」を追加
+- → **専用DLフォルダ接続をメディア制作の必須セットアップに格上げ**（v0.77.0）: README に3手順の節を新設 / takumi-imagegen §3 に失敗実測を明記 / media-pipeline 共通ルールに「未接続なら代替せず止まってセットアップ依頼」を追加
 
 ## 設計決定 2026-07-23 — HTML組み込みは Claude Design（DesignSync）へ
 
 - メディア素材（アルファWebM・切り抜き画像等）を HTML/LP に組み込む工程は **DesignSync で claude.ai/design のプロジェクトへ流すのが正ルート**（ユーザー決定）。ローカルHTML直書きはプレビュー用途のみ
-- media-pipeline 正本 + delve-improve / delve-adlp の DesignSync 節に既定ルート化を反映（v0.77.1）。同期は従来どおり finalize_plan の承認を経る
+- media-pipeline 正本 + takumi-improve / takumi-adlp の DesignSync 節に既定ルート化を反映（v0.77.1）。同期は従来どおり finalize_plan の承認を経る
 
 ## 設計決定 2026-07-23 — ファイル形式の線引き + 素材パック規約（v0.78.0）
 
@@ -277,7 +277,7 @@ Delvework の素材パック検証を3点。読み取り+自ワークスペー�
 ## 機能追加 2026-07-23 — /ワーク追加（v0.82.0）
 
 - 新媒体（ワンキャリア/doda等）を1コマンドで運用に載せる: ヒアリング → registry.yaml 登録 → **その場で初期マッピング（フェーズ①・読み取り専用、knowledge/sites/<id>/ 生成）** → ワークスペース .claude/commands/ に専用コマンド自動生成 → 定常ループ提案
-- 削除フローも定義（地図は資産として残す）。delve-media の動的コマンド生成節は /ワーク追加 への後方互換ポインタに変更。登録14+内部7=手順書21
+- 削除フローも定義（地図は資産として残す）。takumi-media の動的コマンド生成節は /ワーク追加 への後方互換ポインタに変更。登録14+内部7=手順書21
 
 ## 機能追加 2026-07-23 — /セットアップ（v0.83.0）
 
@@ -309,7 +309,7 @@ Delvework の素材パック検証を3点。読み取り+自ワークスペー�
 
 ## メニュー統合 2026-07-23 — 質問駆動のコマンド展開（v0.86.0）
 
-- **SNS 6本→/SNS運用 1本に統合**: 媒体名が要望にあれば直行、無ければ「どの媒体？」を選択式で確認（選択肢は setup.yaml で選んだ媒体のみ = セットアップ連携）。媒体別の見える範囲・制約は procedures/delve-sns-*.md に内部手順として全部残る（知識の消失なし）
+- **SNS 6本→/SNS運用 1本に統合**: 媒体名が要望にあれば直行、無ければ「どの媒体？」を選択式で確認（選択肢は setup.yaml で選んだ媒体のみ = セットアップ連携）。媒体別の見える範囲・制約は procedures/takumi-sns-*.md に内部手順として全部残る（知識の消失なし）
 - **/リサーチ 新設（横断入口）**: 「どの媒体・対象を調べる？」→ SNS/広告/サイトデザイン/サイト品質/徹底/求人市場の各調査手順に振り分け。読み取り専用
 - メニュー 15→11本（登録11+内部13=手順書24）。/広告 の対象確認（v0.85.2）と同じ質問駆動パターンに統一
 
@@ -322,7 +322,7 @@ Delvework の素材パック検証を3点。読み取り+自ワークスペー�
 ## マルチ監査（Sonnet5体+Codex）2026-07-23 — 指摘修正（v0.87.1）
 
 - 監査結果: ルール整合=全OK / 参照チェーン=全OK / 質問UI=high1・med2・low3 / UX=high1・med1 / 方法論=high3・med2・low1 → 全件修正:
-- **[high]** demo の旧 delve-audit 参照 → docs/parts/site-audit.md に / フェーズ④失敗時の遷移を③に統一（②との二重定義解消） / evals「機械判定」の看板を実態（一意基準+LLM/人間判定）に修正 / **psv_done ゲート新設** — Step F で bulk_send 宣言 → pre-send-verifier 監査+承認まで hook が変更操作をブロック（test-hooks に2件追加、21テスト ALL PASS） / README「パック」「掃き出し」の初出定義+同梱物を付録化
+- **[high]** demo の旧 takumi-audit 参照 → docs/parts/site-audit.md に / フェーズ④失敗時の遷移を③に統一（②との二重定義解消） / evals「機械判定」の看板を実態（一意基準+LLM/人間判定）に修正 / **psv_done ゲート新設** — Step F で bulk_send 宣言 → pre-send-verifier 監査+承認まで hook が変更操作をブロック（test-hooks に2件追加、21テスト ALL PASS） / README「パック」「掃き出し」の初出定義+同梱物を付録化
 - **[med]** 鮮度メタデータの更新条件（④の部分照合では更新しない） / 広告の媒体選択を4択+その他に / SNS媒体選択に複数選択可を明記 / design-critic REVISE後の再投入責務をメインループに明記
 - **[low]** outcome-verifier を不可逆送出全般に / リサーチQ2にその他+回答保持 / レポート「旧」削除 / 検証hint和訳
 
@@ -330,7 +330,7 @@ Delvework の素材パック検証を3点。読み取り+自ワークスペー�
 
 - Codex（codex-cli 0.145.0, read-only）の指摘13件を全件修正:
 - **[high]** 台帳の「20本」残骸（構造の芯・命名ルール）→10本 / V17 の期待値が旧世代（13+7=20）→ 10+16=26 に更新
-- **[med]** parts 内の旧 delve-* 名残骸を一掃（style-research/site-audit/page-improve/ad-to-lp/asset-collect/canva-export/delve-report/video-ad SKILL）/ session-start の OFF パック案内先を /機能設定 → /カスタマイズ に / dashboard の lessons.md をフルパスに / README 件数修正（部品17+index・**フック6=Money Watch を台帳に計上**）/ カスタマイズ4択・レポート直行・セットアップall引数・SNSのOFF媒体接続を説明と実手順で一致させた / 追加チェックリストを動的生成（/ワーク追加）優先に
+- **[med]** parts 内の旧 takumi-* 名残骸を一掃（style-research/site-audit/page-improve/ad-to-lp/asset-collect/canva-export/takumi-report/video-ad SKILL）/ session-start の OFF パック案内先を /機能設定 → /カスタマイズ に / dashboard の lessons.md をフルパスに / README 件数修正（部品17+index・**フック6=Money Watch を台帳に計上**）/ カスタマイズ4択・レポート直行・セットアップall引数・SNSのOFF媒体接続を説明と実手順で一致させた / 追加チェックリストを動的生成（/ワーク追加）優先に
 - **再発防止**: lint に旧 delve 名の残骸チェックを追加（廃止手順名が残ると CI が落ちる）
 
 ## 心理学スキル3部作 2026-07-23（v0.89.0）
@@ -369,7 +369,7 @@ Delvework の素材パック検証を3点。読み取り+自ワークスペー�
 
 ## 重複チェック + 非機能要件レビュー 2026-07-23（v0.92.1）
 
-- **重複スキャン（60字超の完全一致行）で実害3件検出→修正**: ①delve-skillify に規約チェックブロックが**5重挿入**されていた（v0.85.0 の一括置換バグ。1つに正規化+「11+2本」の古い数も修正） ②ad-to-lp / page-improve の DesignSync 節二重持ち → design-sync 部品へのポインタ化 ③delve-media の動的コマンドテンプレ重複 → add-work を正本にポインタ化
+- **重複スキャン（60字超の完全一致行）で実害3件検出→修正**: ①takumi-skillify に規約チェックブロックが**5重挿入**されていた（v0.85.0 の一括置換バグ。1つに正規化+「11+2本」の古い数も修正） ②ad-to-lp / page-improve の DesignSync 節二重持ち → design-sync 部品へのポインタ化 ③takumi-media の動的コマンドテンプレ重複 → add-work を正本にポインタ化
 - **許容重複（設計判断）**: SNS媒体手順6本の共通ボイラープレート3行 / agents の Globフォールバック注意書き — テンプレ由来の短文で乖離リスク小、可読性優先で維持
 - **再発防止**: lint に「同一長行がファイル内3回以上=一括置換バグ疑い」チェックを追加（チェック9系統に）
 - **非機能要件の判定**: 保守性=lint 9系統+test-hooks 21+CI で機械保証、正本ポインタ方式で乖離防止 ✅ / 拡張性=媒体追加は動的生成・能力追加は部品、チェックリスト整備済み ✅ / 性能=session-start 注入は9KB（許容内。20KB超えたら分割検討と明記）/ 可搬性=Windows(cp932対応済み)+ubuntu CI 両対応 ✅ / セキュリティ=直近監査で psv ゲートまで完備 ✅
@@ -399,9 +399,9 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
 
 - **v0.94.1**: 質問ツールの選択肢規約（1選択肢=1項目・4択超は同一呼び出し内で2問分割・複数選択可維持）
 - **v0.94.2**: V20をハイブリッド方式に（In Chrome は data:/file: 不可）/ V11基準整合 / evals委譲の絶対パスRead / pre-send-verifier 較正ファイル黙示スキップ
-- **v0.94.3**: **発火導線の根治** — delve-start手順6に outcome-verifier 必須 / steps-reference H+parts/index に critic ゲート（PASS まで引き渡し禁止）/ SNS媒体手順の必読化 / session-log 正本明確化 / verdict-log 初期化
+- **v0.94.3**: **発火導線の根治** — takumi-start手順6に outcome-verifier 必須 / steps-reference H+parts/index に critic ゲート（PASS まで引き渡し禁止）/ SNS媒体手順の必読化 / session-log 正本明確化 / verdict-log 初期化
 - **v0.95.0**: **SNSマトリョーシカ** — セットアップ媒体選択で /<媒体名>運用 を自動生成、/SNS運用 は複数媒体・不明時の受け皿に降格
-- **v0.95.1**: Threadsパック（delve-sns-threads.md — 予約不可・IG連動）/ E-3 公開後実体確認（投稿URL控え）/ delve-task ブラウザ一意化 / V7 references 実体確認
+- **v0.95.1**: Threadsパック（takumi-sns-threads.md — 予約不可・IG連動）/ E-3 公開後実体確認（投稿URL控え）/ takumi-task ブラウザ一意化 / V7 references 実体確認
 - **v0.96.0**: **F1根治** ブラウザ操作タスクの create_trigger 禁止→ローカル登録必須 / **F2緩和** 認証フィールド自己規律（refすり抜けは hook の構造的限界 → escalations E1）/ **F5根治** エージェントのプラグイン領域Glob + 委譲時絶対パス規約 / queue 即時更新
 - **v0.96.1**: T1〜T5 — 優先ブラウザのログイン同居確認 / 通知経路の実地テスト / クラウド→ローカル移行手順（zip引き継ぎ・実証済）/ OGP3点セット
 - **v0.97.0**: **F15 無人運用前チェック**（ログイン○✗巡回→ローカル登録前必須）/ **docs/escalations.md 新設**（上申台帳 E1〜E3: ref検査・ローカルスケジュールAPI・ワークスペース同期）
@@ -433,7 +433,7 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
   - 訪問先は example.com / the-internet.herokuapp.com のみ（前回の漂流は再発ゼロ）
 - V5(b): find→ref 取得後、入力前 read_page で type="password" 確認→人間委譲。ref 経由入力ゼロ
 - 環境所見: セッション後半に navigate / tabs_context_mcp が断続タイムアウト（拡張/回線側と推定・プラグイン起因でない）。MCPタブグループ一時消失は再取得で復構
-- 発見(良・要判断): Cowork cloud ではワークスペース生成の .claude/skills / .claude/commands が**同一セッション内で即時登録**される。delve-setup の「次セッションから」注記は保守的すぎる可能性（環境差ありうるため文言変更は保留）
+- 発見(良・要判断): Cowork cloud ではワークスペース生成の .claude/skills / .claude/commands が**同一セッション内で即時登録**される。takumi-setup の「次セッションから」注記は保守的すぎる可能性（環境差ありうるため文言変更は保留）
 - **判定: この結果をもって v1.0.0 を付与**（0.94.0 からの hardening サイクル完了。公開 API＝コマンド体系・ゲート契約の安定を宣言）
 
 ## ローカル差分検証 2026-07-24（v1.0.0 / Cowork ローカル × Opus 4.8・Sonnet 5 の2ラン）
@@ -446,7 +446,7 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
   - L4: 親が非Fableでも design-artisan は **fable 起動を貫徹**（フォールバックなし）
   - L5 ルーティング解釈: 両モデル正答
 - **モデル非依存の指示欠陥を検出**: 「後片付けする」を Opus・Sonnet **両方**が outputs フォルダ一括削除と解釈（harness 許可プロンプトで停止）→ v1.1.0 で根治: RM Guard hook 新設（一括・再帰削除を機械ガード・warn 試運転）+ 手順書を「作成ファイルの列挙→個別 rm・削除拒否時は残置報告」に書き換え + session-rules (14) 削除ガード追加
-- L6 スキル即時登録: cloud=即時 / ローカル=次セッションから（delve-setup の注記は正しかった。環境差として注記を更新）
+- L6 スキル即時登録: cloud=即時 / ローカル=次セッションから（takumi-setup の注記は正しかった。環境差として注記を更新）
 - **モデル運用の推奨（この2ランに基づく）**:（→ 下の cloud full 第3ランも参照） 開発・検証=Fable / 設計・初回探索・セットアップ=Opus / **定常ラン（フェーズ④・手順固定）=Sonnet 可**。ただし前提は「ゲートが効く cloud セッション」— **ローカルは hooks 未配線のため、一括送出・金銭近傍・無人運用はモデルを問わず cloud で行うこと**
 
 ## 実機 /検証 full 第3ラン 2026-07-24（v1.1.3 / Cowork cloud × **Sonnet 5**）
@@ -470,14 +470,14 @@ v0.94.0 の実弾検証（27項目 + 実運用E2E + 追試2ラウンド、修正
 - **第5ラン: PASS 27 / FAIL 0 / SKIP 1 / 未観測 1** — **V39 初消化: RM Guard の warn 実測・正当な個別削除の誤爆ゼロ・deny 昇格推奨**。全ゲート（workflow/OV/Critic/RM/url-guard/Money Watch）を実タスク経路で deny/warn 実測。V5(b) は read_page で type=password 確認→委譲（実弾再発ゼロ）
 - **第6ラン: FAIL 1（V27/G2）+ 設計所見2件** — プラグイン本体のゲート系は全て正常:
   - **G2 FAIL（較正価値の高い発見）**: スカウト件名5案の自己申告文字数が全案で実測より1字少ない（句読点の数え漏れ）。案1が実際は14字で13字基準を逸脱 → copywriting SKILL.md に「生成後に len() 相当の機械カウント必須（句読点も1文字）」を追加（v1.2.0）
-  - **verify_allowlist 消失事故**: V4 のタスク開始（delve-start）のフラグ初期化 rm が verify_allowlist を巻き込み、直後のクリックで iana.org へ遷移 → **delve-start の rm リストから verify_allowlist を除外**（作成・削除は検証手順のみが行う。v1.2.0）
+  - **verify_allowlist 消失事故**: V4 のタスク開始（takumi-start）のフラグ初期化 rm が verify_allowlist を巻き込み、直後のクリックで iana.org へ遷移 → **takumi-start の rm リストから verify_allowlist を除外**（作成・削除は検証手順のみが行う。v1.2.0）
   - **アーティファクト ID 衝突未遂**: conventions の「already exists → update」を検証がなぞると本番 dashboard をダミーデータで上書きし得た（エージェントが自主回避）→ V11 に「検証は専用 ID（`<id>-verify-test`）・本番 ID を update しない」を明文化（v1.2.0）
 - **RM Guard を deny に昇格（2026-07-24・v1.2.0）**: 2ランで warn 発火実測・誤爆ゼロ。OV/Critic と同じ段階導入完了。これで hook 9本全て本稼働
 
 ### 検証の渡し方（Cowork 最新版）
 
 **推奨: 実タスク形式** — `templates/verify-task.yaml` をワークスペースの `tasks/plugin-verify.yaml` にコピーし
-「plugin-verify やって」で起動する。delve-start → A〜K の本物の経路で走るため、ゲート・フェーズ判定・
+「plugin-verify やって」で起動する。takumi-start → A〜K の本物の経路で走るため、ゲート・フェーズ判定・
 ログ記録が検証の通り道で実地に効く（チャット貼り付けより実運用に近い）。内容は下のプロンプトと同一。
 
 ### 検証プロンプト（タスク形式が使えないときの代替 — これを貼る）

@@ -1,4 +1,4 @@
-# /Webサイト — 自社・対象サイトのカテゴリーパック（delve-website）
+# /Webサイト — 自社・対象サイトのカテゴリーパック（takumi-website）
 
 要望を受けて実行粒度（docs/parts/index.md の3段: タスク単体 / ワークフロー連結 / まるっと）を判定し、タスク5型に振り分ける。各タスクは docs/parts/ の部品を Read して従う。
 

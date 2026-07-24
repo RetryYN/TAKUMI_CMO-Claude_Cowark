@@ -1,4 +1,4 @@
-# /Instagram運用 — Instagram（delve-sns-instagram）
+# /Instagram運用 — Instagram（takumi-sns-instagram）
 
 **共通手順の正本 `docs/sns-ops.md` を最初に Read** し、その運用フロー（実態照合→生成→予約/下書き→実績記録→ダッシュボード締め）に従う。以下はこの媒体固有の差分のみ。
 

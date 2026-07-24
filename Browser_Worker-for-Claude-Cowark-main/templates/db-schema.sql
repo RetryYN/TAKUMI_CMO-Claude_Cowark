@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS schema_meta (
 );
 INSERT OR IGNORE INTO schema_meta VALUES ('version', '1');
 
--- 媒体ステータス履歴（/delve-media status が追記）
+-- 媒体ステータス履歴（/takumi-media status が追記）
 CREATE TABLE IF NOT EXISTS media_status (
   id INTEGER PRIMARY KEY,
   measured_at TEXT NOT NULL,          -- ISO8601
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS media_status (
 );
 CREATE INDEX IF NOT EXISTS idx_media_status ON media_status(media_id, metric, measured_at);
 
--- SNS投稿と成果（/delve-sns が管理。1投稿1行 + メトリクスは別テーブルに追記）
+-- SNS投稿と成果（/takumi-sns が管理。1投稿1行 + メトリクスは別テーブルに追記）
 CREATE TABLE IF NOT EXISTS sns_posts (
   id INTEGER PRIMARY KEY,
   platform TEXT NOT NULL,             -- x / note / ...

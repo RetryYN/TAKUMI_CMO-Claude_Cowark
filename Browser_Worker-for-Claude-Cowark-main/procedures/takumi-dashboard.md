@@ -10,7 +10,7 @@ argument-hint: [なし]
 | セクション | ソース | 表示 |
 |---|---|---|
 | 進行中タスク | memory/.workflow/ + memory/session-log.md 末尾 | タスク名・フェーズ・引き継ぎ事項 |
-| 登録タスク・ループ | tasks/*.yaml + knowledge/config/loops.yaml | ドメイン別タブ構成・場所とタスク一覧・次回実行（/カスタマイズ のタスク登録 = delve-task が生成） |
+| 登録タスク・ループ | tasks/*.yaml + knowledge/config/loops.yaml | ドメイン別タブ構成・場所とタスク一覧・次回実行（/カスタマイズ のタスク登録 = takumi-task が生成） |
 | 媒体サマリー | knowledge/media/registry.yaml + status/ 最新 | 媒体別の主要数値・前回比・アラート（残数/期限） |
 | SNSストック | knowledge/sns/*/queue.md + strategy.md | プラットフォーム別ストック充足率（目標に対する%） |
 | 競合ウォッチ | knowledge/watch/ 最新差分 | 直近の変更検知（重要度順・上位5件） |

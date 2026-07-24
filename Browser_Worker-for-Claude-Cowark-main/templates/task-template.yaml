@@ -1,5 +1,5 @@
-# 定常タスク定義テンプレート（/delve-task が生成する tasks/<name>.yaml の骨格）
-# 本家 Delvework の tasks/_template.yaml から移植。実行は /delve-start が担う（A〜Kワークフロー）
+# 定常タスク定義テンプレート（/takumi-task が生成する tasks/<name>.yaml の骨格）
+# 本家 Delvework の tasks/_template.yaml から移植。実行は /takumi-start が担う（A〜Kワークフロー）
 
 name: your-task-name
 description: タスクの概要
@@ -9,7 +9,7 @@ place: baitai-b             # 対象の場所（knowledge/sites/<place>/ のキ�
 # ループ（定常実行）。単発タスクなら schedule を省略
 schedule:
   cadence: "平日 10:00"     # 自然言語でよい（Cowork のスケジュール登録文に使う）
-  close_with_dashboard: true # 締めに /delve-dashboard を実行
+  close_with_dashboard: true # 締めに /takumi-dashboard を実行
 
 # パラメータ: 実行時に変わる値
 params:

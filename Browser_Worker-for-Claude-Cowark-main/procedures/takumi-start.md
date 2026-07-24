@@ -16,7 +16,7 @@ Delvework のタスク「$ARGUMENTS」を開始してください。
    rm -f memory/.workflow/{b4_done,e_done,k_done,bulk_send,psv_done,ov_done,critic_pending,critic_pass}
    echo "$ARGUMENTS" > memory/.workflow/active
    ```
-   （`money_alert` は**意図的に消さない** — 前回の金銭停止は新タスクに持ち越し、解除は Money Watch 復帰手順のみ。手順8参照。`verify_allowlist` も**消さない** — 検証セッション中にタスク開始すると防壁が消える事故が 2026-07-24 に実測されたため、作成と削除は検証手順（delve-verify 後片付け）だけが行う）
+   （`money_alert` は**意図的に消さない** — 前回の金銭停止は新タスクに持ち越し、解除は Money Watch 復帰手順のみ。手順8参照。`verify_allowlist` も**消さない** — 検証セッション中にタスク開始すると防壁が消える事故が 2026-07-24 に実測されたため、作成と削除は検証手順（takumi-verify 後片付け）だけが行う）
 3. `knowledge/sites/` を確認し、対象サイトのナレッジ有無でフェーズを判定する:
    - ナレッジなし → ① 初回 (First Delve)
    - ナレッジあり、成功ログなし → ② 再訪問 (Return)

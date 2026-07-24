@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Delvework plugin lint — 参照整合・frontmatter・JSON・バージョンの機械チェック。
+"""TAKUMI-CMO plugin lint — 参照整合・frontmatter・JSON・バージョンの機械チェック。
 CI とローカル（python3 scripts/lint.py）の両方で使う。exit 0=OK / 1=違反あり。"""
 import io
 import json
@@ -55,16 +55,16 @@ for event, groups in hooks["hooks"].items():
 
 # --- 3. commands ↔ procedures の1対1 ---
 commands = sorted((ROOT / "commands").glob("*.md"))
-procedures = sorted((ROOT / "procedures").glob("delve-*.md"))
+procedures = sorted((ROOT / "procedures").glob("takumi-*.md"))
 referenced_procs: set[str] = set()
 for c in commands:
     fm = frontmatter(c)
     if "description" not in fm:
         err(f"{c.name}: frontmatter に description がない")
     body = read(c)
-    refs = re.findall(r"procedures/(delve-[a-z-]+\.md)", body)
+    refs = re.findall(r"procedures/(takumi-[a-z-]+\.md)", body)
     if not refs:
-        err(f"commands/{c.name}: procedures/delve-*.md への参照がない")
+        err(f"commands/{c.name}: procedures/takumi-*.md への参照がない")
     for r in refs:
         referenced_procs.add(r)
         if not (ROOT / "procedures" / r).is_file():
@@ -111,9 +111,9 @@ for s in (ROOT / "references").glob("*/SKILL.md"):
         err(f"{s.relative_to(ROOT)}: name '{fm.get('name')}' がディレクトリ名と不一致")
 
 # --- 7. 台帳（command-registry）との件数突合 ---
-# 台帳の行形式: | delve-<name> | <日本語コマンド名> | ドメイン | Pack | 言い方 |
+# 台帳の行形式: | takumi-<name> | <日本語コマンド名> | ドメイン | Pack | 言い方 |
 reg = read(ROOT / "docs/command-registry.md")
-reg_rows = re.findall(r"^\| (delve-[a-z-]+) \| ([^|]+?) \|", reg, re.M)
+reg_rows = re.findall(r"^\| (takumi-[a-z-]+) \| ([^|]+?) \|", reg, re.M)
 reg_jp = {jp.strip() for _, jp in reg_rows if not jp.strip().startswith("（内部")}
 reg_en = {en for en, _ in reg_rows}
 fs_cmds = {c.stem for c in commands}
@@ -127,17 +127,15 @@ if reg_en - fs_procs:
 if fs_procs - reg_en:
     err(f"command-registry.md: 台帳に載っていない手順書 {sorted(fs_procs - reg_en)}")
 
-# --- 8. 旧 delve 名・旧件数の残骸チェック（TESTING.md は履歴として除外） ---
-OLD_NAMES = re.compile(r"\b(delve-style|delve-audit|delve-deep|delve-improve|delve-adlp|delve-adscript|delve-assets|delve-imagegen|delve-canva|delve-watch|delve-guide|delve-sns\.md)\b")
+# --- 8. 旧 delve-* 名の残骸チェック（takumi-* 全面リネーム後、delve- は一切残らない。TESTING.md は履歴として除外） ---
+OLD_NAME = re.compile(r"\bdelve-[a-z]", re.I)
 for f in list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) + \
          list(ROOT.glob("docs/**/*.md")) + list(ROOT.glob("references/**/*.md")) + \
          [ROOT / "README.md", ROOT / "hooks/scripts/session-rules.txt"]:
     if not f.is_file():
         continue
-    for m in set(OLD_NAMES.findall(read(f))):
-        if m == "delve-sns.md":
-            continue  # delve-sns.md は現行ルーター
-        err(f"{f.relative_to(ROOT)}: 廃止済みの旧手順名 '{m}' が残存（docs/parts/ の部品名に置換すること）")
+    if OLD_NAME.search(read(f)):
+        err(f"{f.relative_to(ROOT)}: 旧 'delve-*' 手順名が残存（takumi-* にリネームすること）")
 
 # --- 9. ファイル内の異常重複（同一の長い行が3回以上 = 一括置換バグの兆候） ---
 import collections as _coll

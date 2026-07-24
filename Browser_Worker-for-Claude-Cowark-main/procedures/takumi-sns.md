@@ -1,4 +1,4 @@
-# /SNS運用 — SNS媒体の統合入口（delve-sns）
+# /SNS運用 — SNS媒体の統合入口（takumi-sns）
 
 **媒体別の専用コマンドが優先**: /セットアップ（または /ワーク追加）で媒体を選ぶと、ワークスペースに `/<媒体名>運用`（例: /X運用 /Instagram運用）が生成される。生成済みの媒体への単一媒体依頼はそちらが第一入口。この /SNS運用 は (a) 複数媒体まとめての依頼（「全SNSのストック確認」等）、(b) 媒体不明の依頼、(c) 専用コマンド未生成（セットアップ未実施）時の受け皿。専用コマンドがまだ無い媒体を検知したら、生成を1行提案してよい（正本テンプレは /ワーク追加 §4）。
 
@@ -12,13 +12,13 @@
 
 | 媒体 | 手順書（見える範囲・制約・固有ルールの正本） |
 |---|---|
-| X | procedures/delve-sns-x.md |
-| Instagram | procedures/delve-sns-instagram.md |
-| TikTok | procedures/delve-sns-tiktok.md |
-| Threads | procedures/delve-sns-threads.md |
-| note | procedures/delve-sns-note.md |
-| YouTube | procedures/delve-sns-youtube.md |
-| LINE公式 | procedures/delve-sns-line.md |
+| X | procedures/takumi-sns-x.md |
+| Instagram | procedures/takumi-sns-instagram.md |
+| TikTok | procedures/takumi-sns-tiktok.md |
+| Threads | procedures/takumi-sns-threads.md |
+| note | procedures/takumi-sns-note.md |
+| YouTube | procedures/takumi-sns-youtube.md |
+| LINE公式 | procedures/takumi-sns-line.md |
 
 複数媒体まとめて（「全SNSのストック確認」等）は媒体ごとに順に実行し、締めで outcome-verifier の集計とダッシュボード更新につなぐ。
 
@@ -28,4 +28,4 @@ docs/parts/content-calendar.md に従う（媒体別の制約はこのパック�
 
 ## 2. 共通フロー
 
-各媒体手順は docs/sns-ops.md（実態照合→生成→予約/下書き→実績記録）に従う。投稿・予約・配信の変更操作はタスク開始手順（procedures/delve-start.md）のゲート下。LINE の配信実行は pre-send-verifier 監査 + ユーザー承認 + 費用見積もりが必須。
+各媒体手順は docs/sns-ops.md（実態照合→生成→予約/下書き→実績記録）に従う。投稿・予約・配信の変更操作はタスク開始手順（procedures/takumi-start.md）のゲート下。LINE の配信実行は pre-send-verifier 監査 + ユーザー承認 + 費用見積もりが必須。

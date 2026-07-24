@@ -13,7 +13,7 @@ GATE_MODE="${DELVEWORK_GATE_MODE:-deny}"
 # 1) k_done への touch を含むコマンドだけが対象
 printf '%s' "$STDIN_TEXT" | grep -q 'k_done' || exit 0
 printf '%s' "$STDIN_TEXT" | grep -q 'touch' || exit 0
-# 初期化・掃除（rm を含むコマンド）は免除 — delve-start 手順2 の
+# 初期化・掃除（rm を含むコマンド）は免除 — takumi-start 手順2 の
 # `rm -f memory/.workflow/{...,k_done,...}` が前タスクの bulk_send 残留時に誤爆しデッドロックするため
 printf '%s' "$STDIN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm([[:space:]]|$)' && exit 0
 

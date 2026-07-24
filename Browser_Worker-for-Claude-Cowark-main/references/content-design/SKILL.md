@@ -54,6 +54,6 @@ description: コンテンツ設計（C×P×T） — 記事/SNS長文/オウン�
 
 ## ネタ帳・ストック運用（量産の型）
 
-- ネタは `knowledge/sns/<platform>/queue.md`（delve-sns と同じ台帳。SNS以外の記事は `knowledge/sns/blog/queue.md`）に **Inbox →（検証済み）Ready →（使用後）Used** で管理。別の queue ファイルを新設しない
+- ネタは `knowledge/sns/<platform>/queue.md`（takumi-sns と同じ台帳。SNS以外の記事は `knowledge/sns/blog/queue.md`）に **Inbox →（検証済み）Ready →（使用後）Used** で管理。別の queue ファイルを新設しない
 - ストック目標を決めて充足する（例: 記事4本分・SNS 3日分）。目標割れが「作るべきサイン」
 - 公開後はメトリクスを記録し、次のテーマ選定に反映する（伸びた C×P×T の組み合わせを増やす）

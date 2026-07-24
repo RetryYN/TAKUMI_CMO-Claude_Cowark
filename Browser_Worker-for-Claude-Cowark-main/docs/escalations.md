@@ -5,7 +5,7 @@
 | # | 重大度 | 課題 | プラグイン側の緩和（実装済み） | 上申内容 |
 |---|---|---|---|---|
 | E1 | **最重要（セキュリティ）** | Credential Guard の ref すり抜け: hooks はツール引数の文字列しか見えず、`ref_150` 等の参照IDの解決先が type=password かを判定できない（2026-07-24 実測: Wikipedia 実 password 欄に入力が素通り） | steps-reference「認証フィールドの取り扱い」の自己規律 + V5 に ref 回帰テスト + キーワード検知（従来） | **Claude in Chrome 拡張側で、入力系操作の ref 解決先要素の type=password / autocomplete（current-password / one-time-code 等）を検査してブロックする機構** |
-| E2 | 致命（無人運用） | ローカルスケジュールのプログラマティック登録不可: 「このコンピュータで実行」スケジュールはデスクトップアプリのUI操作でのみ作成でき、AI/プラグインから登録できない（create_trigger はクラウド発火で実PC Chrome に不達） | delve-task / unattended-ops で「ブラウザ操作タスクは create_trigger 禁止・ローカル登録」の規約化 + 登録手順の案内 + 無人運用前チェック | **ローカル（デバイス指定）スケジュールをプログラマティックに登録するAPI/ツール** |
+| E2 | 致命（無人運用） | ローカルスケジュールのプログラマティック登録不可: 「このコンピュータで実行」スケジュールはデスクトップアプリのUI操作でのみ作成でき、AI/プラグインから登録できない（create_trigger はクラウド発火で実PC Chrome に不達） | takumi-task / unattended-ops で「ブラウザ操作タスクは create_trigger 禁止・ローカル登録」の規約化 + 登録手順の案内 + 無人運用前チェック | **ローカル（デバイス指定）スケジュールをプログラマティックに登録するAPI/ツール** |
 | E3 | 高（資産継続性） | クラウド/ローカルのワークスペース分断: クラウドセッションの作業場はコンテナ内のみで、ローカルセッションは別ファイルシステム。資産（knowledge/tasks/memory/コマンド）が引き継がれない | unattended-ops §クラウド→ローカル移行（zip 書き出し→接続フォルダ→展開。56ファイルで実証） | **ワークスペース資産のクラウド/ローカル同期機構** |
 | E4 | **最重要（セキュリティ）** | **ローカル Cowork で plugin hooks が未配線**: デスクトップのローカルセッションでは PreToolUse/PostToolUse がツール呼び出しに配線されず、matcher 完全一致のツール（mcp__claude-in-chrome__navigate）でも不発（2026-07-24 v1.0.0 で Opus/Sonnet 両ラン実測）。全ゲートがフェイルオープンになる。付随: ローカルのツール名も cloud と異なる（Bash→mcp__workspace__bash / 送付→mcp__cowork__present_files） | README 既知の限界に開示 + 「ゲート前提の運用（一括送出・金銭近傍・無人）は cloud で」の運用規約 + matcher にローカルツール名を先回り登録（配線され次第有効） | **ローカルセッションでも plugin hooks を配線する（少なくとも PreToolUse）。併せてツール名の cloud/ローカル差の解消 or 対応表の公開** |
 

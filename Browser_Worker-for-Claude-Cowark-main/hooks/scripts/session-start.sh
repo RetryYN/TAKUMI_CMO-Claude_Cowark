@@ -21,7 +21,7 @@ fi
 # 初期セットアップ: 未回答のときだけ1行案内（回答済みなら何も注入しない = コンテキスト消費ゼロ）
 SETUP_FILE="$PROJECT_DIR/knowledge/config/setup.yaml"
 if [ -d "$PROJECT_DIR/knowledge" ] && [ ! -f "$SETUP_FILE" ]; then
-  PREFIX="${PREFIX}【セットアップ】初期ヒアリング未回答。最初の依頼の前に /セットアップ（procedures/delve-setup.md）を1行で案内すること（強制はしない）。 "
+  PREFIX="${PREFIX}【セットアップ】初期ヒアリング未回答。最初の依頼の前に /セットアップ（procedures/takumi-setup.md）を1行で案内すること（強制はしない）。 "
 elif [ -f "$SETUP_FILE" ] && grep -q "completed: pending" "$SETUP_FILE" 2>/dev/null; then
   PREFIX="${PREFIX}【セットアップ】未回答の項目が残っている（setup.yaml: pending）。区切りの良いタイミングで /セットアップ の続きを1行で案内。 "
 fi
@@ -31,7 +31,7 @@ PACKS_CONF="$PROJECT_DIR/knowledge/config/packs.conf"
 if [ -f "$PACKS_CONF" ]; then
   OFF_PACKS="$(grep -E '^[a-z-]+=off' "$PACKS_CONF" 2>/dev/null | cut -d= -f1 | grep -v '^core$' | tr '\n' ',' | sed 's/,$//')"
   if [ -n "$OFF_PACKS" ]; then
-    PREFIX="${PREFIX}【タスクPack】無効: ${OFF_PACKS} — 該当パックの機能は使わない・提案しない・自動発火させない（定義は procedures/delve-config.md（/カスタマイズ の機能ON/OFF）参照。ユーザーが明示要求したときのみON化を1行案内）。 "
+    PREFIX="${PREFIX}【タスクPack】無効: ${OFF_PACKS} — 該当パックの機能は使わない・提案しない・自動発火させない（定義は procedures/takumi-config.md（/カスタマイズ の機能ON/OFF）参照。ユーザーが明示要求したときのみON化を1行案内）。 "
   fi
 fi
 

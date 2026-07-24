@@ -51,7 +51,7 @@ YAML 案を確定する前に、strategy-advisor サブエージェントに (a)
 
 ### 7. 以後の実行（このコマンドの仕事ではない）
 
-- 実行は従来どおり **/タスク開始** が担う: 「<タスク名>やって」→ delve-start が `tasks/<タスク名>.yaml` を読み、steps を実行計画の正として A〜K を回す（destructive ステップは H で承認）
+- 実行は従来どおり **/タスク開始** が担う: 「<タスク名>やって」→ takumi-start が `tasks/<タスク名>.yaml` を読み、steps を実行計画の正として A〜K を回す（destructive ステップは H で承認）
 - ダッシュボードは `tasks/*.yaml` + `loops.yaml` を読んでタスク一覧・タブ・次回実行を自動反映する
 
 ## list

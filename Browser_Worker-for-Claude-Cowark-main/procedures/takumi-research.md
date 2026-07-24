@@ -1,4 +1,4 @@
-# /リサーチ — 調査の横断入口（delve-research）
+# /リサーチ — 調査の横断入口（takumi-research）
 
 ## 0. どの媒体・対象？（曖昧なときだけ聞く）
 
@@ -13,8 +13,8 @@
 
 | 対象 | 手順 |
 |---|---|
-| SNS | docs/parts/sns-research.md + 該当媒体の procedures/delve-sns-*.md（見える範囲・制約） |
-| 広告 | procedures/delve-ads.md のリサーチ行（TikTok Creative Center 等） |
+| SNS | docs/parts/sns-research.md + 該当媒体の procedures/takumi-sns-*.md（見える範囲・制約） |
+| 広告 | procedures/takumi-ads.md のリサーチ行（TikTok Creative Center 等） |
 | Webサイト・LP のデザイン | docs/parts/style-research.md |
 | Webサイト・LP の品質・速度 | docs/parts/site-audit.md |
 | 徹底的に全部 | docs/parts/deep-research.md |

@@ -1,13 +1,13 @@
-# /カスタマイズ — 仕組みを育てる統合入口（delve-customize）
+# /カスタマイズ — 仕組みを育てる統合入口（takumi-customize）
 
 ## 0. 何をカスタマイズ？（曖昧なときだけ聞く）
 
 要望から読み取れなければ質問ツールで確認する:
 
-1. **タスクをまとめる**（繰り返す仕事の登録） → procedures/delve-task.md
-2. **スキルを作る**（手順・やり方を覚えさせる） → procedures/delve-skillify.md（ルール？方法？判断基準？の分類つき）
-3. **好み・NGを記憶**（成果物への評価を次に活かす） → procedures/delve-feedback.md
-4. **機能のON/OFF**（使う媒体・パックの変更） → procedures/delve-config.md（媒体の増減は /セットアップ でも可）
+1. **タスクをまとめる**（繰り返す仕事の登録） → procedures/takumi-task.md
+2. **スキルを作る**（手順・やり方を覚えさせる） → procedures/takumi-skillify.md（ルール？方法？判断基準？の分類つき）
+3. **好み・NGを記憶**（成果物への評価を次に活かす） → procedures/takumi-feedback.md
+4. **機能のON/OFF**（使う媒体・パックの変更） → procedures/takumi-config.md（媒体の増減は /セットアップ でも可）
 
 ## 判定のヒント
 

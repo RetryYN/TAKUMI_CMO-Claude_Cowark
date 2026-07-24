@@ -70,6 +70,6 @@ status の履歴（knowledge/media/status/）から横断ダッシュボード H
 | 「スカウト送って」「求人を更新して」 | 掃き出し | /タスク開始（A〜K）+ pre-send-verifier 監査 + ユーザー承認 |
 | 「送信計画・スケジュールを立てて」 | 計画 | docs/parts/content-calendar.md（チケット残数・期限から逆算） |
 
-## 動的コマンド生成（正本は /ワーク追加 = procedures/delve-add-work.md — 登録+初期マッピング+コマンド生成を一括で行う）
+## 動的コマンド生成（正本は /ワーク追加 = procedures/takumi-add-work.md — 登録+初期マッピング+コマンド生成を一括で行う）
 
-register 単体で呼ばれた場合も、登録後の動的コマンド生成・初期マッピングは procedures/delve-add-work.md の手順（§3〜§5）に従う（テンプレはそちらが正本。ここに複製しない）。
+register 単体で呼ばれた場合も、登録後の動的コマンド生成・初期マッピングは procedures/takumi-add-work.md の手順（§3〜§5）に従う（テンプレはそちらが正本。ここに複製しない）。
