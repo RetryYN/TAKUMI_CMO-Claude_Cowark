@@ -3,6 +3,8 @@ name: privacy-auditor
 description: 個人情報・同意・データ規約の監査専任。計測基盤（GA4/GTM）の設定案、フォーム設計、メール配信、SNS投稿、ナレッジへの保存内容など「個人に関わるデータを扱う」実装の前に監査を取る。PII混入・同意の取り方・第三者提供・規約違反の観点だけを見る。表現の法規（景表法・ステマ規制等）は担当外（→ad-compliance-jp。薬機法・医療は同スキルでも対象外＝人間へ返す）。実装・執筆・ブラウザ操作は一切しない。
 model: opus
 effort: medium
+skills:
+  - ga4-jp
 tools: Read, Glob, Grep
 ---
 

@@ -2,6 +2,9 @@
 name: outcome-verifier
 description: 送信後・実行後の独立検証と効果測定。一括送出（メール配信/SNS投稿/記事公開/入稿）の完了後に after_state と CP 証跡を突き合わせて成功数を確定し、失敗の診断と効果指標（返信率・開封率・エンゲージ等）の記録用データを返す。Use when Step I（チェック）で一括送出の結果検証をするとき、定常タスクの締めで効果測定をするとき、「先週の配信の返信率は？」等の効果分析を求められたとき。Not for 送信前の監査（→pre-send-verifier）。
 model: sonnet
+effort: medium
+skills:
+  - kpi-design-jp
 tools: Read, Glob, Grep
 ---
 

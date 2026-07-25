@@ -524,6 +524,67 @@ elif _skill_dirs:
             if _ref not in _skill_dirs:
                 err(f"skills/{_name}/SKILL.md: 存在しないスキル `skills/{_ref}` を参照している")
 
+# --- 21. エージェントの級（model / effort / skills preload）
+#         （2026-07-26 導入。正本は docs/agent-tiers.md。
+#          一次情報: プラグイン同梱エージェントは model/effort/skills/maxTurns/tools/
+#          disallowedTools/memory/background/isolation のみ。hooks/mcpServers/permissionMode は
+#          セキュリティ上サポートされない。effort は Haiku では非対応（公式の対応表に無い）。
+#          `skills:` は名前を間違えても**デバッグログに警告が出るだけで静かにスキップされる**ので、
+#          実在確認を機械でやる） ---
+_tiers = ROOT / "docs" / "agent-tiers.md"
+_agent_files = sorted((ROOT / "agents").glob("*.md"))
+_EFFORTS = {"low", "medium", "high", "xhigh", "max"}
+_UNSUPPORTED_FM = ("hooks", "mcpServers", "permissionMode")
+if not _tiers.is_file():
+    err("docs/agent-tiers.md が無い（エージェントの級の正本）")
+elif _agent_files:
+    _tier_text = read(_tiers)
+    _skill_names = {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")}
+    for _p in _agent_files:
+        _a = _p.stem
+        _fm = frontmatter(_p)
+        _raw = read(_p)
+        _model = _fm.get("model")
+        _effort = _fm.get("effort")
+
+        if not _model:
+            err(f"agents/{_a}.md: `model` が無い（`inherit` 任せにすると級が意味を失う。"
+                "docs/agent-tiers.md の表から取る）")
+        elif _model == "haiku":
+            if _effort:
+                err(f"agents/{_a}.md: `model: haiku` に `effort: {_effort}` が付いている。"
+                    "**Haiku は effort 非対応**（公式の対応表に無い）。効かない設定を置かない")
+        else:
+            if not _effort:
+                err(f"agents/{_a}.md: `effort` が無い（`model: {_model}` は effort をサポートする。"
+                    "級から決めた値を明示する — 未設定はセッション既定に流されて級が効かない）")
+            elif _effort not in _EFFORTS:
+                err(f"agents/{_a}.md: `effort: {_effort}` は不正（{'/'.join(sorted(_EFFORTS))}）")
+
+        # 正本の表との突合（| `name` | 級 | `model` | `effort` | … の行）
+        _row = re.search(
+            rf"^\|\s*`{re.escape(_a)}`\s*\|[^|]*\|\s*`([a-z0-9-]+)`\s*\|\s*`([a-z]+)`\s*\|",
+            _tier_text, re.M)
+        if not _row:
+            err(f"docs/agent-tiers.md: `{_a}` の配役行が無い（級・model・effort を表に載せる）")
+        elif _model and (_row.group(1) != _model or (_effort or "") != _row.group(2)):
+            err(f"agents/{_a}.md: 実体（{_model}/{_effort}）が docs/agent-tiers.md の表"
+                f"（{_row.group(1)}/{_row.group(2)}）と食い違う")
+
+        for _bad in _UNSUPPORTED_FM:
+            if re.search(rf"^{_bad}:", _raw, re.M):
+                err(f"agents/{_a}.md: `{_bad}:` はプラグイン同梱エージェントでは"
+                    "サポートされない（セキュリティ上の制約）。書いても効かない")
+
+        # skills: preload の実在確認（**間違えても静かにスキップされる**ため機械で拾う）
+        _sk = re.search(r"^skills:\s*$\n((?:\s+-\s+\S+\n)+)", _raw, re.M)
+        if _sk:
+            for _name in re.findall(r"-\s+(\S+)", _sk.group(1)):
+                if _name not in _skill_names:
+                    err(f"agents/{_a}.md: `skills:` の `{_name}` が実在しない。"
+                        "**preload は名前を間違えても警告がデバッグログに出るだけで静かに落ちる** "
+                        "— 規範ゼロで走ることになる")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
