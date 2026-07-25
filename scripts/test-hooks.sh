@@ -228,6 +228,49 @@ check "brand-iso: warnモードは注入のみ" 'additionalContext.*Brand Isolat
 rm -f "$TAKUMI_WF_DIR/active_brand"
 unset TAKUMI_GATE_MODE
 
+# --- 並列ゲート（サブエージェントの同時起動上限） ---
+AG="$SC/agent-parallel-gate.sh"
+SLOTS="$TAKUMI_WF_DIR/agents_running"
+AGENT_JSON='{"tool_name":"Agent","tool_input":{"prompt":"x"}}'
+rm -f "$SLOTS"
+
+# 対象外のツールには一切干渉しない
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"ls"}}' | bash "$AG" pre)
+check "parallel: 対象外ツールは素通し" EMPTY "$out"
+[ -f "$SLOTS" ] && { echo "FAIL: parallel: 対象外で枠を消費した"; FAIL=1; } || echo "PASS: parallel: 対象外で枠を消費しない"
+
+# 上限（4）までは通り、5体目で止まる
+for i in 1 2 3 4; do
+  out=$(printf '%s' "$AGENT_JSON" | bash "$AG" pre)
+  check "parallel: ${i}体目は通過" EMPTY "$out"
+done
+out=$(printf '%s' "$AGENT_JSON" | bash "$AG" pre)
+check "parallel: 5体目は警告（warn 既定）" 'additionalContext.*並列ゲート' "$out"
+check "parallel: 上限と現在数を示す" '最大 4 体.*現在 4 体' "$out"
+printf '%s' "$out" | json_valid && echo "PASS: parallel: 出力JSONが妥当" || { echo "FAIL: parallel: JSON不正"; FAIL=1; }
+
+# deny 昇格モード
+out=$(printf '%s' "$AGENT_JSON" | TAKUMI_PARALLEL_GATE_MODE=deny bash "$AG" pre)
+check "parallel: deny モードで deny" '"permissionDecision":"deny"' "$out"
+
+# 完了で枠が返り、また起動できる
+printf '%s' "$AGENT_JSON" | bash "$AG" post >/dev/null
+out=$(printf '%s' "$AGENT_JSON" | bash "$AG" pre)
+check "parallel: 完了後は再び起動できる" EMPTY "$out"
+
+# TTL 超過の枠は掃除される（取りこぼしでデッドロックしない）
+printf '1\n1\n1\n1\n' > "$SLOTS"
+out=$(printf '%s' "$AGENT_JSON" | bash "$AG" pre)
+check "parallel: 古い枠は掃除して通す" EMPTY "$out"
+
+# 上限は環境変数で下げられる
+rm -f "$SLOTS"
+out=$(printf '%s' "$AGENT_JSON" | TAKUMI_MAX_PARALLEL_AGENTS=1 bash "$AG" pre)
+check "parallel: 上限1で1体目は通過" EMPTY "$out"
+out=$(printf '%s' "$AGENT_JSON" | TAKUMI_MAX_PARALLEL_AGENTS=1 bash "$AG" pre)
+check "parallel: 上限1で2体目は警告" '最大 1 体' "$out"
+rm -f "$SLOTS"
+
 rm -rf "$CLAUDE_PROJECT_DIR"
 [ "$FAIL" = 0 ] && echo "test-hooks: ALL PASS" || echo "test-hooks: FAILURES"
 exit "$FAIL"

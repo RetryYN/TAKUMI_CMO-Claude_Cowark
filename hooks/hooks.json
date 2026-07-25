@@ -39,6 +39,15 @@
         ]
       },
       {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/agent-parallel-gate.sh\" pre"
+          }
+        ]
+      },
+      {
         "matcher": "SendUserFile|mcp__remote-devices__device_commit_files|mcp__remote-devices__create_artifact|mcp__remote-devices__update_artifact|mcp__claude-in-chrome__file_upload|mcp__cowork__present_files",
         "hooks": [
           {
@@ -62,6 +71,15 @@
       }
     ],
     "PostToolUse": [
+      {
+        "matcher": "Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/scripts/agent-parallel-gate.sh\" post"
+          }
+        ]
+      },
       {
         "matcher": "mcp__claude-in-chrome__read_page|mcp__claude-in-chrome__find|mcp__claude-in-chrome__get_page_text|mcp__playwright__browser_snapshot|mcp__playwright__browser_evaluate|mcp__playwright__browser_run_code",
         "hooks": [

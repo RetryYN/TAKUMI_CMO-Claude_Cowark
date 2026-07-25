@@ -124,6 +124,46 @@ fable が月次上限・不達で `Agent terminated early due to an API error` �
 3. **preload が実際に効いているかは Tier 2 の V78 で実測する**
    （preload したスキルにしか書いていない内容を答えられるかで判定する）
 
+## 並列起動の上限 — 同時 **4体**
+
+**本体の既定は同時20体**（超えると `Concurrent subagent limit reached` で失敗し、
+再試行しないよう指示が出る）。**匠CMO はこれを4体に絞る。**
+
+理由は3つ:
+
+1. **費用とレート** — 戦略級（`opus`/`high`・`fable`/`medium`）が20体走ると跳ね上がる
+2. **後始末が追えない** — 並列で失敗した委譲の切り分けは、体数が増えるほど指数的に難しくなる
+3. **本プラグインの並列は元々2〜3体** — `docs/parts/pre-setup-council.md` の合議は常設2体、
+   `/戦略` の壁打ちは2体。**4体あれば設計上の並列はすべて収まる**
+
+### 強制の3枚
+
+| 層 | 何が効くか | 限界 |
+|---|---|---|
+| **① 環境変数**（本命） | `CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS=4` を利用者の設定に置くと**本体が弾く** | **プラグインからは設定できない**（利用者の環境。`settings.json` の `env` ブロック等で本人が置く） |
+| **② hook**（`hooks/scripts/agent-parallel-gate.sh`） | PreToolUse(Agent) で数え、上限で止める | **E4/E5** — ローカル Cowork では hooks 未配線、cloud でも発火は保証されない |
+| **③ session-rules** | メインループが「5体目を起動しない」判断をする | 規約なので破られうる |
+
+**①がある人は①で終わり。無い人のために②③がある。**
+
+### hook の設計（数え方と、なぜ warn から始めるか）
+
+PreToolUse(Agent) で `memory/.workflow/agents_running` に1行 append、PostToolUse(Agent) で1行 pop。
+**完了シグナルを取りこぼすと枠が残る**ので、TTL（既定30分）を過ぎた行は掃除する
+（掃除が無いと、失敗した委譲1件で以後ずっと枠が減ったままになる）。
+
+**既定は `warn`（注入のみ）。** 他のゲートと同じ段階導入（TESTING.md「GATE_MODE 昇格」）だが、
+理由はこのゲート固有:
+
+> **並列上限は「止めそこねても事故にならない」種類の規約である。**
+> 不可逆送出やブランド汚染と違い、5体走っても壊れるものは無い（費用がかさむだけ）。
+> 一方、**誤爆で正当な委譲を殺すと作業が止まる**。実害の非対称が逆向きなので、
+> deny を急がない。**V79 で誤爆ゼロを実測してから昇格する。**
+
+環境変数で調整できる（開発・検証用）:
+`TAKUMI_MAX_PARALLEL_AGENTS`（既定4）/ `TAKUMI_AGENT_SLOT_TTL`（既定1800秒）/
+`TAKUMI_PARALLEL_GATE_MODE`（`warn` | `deny`）
+
 ## モデル退役への追従（エイリアスだけを書く）
 
 **`model:` にはエイリアス（`opus` / `sonnet` / `haiku` / `fable`）だけを書き、フルモデルIDを書かない。**
