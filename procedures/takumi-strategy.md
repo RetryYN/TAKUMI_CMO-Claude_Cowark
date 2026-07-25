@@ -6,7 +6,7 @@
 
 ## サイクル（リサーチ → 仮説 → 戦略 → 計画 → 改善）
 
-1. **インプット収集**: `knowledge/brands/<slug>/brand.yaml`（プロフィール・ポジショニング・ICP・ブランドガイド）、既存の競合/市場リサーチ（無ければ /リサーチ を先に回す提案）、**下流から返った計測**（`knowledge/brands/<slug>/…/analytics` や outcome-verifier 集計があれば取り込む＝∞の上り）。
+1. **インプット収集**: `knowledge/brands/<slug>/brand.yaml`（プロフィール・ポジショニング・ICP・ブランドガイド）、既存の競合/市場リサーチ（無ければ /リサーチ を先に回す提案）、**下流から返った計測**（`knowledge/brands/<slug>/analytics/` や outcome-verifier 集計があれば取り込む＝∞の上り。計測が無い・古い場合は **/計測**（procedures/takumi-analytics.md）で取りに行ってから立案する）。
 2. **立案の委譲**: cmo-strategist に委譲する。委譲プロンプトには上記インプットの**絶対パス**を明記（相対は synced 環境で不達）。Agent ツールが無い環境ではメインループが agents/cmo-strategist.md を Read して自ら作法に従い立案し、その旨を1行記録（conventions §4）。
 3. **成果物の永続化**（アクティブ区画内でのみ）:
    - `knowledge/brands/<slug>/strategy/strategy.md` … 3C・ポジショニング・ロードマップ
