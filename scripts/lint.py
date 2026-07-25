@@ -235,6 +235,32 @@ for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + 
             err(f"{f.relative_to(ROOT)}: skills の本数が実体と不一致"
                 f"（記述={m.group(1)} / 実体={_ref_count}）")
 
+# --- 13b. コマンド・手順書の本数を書いた記述が実体と一致するか
+#          （2026-07-25 検出: 台帳に「登録13本」「内部手順 17 / 手順書 30」と書かれたまま
+#           コマンドが 16 本に増えていた。#13 は skills だけを見ており、他は素通りだった） ---
+_n_cmd = len(commands)
+_n_proc = len(procedures)
+_COUNT_PATTERNS = [
+    (re.compile(r"登録コマンド (\d+) 本"), lambda: _n_cmd, "登録コマンド"),
+    (re.compile(r"コマンド台帳（登録(\d+)本）"), lambda: _n_cmd, "登録コマンド"),
+    (re.compile(r"`commands/`（登録(\d+)本"), lambda: _n_cmd, "登録コマンド"),
+    (re.compile(r"メニューに並ぶのはこの(\d+)本"), lambda: _n_cmd, "登録コマンド"),
+    (re.compile(r"内部手順含め(\d+)本"), lambda: _n_proc, "手順書"),
+    (re.compile(r"内部手順 (\d+) / 手順書 (\d+)"), lambda: (_n_proc - _n_cmd, _n_proc), "内部手順/手順書"),
+]
+for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
+    if not f.is_file():
+        continue
+    body = read(f)
+    for pat, expected, label in _COUNT_PATTERNS:
+        for m in pat.finditer(body):
+            exp = expected()
+            got = tuple(int(g) for g in m.groups())
+            want = exp if isinstance(exp, tuple) else (exp,)
+            if got != want:
+                err(f"{f.relative_to(ROOT)}: {label} の本数が実体と不一致"
+                    f"（記述={got} / 実体={want}）— 台帳の件数は実体を数えて書く")
+
 # --- 14. docs/parts/ の実体と index.md の突合（2026-07-25 合議で検出: parts は台帳突合の対象外だった） ---
 _parts_dir = ROOT / "docs/parts"
 if _parts_dir.is_dir():
