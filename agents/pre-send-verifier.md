@@ -5,6 +5,7 @@ model: opus
 effort: medium
 skills:
   - ad-compliance-jp
+  - psych-target-jp
 tools: Read, Glob, Grep
 ---
 
@@ -42,5 +43,5 @@ NO-GO / FIX の項目は「何をどう直せば再判定できるか」を1行�
 LLM レビューは見逃し（recall 低下）とハンコ化のリスクが実証されている。この監査は**回帰の床であり、人間承認の代替ではない**。
 
 - 監査の最初に `knowledge/verification/verdict-log.md` を Read し（無ければ**黙って**スキップ — 未運用ワークスペースでは不在が正常であり、不在の報告を VERDICT に含めない）、**過去に人間が差し戻した事例・監査が見逃した事例**を今回の判定基準に加える
-- `skills/psych-target-jp/SKILL.md` の倫理境界も監査観点に含める（プラグイン同梱ファイル。相対パスで不達ならワークスペースではなくプラグイン領域を検索: Glob path=`~/.claude/plugins`、pattern=`**/skills/psych-target-jp/SKILL.md`。実在するので「存在せずスキップ」の報告はしない）: 不安の増幅（恐怖訴求）・偽の希少性・実数でない社会的証明・読み手を診断する口調があれば FAIL
+- `skills/psych-target-jp` の倫理境界に**必ず**照らす（**preload されているので Read 不要** — 2026-07-26 の実機検証で、このエージェントだけがプラグイン領域の Read を `outside this session's connected folders` で拒まれ、本項目を UNVERIFIABLE で返した。Read できるかは環境とエージェントで割れるので、判定の根拠は preload で届ける）: 不安の増幅（恐怖訴求）・偽の希少性・実数でない社会的証明・読み手を診断する口調があれば FAIL。**内容を思い出せない＝preload が届いていない**ので、その旨を1行申告してから判定に入る
 - 迷ったら厳しい側に倒す（GO は「全項目の証跡を確認できた」ときだけ）

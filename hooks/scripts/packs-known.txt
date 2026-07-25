@@ -1,0 +1,32 @@
+# 実在するタスクPack名の正本（1行1パック・# 始まりはコメント）。
+#
+# なぜ要るか: packs.conf は「<pack>=off」を書くだけの素朴な設定で、
+# session-start.sh は以前これを**名前を検査せずそのまま**通知に流していた。
+# つまり `sns-tiktokk=off` のような打ち間違いは、
+#   ・通知には「無効: sns-tiktokk」と出る（切れたように見える）
+#   ・実パック sns-tiktok は ON のまま（切れていない）
+# という、**切ったつもりで切れていない**状態を作る。切れていないこと自体に気づけない。
+# 2026-07-26 の Tier 2 ローカルランで実測（D-1）。
+#
+# 追加・改名するときは procedures/takumi-config.md の Pack 定義表と
+# procedures/takumi-sns-<媒体>.md を同時に直す。lint #33 が三者の一致を機械検査する。
+
+# --- 機能パック（procedures/takumi-config.md の Pack 定義表が正本）---
+core
+research
+creative
+sns
+ownedmedia
+deep
+writing
+compliance
+slack
+
+# --- 媒体サブパック（procedures/takumi-sns-<媒体>.md の実在が正本）---
+sns-instagram
+sns-line
+sns-note
+sns-threads
+sns-tiktok
+sns-x
+sns-youtube

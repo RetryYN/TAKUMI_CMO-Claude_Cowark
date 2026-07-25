@@ -27,13 +27,39 @@ elif [ -f "$SETUP_FILE" ] && grep -q "completed: pending" "$SETUP_FILE" 2>/dev/n
 fi
 
 # タスクPack設定（knowledge/config/packs.conf）: off のパックを通知に含める
+#
+# 名前は packs-known.txt と突き合わせる。**知らない名前を黙って「無効」と報告しない** —
+# 打ち間違いは「切ったつもりで切れていない」状態を作り、通知が切れたように見せるぶん
+# いちばん気づけない（2026-07-26 Tier 2 ローカルラン D-1 で実測）。
 PACKS_CONF="$PROJECT_DIR/knowledge/config/packs.conf"
+KNOWN_PACKS="$SCRIPT_DIR/packs-known.txt"
 if [ -f "$PACKS_CONF" ]; then
-  OFF_PACKS="$(grep -E '^[a-z-]+=off' "$PACKS_CONF" 2>/dev/null | cut -d= -f1 | grep -v '^core$' | tr '\n' ',' | sed 's/,$//')"
+  OFF_LIST="$(grep -E '^[a-z0-9-]+=off' "$PACKS_CONF" 2>/dev/null | cut -d= -f1 | grep -v '^core$')"
+  OFF_PACKS=""
+  UNKNOWN_PACKS=""
+  while IFS= read -r _p; do
+    [ -n "$_p" ] || continue
+    if [ -f "$KNOWN_PACKS" ] && ! grep -qx "$_p" "$KNOWN_PACKS" 2>/dev/null; then
+      UNKNOWN_PACKS="${UNKNOWN_PACKS:+$UNKNOWN_PACKS,}$_p"
+    else
+      OFF_PACKS="${OFF_PACKS:+$OFF_PACKS,}$_p"
+    fi
+  done <<EOF
+$OFF_LIST
+EOF
   if [ -n "$OFF_PACKS" ]; then
-    PREFIX="${PREFIX}【タスクPack】無効: ${OFF_PACKS} — 該当パックの機能は使わない・提案しない・自動発火させない（定義は procedures/takumi-config.md（/カスタマイズ の機能ON/OFF）参照。ユーザーが明示要求したときのみON化を1行案内）。 "
+    PREFIX="${PREFIX}【タスクPack】無効: ${OFF_PACKS} — 該当パックの機能は使わない・提案しない・自動発火させない（定義は procedures/takumi-config.md（/匠設定 の機能ON/OFF）参照。ユーザーが明示要求したときのみON化を1行案内）。 "
+  fi
+  if [ -n "$UNKNOWN_PACKS" ]; then
+    PREFIX="${PREFIX}【タスクPack】不明なパック名: ${UNKNOWN_PACKS} — packs.conf に実在しないパック名が書かれており、**該当機能は無効化されていない（ONのまま）**。切ったつもりで切れていない状態なので、最初の応答で1行報告し、/匠設定 で正しい名前に直すよう案内すること（実在名は procedures/takumi-config.md の Pack 定義表）。 "
   fi
 fi
+
+# 並列ゲートの枠の自己修復: セッション開始時点で走っているサブエージェントは無い。
+# API エラー等で異常終了した委譲は PostToolUse が飛ばず枠が残る（2026-07-26 Tier 2 V79 で実測:
+# 残枠が 4→1 まで減った）。TTL 30分で消える設計だが、**セッションを跨いでまで残す理由が無い**ので
+# ここで確実に空にする。取りこぼしが残ったまま deny へ昇格すると正当な委譲を殺す。
+rm -f "$WF_DIR/agents_running" 2>/dev/null
 
 # 運用ルール本文は session-rules.txt が正本（bash文字列への直書き禁止 — 編集性とエスケープ事故防止）
 RULES_FILE="$SCRIPT_DIR/session-rules.txt"

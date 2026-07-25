@@ -146,6 +146,43 @@ else
   echo "FAIL: session-start JSON 不正"; FAIL=1
 fi
 
+# 10b. session-start: パック名の検証（打ち間違いを「無効」と報告しない）
+#      2026-07-26 Tier 2 ローカルラン D-1。実在しない名前を「無効」と流すと、
+#      通知は切れたように見えるのに実体は ON のまま＝切ったつもりで切れていない。
+mkdir -p "$CLAUDE_PROJECT_DIR/knowledge/config"
+PACKS="$CLAUDE_PROJECT_DIR/knowledge/config/packs.conf"
+printf 'sns-tiktok=off\n' > "$PACKS"
+out=$(printf '{}' | bash "$SC/session-start.sh")
+check "packs: 実在名は「無効」に出る" '無効: sns-tiktok' "$out"
+printf 'sns-tiktokk=off\n' > "$PACKS"
+out=$(printf '{}' | bash "$SC/session-start.sh")
+check "packs: 打ち間違いは「不明なパック名」" '不明なパック名: sns-tiktokk' "$out"
+if printf '%s' "$out" | grep -q '無効: sns-tiktokk'; then
+  echo "FAIL: packs: 実在しない名前を「無効」として報告している（切れていないのに切れたと見える）"; FAIL=1
+else
+  echo "PASS: packs: 実在しない名前は「無効」に混ざらない"
+fi
+printf 'core=off\n' > "$PACKS"
+out=$(printf '{}' | bash "$SC/session-start.sh")
+check "packs: core は常時ONなので通知に出さない" 'TAKUMI-CMO' "$out"
+if printf '%s' "$out" | grep -qE '(無効|不明なパック名): core'; then
+  echo "FAIL: packs: core が通知に出ている（core は無効化不可）"; FAIL=1
+else
+  echo "PASS: packs: core は通知に出ない"
+fi
+rm -f "$PACKS"
+
+# 10c. session-start: 並列ゲートの枠を自己修復する
+#      API エラーで異常終了した委譲は PostToolUse が飛ばず枠が残る（V79 実測: 残枠 4→1）。
+#      セッション開始時点で走っている委譲は無いので、ここで確実に空にする。
+printf '1\n2\n3\n4\n' > "$TAKUMI_WF_DIR/agents_running"
+printf '{}' | bash "$SC/session-start.sh" >/dev/null
+if [ -f "$TAKUMI_WF_DIR/agents_running" ]; then
+  echo "FAIL: session-start が残った並列枠を掃除していない"; FAIL=1
+else
+  echo "PASS: session-start: 取りこぼした並列枠を掃除する"
+fi
+
 # --- psv_done ゲート（一括送出の監査強制） ---
 echo t > "$TAKUMI_WF_DIR/active"; touch "$TAKUMI_WF_DIR/b4_done" "$TAKUMI_WF_DIR/e_done"
 rm -f "$TAKUMI_WF_DIR/money_alert"

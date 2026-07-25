@@ -468,18 +468,33 @@ if (_ws / "knowledge").is_dir():
 #         （2026-07-26 に #20 から #26 へ改番。#20 が「スキルの接続」と重複しており、
 #          **番号で他所を指す仕組みなのに番号自体が一意でなかった**。#27 が一意性を検査する。
 #          改番して安全だったのは、この番号がどの正本からも引かれていないことを実測したため） ---
+#         （2026-07-26 追記: マーカーに `env=` を足した。ローカルランでも配線は測れるが、
+#          **配布判断は cloud ランでしか代替できない** — ローカルは hook 配線が環境依存（E4）で、
+#          かつ永続フォルダ未接続だと knowledge/ 系が丸ごと測れない。
+#          バージョンだけのマーカーでは「ローカルで通ったから配布してよい」と読める余地が残る） ---
 _testing = ROOT / "TESTING.md"
 if _testing.is_file():
-    _m = re.search(r"<!--\s*tier2-verified:\s*([0-9.]+)\s*-->", read(_testing))
+    _m = re.search(r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s*-->", read(_testing))
     if not _m:
-        err("TESTING.md: <!-- tier2-verified: <version> --> マーカーが無い"
-            "（最後に実機検証したバージョンを機械可読で持つ）")
-    elif _m.group(1) != plugin["version"]:
-        warns.append(
-            f"Tier 2 実機検証が未実施: 最終ラン={_m.group(1)} / 現行={plugin['version']}"
-            f" — cloud Cowork で `/匠検証 full` と言い、結果を TESTING.md に記録して"
-            f" マーカーを更新すること（リリースチェックリスト項目5・人間が実行）"
-        )
+        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> --> マーカーが無い"
+            "（最後に実機検証したバージョンと**実行環境**を機械可読で持つ。"
+            "環境が無いと『ローカルで通った』を配布可と読み違える）")
+    else:
+        _ran, _env = _m.group(1), _m.group(2)
+        if _env not in ("cloud", "local"):
+            err(f"TESTING.md: tier2-verified の env={_env} は不正（cloud か local）")
+        if _ran != plugin["version"]:
+            warns.append(
+                f"Tier 2 実機検証が未実施: 最終ラン={_ran}（env={_env}） / 現行={plugin['version']}"
+                f" — cloud Cowork で `/匠検証 full` と言い、結果を TESTING.md に記録して"
+                f" マーカーを更新すること（リリースチェックリスト項目5・人間が実行）"
+            )
+        elif _env != "cloud":
+            warns.append(
+                f"Tier 2 の最終ランが env={_env}（v{_ran}）— **配布判断には cloud ランが要る**。"
+                f" ローカルは hook 配線が環境依存（escalations E4）で、永続フォルダ未接続なら"
+                f" knowledge/ 系（ブランド区画・ダッシュボード）を測れない"
+            )
 
 # --- 19. 主要ディレクトリが空でないこと
 #         （2026-07-25 references→skills 移設時に検出: ディレクトリ名を変えると
@@ -873,6 +888,60 @@ for _f in list((ROOT / "commands").glob("*.md")) + list((ROOT / "skills").glob("
         err(f"{_f.relative_to(ROOT)}: `disable-model-invocation` を付けてはいけない"
             f"（**スケジュール発火で実行されず平文になる**＝定常タスクが登録済みのまま無言で死ぬ。"
             f"`/` の一覧から隠したいだけなら `user-invocable: false` を使う → docs/unattended-ops.md）")
+
+# --- 33. 実在するパック名の正本が3箇所で一致していること
+#         （2026-07-26 導入。Tier 2 ローカルラン D-1: session-start.sh は packs.conf の
+#          パック名を**検査せずそのまま**「無効:」通知に流していた。打ち間違えると
+#          「通知には切れたと出るが実際は切れていない」という、最も気づけない壊れ方になる。
+#          hooks 側に名前の正本 packs-known.txt を置いたので、それが
+#          ①procedures/takumi-config.md の Pack 定義表 ②procedures/takumi-sns-<媒体>.md の実在
+#          と食い違ったまま古びないよう機械で縛る。**正本が3つに増えたのではなく、
+#          機械が読める形が1つ増えた**ので、ズレたら落とす） ---
+_known_file = ROOT / "hooks" / "scripts" / "packs-known.txt"
+if not _known_file.is_file():
+    err("hooks/scripts/packs-known.txt が無い（session-start.sh がパック名を検査できない）")
+else:
+    _known = {ln.strip() for ln in read(_known_file).splitlines()
+              if ln.strip() and not ln.strip().startswith("#")}
+    _cfg = ROOT / "procedures" / "takumi-config.md"
+    _sec = re.search(r"^## Pack 定義.*?^(.*?)^## ", read(_cfg), re.M | re.S) if _cfg.is_file() else None
+    _table = ({n for n in re.findall(r"^\|\s*([a-z][a-z0-9-]*)\s*\|", _sec.group(1), re.M)}
+              - {"pack"}) if _sec else set()
+    if not _table:
+        err("procedures/takumi-config.md: 「## Pack 定義」の表からパック名を1つも読めない"
+            "（表の形を変えたら packs-known.txt との突合が空振りする）")
+    _media = {f"sns-{p.stem.replace('takumi-sns-', '')}"
+              for p in (ROOT / "procedures").glob("takumi-sns-*.md")}
+    _expected = _table | _media
+    for _miss in sorted(_expected - _known):
+        err(f"hooks/scripts/packs-known.txt: `{_miss}` が載っていない"
+            f"（利用者が正しい名前で off にしても『不明なパック名』と誤って警告される）")
+    for _extra in sorted(_known - _expected):
+        err(f"hooks/scripts/packs-known.txt: `{_extra}` は実体が無い"
+            f"（procedures/takumi-config.md の Pack 定義表にも procedures/takumi-sns-*.md にも無い）")
+
+# --- 34. 判定の根拠にする正本は、Read ではなく preload で届けること
+#         （2026-07-26 導入。Tier 2 ローカルラン E-2: **同じ環境でもエージェントによって
+#          プラグイン領域の Read が通ったり拒否されたりした**（risk-forecaster/design-critic/
+#          deliverable-writer は成功、pre-send-verifier は `outside this session's connected folders`）。
+#          preload（skills: frontmatter）は V78 で両者とも効いていた。
+#          つまり **Read は当てにできる経路ではなく、preload が唯一の保証**。
+#          そこで「本文で必読を指示している skills/<name>」は preload 必須にする。
+#          振り分けの案内（→ `skills/x`・併読）は対象外 — 全部載せると文脈を食い潰す） ---
+_MUST_READ = ("必ず", "に従い", "に従う", "Read し", "Read する", "読み込み", "審査前に")
+for _a in sorted((ROOT / "agents").glob("*.md")):
+    _raw = read(_a)
+    # frontmatter() は行単位の素朴なパーサでリスト値を持てないので #21 と同じ regex で取る
+    _blk = re.search(r"^skills:\s*$\n((?:\s+-\s+\S+\n)+)", _raw, re.M)
+    _pre = set(re.findall(r"-\s+(\S+)", _blk.group(1))) if _blk else set()
+    for _ln in _raw.splitlines():
+        if not any(_m in _ln for _m in _MUST_READ):
+            continue
+        for _s in re.findall(r"skills/([a-z0-9-]+)", _ln):
+            if _s not in _pre:
+                err(f"agents/{_a.name}: 本文が `skills/{_s}` の**必読**を指示しているのに "
+                    f"`skills:` preload に無い（Read はエージェントによって拒否される — E-2 実測。"
+                    f"判定の根拠にするなら preload に載せる。案内だけなら『必ず』『に従い』を外す）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
