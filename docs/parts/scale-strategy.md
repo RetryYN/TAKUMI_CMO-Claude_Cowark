@@ -6,7 +6,7 @@
 > **作法の正本は `skills/scale-strategy-jp`。着手前に必ず Read する**（相対不達なら Glob）。
 > 判断基準・出典の限界（**数値は原典未取得**）はそちらに書いてある。
 >
-> **前段**: アクティブブランドを確定する（未確定なら /ブランド）。
+> **前段**: アクティブブランドを確定する（未確定なら /匠設定）。
 > 記録は `knowledge/brands/<slug>/strategy/` にスコープされる（Brand Isolation Guard 対象）。
 
 ## この部品の位置
@@ -103,7 +103,7 @@ ms.is_within_striking_distance(0.45, LanchesterMode.FIRST_LAW)
 |---|---|
 | **局地戦** | テーマ・検索意図を絞る（→ `skills/seo-jp`） |
 | **一騎討ち戦** | 誰も答えていない問い（→ `skills/seo-jp`「向かれていない読み手」） |
-| **接近戦** | メール・紹介・応対（→ `/メール`・`/エンゲージメント`・`skills/referral-advocacy-jp`） |
+| **接近戦** | メール・紹介・応対（→ `/匠発信`・`/匠顧客`・`skills/referral-advocacy-jp`） |
 | **一点集中** | 媒体もテーマも絞る（→ `docs/parts/capacity-plan.md`） |
 | **陽動戦** | 大手が扱えない話題・言えない立場（→ `skills/winning-position-jp` §2） |
 
@@ -128,7 +128,7 @@ ms.is_within_striking_distance(0.45, LanchesterMode.FIRST_LAW)
    - 採る弱者戦法／**落とすもの**
    - **外れたと分かる条件**（→ `skills/hypothesis-design-jp`）
 2. `skills/winning-position-jp` の `winning-position.md` と突き合わせる（**土俵の性質 × 範囲の広さ**）
-3. `/戦略` のロードマップへ渡す
+3. `/匠戦略` のロードマップへ渡す
 4. 主張の言語化は `skills/messaging-design-jp`
 
 ## 禁止・注意

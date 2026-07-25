@@ -6,7 +6,7 @@
 
 | 部品 | 実体 | 用途 |
 |---|---|---|
-| 画像生成 | 部品 docs/parts/imagegen.md（/コンテンツ 等のパックから） | Gemini/ChatGPT の UI 操作で生成。グリーンバック指定可 |
+| 画像生成 | 部品 docs/parts/imagegen.md（/匠発信 等のパックから） | Gemini/ChatGPT の UI 操作で生成。グリーンバック指定可 |
 | 動画生成 | 部品 docs/parts/videogen.md（本体は imagegen.md §2b） | **Gemini 経由で実機検証済み（2026-07-23）**。生成AI動画→取り込みは画像と同じルート（専用DLフォルダ / blob fetch） |
 | 素材調達 | 部品 docs/parts/asset-collect.md / video-asset-collect.md | ストックサイトからライセンス証跡つき取り込み |
 | 切り抜き | `templates/chromakey.py` | GB生成画像 → 透過PNG（緑優勢度→連続アルファ+スピル抑制） |
@@ -33,7 +33,7 @@ ffmpeg -framerate 24 -i f%04d.png -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 0 -crf 
 
 ## 定番ライン
 
-1. **バナー量産**: 生成（GB不要）→ banner-compose（コピー案リスト×画像ループ）→ /カスタマイズ でタスク化
+1. **バナー量産**: 生成（GB不要）→ banner-compose（コピー案リスト×画像ループ）→ /匠設定 でタスク化
 2. **LPの動く人物/オブジェクト**（2026-07-23 動画生成起点でもフルライン実証済み: Gemini動画→背景除去→WebM）: GB指定生成 → chromakey → 浮遊フレーム → アルファWebM → `<video autoplay loop muted playsinline>` で任意背景の上に重ねる（GIFより滑らかで軽い。page-improve / content-to-lp 部品の演出部品）。**HTML への組み込みは DesignSync で claude.ai/design のプロジェクトへ流す**（増分同期・承認フローは docs/parts/design-sync.md に従う）。ローカル HTML 直書きはプレビュー用途のみ
 3. **操作教材**: gif_creator で実録画 → 専用DLフォルダ回収 → guide-anim / ffmpeg で注釈焼き込み → ガイド/レポートに添付
 

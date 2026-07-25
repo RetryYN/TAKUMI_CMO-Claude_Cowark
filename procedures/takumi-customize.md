@@ -1,4 +1,4 @@
-# /カスタマイズ — 仕組みを育てる統合入口（takumi-customize）
+# /匠設定 ▸ 仕組みを育てる（takumi-customize）
 
 ## 0. 何をカスタマイズ？（曖昧なときだけ聞く）
 
@@ -7,7 +7,7 @@
 1. **タスクをまとめる**（繰り返す仕事の登録） → procedures/takumi-task.md
 2. **スキルを作る**（手順・やり方を覚えさせる） → procedures/takumi-skillify.md（ルール？方法？判断基準？の分類つき）
 3. **好み・NGを記憶**（成果物への評価を次に活かす） → procedures/takumi-feedback.md
-4. **機能のON/OFF**（使う媒体・パックの変更） → procedures/takumi-config.md（媒体の増減は /セットアップ でも可）
+4. **機能のON/OFF**（使う媒体・パックの変更） → procedures/takumi-config.md（媒体の増減は /匠設定 でも可）
 
 ## 判定のヒント
 

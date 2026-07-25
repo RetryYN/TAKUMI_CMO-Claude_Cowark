@@ -116,7 +116,7 @@ description: 日本の表示規制チェック — 景品表示法・ステマ�
 
 **匠CMO の運用に直結する2点:**
 
-- **/メール で一斉配信する前に、承諾（オプトイン）の有無と記録の所在を確認する。**
+- **/匠発信 で一斉配信する前に、承諾（オプトイン）の有無と記録の所在を確認する。**
   リストの出所が言えないなら送らない。**同じ趣旨のオプトイン規制は特定電子メール法にもある**（→ 出典）
 - **返品特約を「書いてあるからOK」で流さない。** 特約は**広告にあらかじめ表示していた場合**に効く。
   申込直前だけに置いた特約は前提を満たさない可能性がある → 人間の確認へ
@@ -176,7 +176,7 @@ description: 日本の表示規制チェック — 景品表示法・ステマ�
 > 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **F. 出す前の関門**
 
 - **前段**（先に決まっているべきこと）: 生成系すべての最終稿（`skills/copywriting`／`skills/sales-writing`／`skills/storytelling`／`skills/video-script`／`skills/sns-jp`／`skills/seo-jp`／`skills/business-writing`）
-- **後段**（ここで決めたら次に開く）: 公開・配信の手順（`/オウンドメディア`・`/SNS運用`・`/メール`）。**出す先の規約も別に確かめる**（`skills/local-seo-jp` §3）
+- **後段**（ここで決めたら次に開く）: 公開・配信の手順（`/匠発信`・`/匠発信`・`/匠発信`）。**出す先の規約も別に確かめる**（`skills/local-seo-jp` §3）
 - **併用**（同時に開く）: `skills/offer-design-jp`（価格・返品・定期購入）／`skills/referral-advocacy-jp`（対価）／`skills/brand-guideline-jp`（禁止事項）／`skills/engagement-reply-jp`
 - **正本が別**: 景品の上限は `takumi/domain/premium.py`、No.1 の分母は `takumi/domain/market_share.py`、個人データは `privacy-auditor`
 

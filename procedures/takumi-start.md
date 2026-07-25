@@ -8,12 +8,12 @@ TAKUMI-CMO のタスク「$ARGUMENTS」を開始してください。
 手順の正本は `${CLAUDE_PLUGIN_ROOT}/docs/steps-reference.md`（見つからなければ Glob `**/docs/steps-reference.md`）。
 **最初に必ず Read すること** — CP証跡定義（E-3）・レギュレーション検証（F-4）・ログ記録スキーマ（I-3）・ナレッジ構造（D-2）はそちらに従う。以下はフラグ操作の最短経路のみ。
 
-**前段0（変更操作の前に必ず・マルチブランド）**: アクティブブランドを確定する。`memory/.workflow/active_brand`（無ければ `knowledge/.active-brand`）を読み、未確定なら /ブランド（procedures/takumi-brand.md）で登録/切替を促してから進む（確定するまで変更系は進めない）。以後の全書き込みはそのブランド区画 `knowledge/brands/<slug>/` にスコープされ、別区画への書き込みは **Brand Isolation Guard** が deny する。単一ブランド運用でも1つ登録して確定しておく。
+**前段0（変更操作の前に必ず・マルチブランド）**: アクティブブランドを確定する。`memory/.workflow/active_brand`（無ければ `knowledge/.active-brand`）を読み、未確定なら /匠設定（procedures/takumi-brand.md）で登録/切替を促してから進む（確定するまで変更系は進めない）。以後の全書き込みはそのブランド区画 `knowledge/brands/<slug>/` にスコープされ、別区画への書き込みは **Brand Isolation Guard** が deny する。単一ブランド運用でも1つ登録して確定しておく。
 
 > **エージェントの回し方は `docs/parts/task-loop.md` が正本**（**① 構える → ② 作る → ③ 咎める → ④ 確かめる**、級と1対1、差し戻しは**最大2周**）。この手順書はフラグとゲートの操作を担い、**誰にどの順で委譲するか**はそちらに従う。
 
 0. **完了条件を1行で書く** — 「何ができたら終わりか」。**作業量（3案作る）ではなく状態（critic が PASS を出し、実測が◯◯を下回る）で書く**。書けないならまだタスクではないので、依頼者に確かめる（`docs/parts/task-loop.md` 規律1）。あわせて**不可逆送出を含むか**を宣言する（含むなら ③ 咎める は `pre-send-verifier` で通す）
-0b. `tasks/$ARGUMENTS.yaml`（登録済み定常タスク。/カスタマイズ のタスク登録が生成）があれば Read し、その steps を実行計画の正とする（destructive: true/auto のステップは Step H で人の承認を必ず取る）。なければ依頼文から計画を組む
+0b. `tasks/$ARGUMENTS.yaml`（登録済み定常タスク。/匠設定 のタスク登録が生成）があれば Read し、その steps を実行計画の正とする（destructive: true/auto のステップは Step H で人の承認を必ず取る）。なければ依頼文から計画を組む
 1. ワークスペースに `memory/.workflow/` と `knowledge/sites/` がなければ作成する
 2. フラグを初期化する:
    ```bash
