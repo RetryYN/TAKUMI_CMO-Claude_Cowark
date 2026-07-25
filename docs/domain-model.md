@@ -25,6 +25,8 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | タスク | `Task` | エンティティ | 単一の仕事。動詞型: 計画/リサーチ/収集/クリエイティブ/分析/掃き出し |
 | 媒体 | `Channel` | 値オブジェクト | オーガニック媒体。有料出稿媒体は持たない（Owned / Earned のみ、Paid は構造的に不在） |
 | 媒体種別 | `ChannelKind` | 値オブジェクト | **Owned**: SNS / コンテンツ / Webサイト / オウンドメディア / メール ／ **Earned**: 広報・連携。**Paid は持たない**（ゼロ広告費） |
+| 景品類の提供 | `PremiumOffer` | 値オブジェクト | 紹介特典・キャンペーン景品1件。景品表示法の限度額を超えていれば拒否する |
+| 景品の提供方法 | `PremiumKind` | 値オブジェクト | 総付景品 / 一般懸賞 / 共同懸賞。**自動分類はしない**（呼び出し側が宣言する） |
 | ゲート | `Gate` | ドメインサービス（hook） | 不変条件の機械強制（Brand Isolation / ゼロ課金 / 送出監査 等） |
 
 ## 匠の∞ループ（中核のドメインサービス）
@@ -76,6 +78,7 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | `Strategy` / `RoadmapItem` | 実装済み | `tests/test_strategy.py` |
 | `Campaign` | 実装済み | `tests/test_campaign.py` |
 | `UpstreamLoop` / `DownstreamLoop` / `PlanHandoff` / `MeasurementHandoff` | 実装済み | `tests/test_loop.py` |
+| `PremiumOffer` / `PremiumKind` | 実装済み | `tests/test_premium.py` |
 | `Task` | **コード化しない** — ランタイム側の表現（`tasks/*.yaml` + `docs/steps-reference.md` の A〜K）が正本。Python に写すと二重管理になる | — |
 | `Gate` | **コード化しない** — 実体は `hooks/scripts/*.sh`。判定ロジックは `scripts/test-hooks.sh` が保証する | — |
 
