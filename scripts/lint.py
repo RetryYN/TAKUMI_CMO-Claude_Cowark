@@ -465,10 +465,13 @@ if (_ws / "knowledge").is_dir():
         if not _ws_errors:
             print(f"lint: ワークスペース検証 OK（{_ws}）")
 
-# --- 20. Tier 2 実機検証の未実施を可視化する（WARN・CI は落とさない）
+# --- 26. Tier 2 実機検証の未実施を可視化する（WARN・CI は落とさない）
 #         実機検証は人間にしかできない（リリースチェックリスト項目5）。落とすと開発が止まるので
 #         WARN に留めるが、「黙って積み上がる」状態は止める。
-#         2026-07-25 の全体CHECK 時点で v2.0.0 のまま7リリース分が未検証だった。 ---
+#         2026-07-25 の全体CHECK 時点で v2.0.0 のまま7リリース分が未検証だった。
+#         （2026-07-26 に #20 から #26 へ改番。#20 が「スキルの接続」と重複しており、
+#          **番号で他所を指す仕組みなのに番号自体が一意でなかった**。#27 が一意性を検査する。
+#          改番して安全だったのは、この番号がどの正本からも引かれていないことを実測したため） ---
 _testing = ROOT / "TESTING.md"
 if _testing.is_file():
     _m = re.search(r"<!--\s*tier2-verified:\s*([0-9.]+)\s*-->", read(_testing))
@@ -711,6 +714,47 @@ if _si.is_file() and _sj.is_file():
             if "令和7年度" not in _t:
                 err(f"{_f.relative_to(ROOT)}: SNS利用率の調査年度（令和7年度）が書かれていない"
                     f"（**値と年度はセットで更新する**。総務省の同調査は毎年6月頃に更新される）")
+
+# --- 27. 番号で他所を指す引用が、実在する番号を指しているか
+#         （2026-07-26 全体CHECK で導入。本プロダクトは正本を**番号で**指す箇所が多い —
+#          `session-rules (11)`・`Step H`・`lint #23`。**番号は改番・削除で静かにずれる**が、
+#          文章としては読めてしまうので気づけない。実際 lint.py 自身の番号が #20 で重複しており、
+#          「番号で指す」仕組みの土台が壊れていた。
+#          いま全引用が解決することは実測済み。**この検査は「今の正しさ」ではなく
+#          「これから壊れないこと」のために置く**） ---
+_lint_src = read(ROOT / "scripts/lint.py")
+_lint_nums = re.findall(r"^# --- (\d+[a-z]?)\.", _lint_src, re.M)
+for _n, _c in _coll.Counter(_lint_nums).items():
+    if _c > 1:
+        err(f"scripts/lint.py: チェック番号 #{_n} が{_c}回使われている"
+            f"（**番号で他所を指す仕組みなので、番号自体が一意でないと引用先が定まらない**）")
+_lint_set = set(_lint_nums)
+
+_rules_txt = ROOT / "hooks/scripts/session-rules.txt"
+_rule_ids = set(re.findall(r"^\((\d+[a-z]?)\)", read(_rules_txt), re.M)) if _rules_txt.is_file() else set()
+
+_steps_doc = ROOT / "docs/steps-reference.md"
+_step_ids = set(re.findall(r"^\|\s*([A-Z])\s*\|", read(_steps_doc), re.M)) if _steps_doc.is_file() else set()
+
+for _f in md_files + [ROOT / "TESTING.md"]:
+    if not _f.is_file():
+        continue
+    _rel, _txt = _f.relative_to(ROOT), read(_f)
+    for _r in set(re.findall(r"session-rules\s*\((\d+[a-z]?)\)", _txt)):
+        if _rule_ids and _r not in _rule_ids:
+            err(f"{_rel}: session-rules ({_r}) は実在しないルール番号"
+                f"（`hooks/scripts/session-rules.txt` にある番号だけを引く）")
+    for _s in set(re.findall(r"Step ([A-Z])(?![a-z])", _txt)):
+        if _step_ids and _s not in _step_ids:
+            err(f"{_rel}: Step {_s} は `docs/steps-reference.md` の一覧に無い")
+    # lint のチェック番号: 「lint」を含む行の #n だけを見る（PR 番号と混同しない）
+    for _line in _txt.splitlines():
+        if "lint" not in _line.lower():
+            continue
+        for _m in re.finditer(r"(?<!PR )(?<!pull/)(?<!issues/)#(\d+[a-z]?)\b", _line):
+            if _m.group(1) not in _lint_set:
+                err(f"{_rel}: lint のチェック #{_m.group(1)} は `scripts/lint.py` に存在しない"
+                    f"（改番・削除で引用が宙に浮いている）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
