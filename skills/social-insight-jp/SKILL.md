@@ -271,6 +271,15 @@ psych-target-jp は「**その不安をどう文面で扱うか**」を担う。
 - **社会不安を煽る材料に使う**（心理は不安の解消に使う）
 - **成果物に「あなたは◯◯タイプ」と書く**（プロファイルは内部判断に留める）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **A. 環境と人を知る**
+
+- **前段**（先に決まっているべきこと）: `skills/market-analysis-jp`（社会・市場の環境）
+- **後段**（ここで決めたら次に開く）: `skills/stp-jp`（切り口に落とす）／`skills/psych-target-jp`（読み手ごとの書き分け）／`skills/offer-design-jp`（制約を外す差し出し方）
+- **併用**（同時に開く）: `skills/quant-research-jp`（統計の読み違いを防ぐ）／`skills/voc-research-jp`（推論を本人に確かめる）／`skills/demand-timing-jp`（生活の周期）
+- **正本が別**: 実行手順は `docs/parts/context-to-persona.md`
+
 ## 出典
 
 **【一次情報・出所は特定済み／原文は未取得（要確認）】**

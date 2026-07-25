@@ -120,6 +120,11 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 
 ## スキル台帳（`skills/` — 規範の正本）
 
+> **スキル同士のつながりは [skill-map.md](skill-map.md) が正本**（層 A〜G と、各スキルの前段／後段／併用）。
+> この台帳は「どのスキルが何を担うか」、skill-map は「どこから来てどこへ行くか」を持つ。
+> 各 `SKILL.md` 末尾の `## 接続` は skill-map の写しで、**食い違ったら skill-map が正しい**。
+> `scripts/lint.py` が**孤島**（どのスキルからも指されない）と**行き止まり**（他スキルへつながらない）を機械で止める。
+
 > **配置方針（2026-07-25 変更）**: `skills/` に置く。**旧 `references/` は Cowork のプラグイン仕様上どのコンポーネントにも該当せず**、公式仕様は「skills は `skills/` または `commands/` 配下、あるいはルート直下の単一 `SKILL.md`」と定めている（[plugins-reference](https://code.claude.com/docs/en/plugins-reference)・一次情報）。
 >
 > 旧方針は「自動発火させない内部教科書」だった。これを覆した理由は **escalations E6** — 永続フォルダ未接続の環境で委譲先エージェントが `references/**` に到達できず、`outside this session's connected folders` で拒否される。規範がまったく適用されないまま design-critic の審査や法規チェックが走る状態は、自動発火を避ける利益より高くつく。

@@ -172,6 +172,15 @@ ReviewSolicitation(target=SolicitationTarget.EMPLOYEE, incentive=False).assert_a
 - **UTM を付け忘れる**。流入が `(direct)` に溶けて、効果が永久に測れない
 - **低評価に反射で反論する**。返信は第三者に読まれている（→ `skills/engagement-reply-jp`）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/channel-planning-jp`（「見つかる」の役割）／`skills/scale-strategy-jp`（**商圏内で1位**）
+- **後段**（ここで決めたら次に開く）: `skills/engagement-reply-jp`（口コミへの返信）／`skills/referral-advocacy-jp`（依頼の設計）／`skills/ga4-jp`（UTM を付けて流入を分ける）
+- **併用**（同時に開く）: `skills/seo-jp`（サイト側）／`skills/search-console-jp`／`skills/ad-compliance-jp`（掲載文も表示）
+- **正本が別**: 名称と口コミ依頼の可否は `takumi/domain/local_profile.py`（**対価の有無は人間が宣言**）
+
 ## 出典
 
 **【一次情報・確認済み】**

@@ -128,6 +128,15 @@ AI は認知し推奨する」を「AI に届く」の定義に置いている�
 - **柱をコロコロ変える**（反復の蓄積が毎回ゼロに戻る）
 - **顧客に確かめずに決める**（作り手が誇りたいことと、顧客が気にすることは一致しない → `skills/voc-research-jp`）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **B. 勝ち筋を決める**
+
+- **前段**（先に決まっているべきこと）: `skills/stp-jp`（誰に）／`skills/winning-position-jp`（何で勝つ）／`skills/voc-research-jp`（顧客の語彙）
+- **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/storytelling`／`skills/content-design`／`skills/sns-jp`／`skills/brand-guideline-jp`（言い方の規約へ）
+- **併用**（同時に開く）: `skills/channel-planning-jp`（媒体ごとに形を変える）／`skills/demand-timing-jp`（同じ柱をいつ出すか）
+- **正本が別**: 一貫性の点検手順は `docs/parts/messaging-audit.md`
+
 ## 出典・確からしさ
 
 - メッセージングハウス（屋根＝ポジショニング／柱＝主張／土台＝証拠）は、ブランド戦略の実務で

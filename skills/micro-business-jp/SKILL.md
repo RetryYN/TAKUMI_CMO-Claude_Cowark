@@ -181,6 +181,14 @@ OrganicAcquisitionCost(hours_spent=40, hourly_rate_yen=5_000, customers_acquired
 - **同時に2つ広げる／飛び地に行く**（既存顧客に紹介できないなら隣接ではない）
 - **取引条件を書面で明示させない**（法律上、求めてよい）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **B. 勝ち筋を決める**
+
+- **前段**（先に決まっているべきこと）: `skills/business-model-jp`（**時間が原価**。稼働が埋まっていないか）／`skills/scale-strategy-jp`（弱者の型）
+- **後段**（ここで決めたら次に開く）: `skills/offer-design-jp`（単価を上げる）／`skills/content-ops-jp`（積み上がる資産）／`skills/referral-advocacy-jp`（複利で増える経路）
+- **併用**（同時に開く）: `skills/winning-position-jp`（非対称な強み）／`skills/growth-teardown-jp`（近い規模の先を見る）／`skills/stp-jp`
+
 ## 出典
 
 **【一次情報・確認済み】**

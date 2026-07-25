@@ -165,3 +165,11 @@ session-rules (3) 違反であり、ad-compliance-jp の対象にもなる。
 - [ ] 比較表・No.1表現・保証表現がある → `skills/ad-compliance-jp` を通した
 - [ ] 締切・希少性は**実在する制約のみ**（偽の希少性はダークパターン → `skills/cro-jp`）
 - [ ] CTA は1つに絞った
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/offer-design-jp`（**何を差し出すかが先**）／`skills/voc-research-jp`（断られる理由）
+- **後段**（ここで決めたら次に開く）: `skills/ad-compliance-jp`（公開前）／`skills/cro-jp`（申込導線で測る）
+- **併用**（同時に開く）: `skills/copywriting`（見出し）／`skills/psych-nudge-jp`／`skills/psych-target-jp`／`skills/psych-ux-jp`／`skills/web-design`

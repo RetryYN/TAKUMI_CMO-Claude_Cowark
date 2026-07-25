@@ -177,6 +177,15 @@ cost.verdict(gross_profit_per_customer_yen=30_000) # 「回収できている」
 - **ユニットエコノミクスを KPIツリーに入れる**（獲得を減らせば達成できる目標になる）
 - **固定費削減を常に正解だと思う**（構造の選択であって、善悪ではない）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **B. 勝ち筋を決める**
+
+- **前段**（先に決まっているべきこと）: `skills/market-analysis-jp`／`skills/stp-jp`（誰から、いくらで）
+- **後段**（ここで決めたら次に開く）: `skills/offer-design-jp`（価格と束）／`skills/kpi-design-jp`（**動かす指標はここでは決めない**）／`skills/micro-business-jp`（一人〜少人数なら）
+- **併用**（同時に開く）: `skills/scale-strategy-jp`（投下時間＝兵力）／`skills/quant-research-jp`（価格の調査）
+- **正本が別**: 計算は `takumi/domain/unit_economics.py`（**変動費率1以上・獲得0件は数字を返さず止まる**）
+
 ## 出典
 
 **【一次情報・入手先】**

@@ -68,3 +68,12 @@ description: Webデザイン/LP設計 — レイアウト・タイポグラフ�
 - 装飾目的のアニメーション（意味のあるトランジションのみ、200-300ms）
 - 3色以上のアクセント、3種以上のフォント、不統一な角丸
 - 根拠（計測データ・診断）に紐付かないデザイン変更
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/brand-guideline-jp`（見た目の決めごと）／`skills/offer-design-jp`（そのページで何を差し出すか）
+- **後段**（ここで決めたら次に開く）: `skills/cro-jp`（改善の仮説）／`skills/ad-compliance-jp`（公開前）
+- **併用**（同時に開く）: `skills/design-evidence-jp`（**数値の正本**）／`skills/psych-ux-jp`（心理の根拠）／`skills/seo-jp`
+- **正本が別**: ビジュアル成果物は design-artisan → design-critic のループ（`docs/parts/index.md`）

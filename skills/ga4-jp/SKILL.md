@@ -267,3 +267,12 @@ GA4 のモデルは3つ:
 
 - GA4 の AI Assistant チャネル追加 — Search Engine Journal, Digital Applied ほか
 - AI 経由トラフィックの Direct 落ち比率・転換率 — 出所を辿れないため設計判断の根拠にしない
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **G. 測る**
+
+- **前段**（先に決まっているべきこと）: `skills/kpi-design-jp`（**何を測るかが先**）／`skills/gtm-jp`（送る側）
+- **後段**（ここで決めたら次に開く）: `skills/customer-analytics-jp`（読む）／`skills/logical-writing`（返す）／`skills/cro-jp`（改善へ）
+- **併用**（同時に開く）: `skills/search-console-jp`（検索側）／`skills/local-seo-jp`（UTM を付けないと `(direct)` に溶ける）
+- **正本が別**: 設定変更の合議は `docs/parts/pre-setup-council.md`。**データ保持・プロパティ削除・広告連携は行わない**

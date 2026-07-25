@@ -98,3 +98,11 @@ description: 日本語SEO/AEO — 検索・AI回答エンジンに見つかる�
 - 生成AI丸出しの網羅記事は評価されない — 一次情報（自社データ・実務者の声）を必ず1つ以上入れる
 - 医療・金融・法律に踏み込む表現は YMYL — 断定を避け出典を付ける。広告表現は ad-compliance-jp を通す
 - 診断結果をレポート化するときは logical-writing / conventions.md に従う
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/stp-jp`（誰の検索か）／`skills/content-ops-jp`（**増やす前に直す**）／`skills/channel-planning-jp`
+- **後段**（ここで決めたら次に開く）: `skills/content-design`／`skills/copywriting`／`skills/web-design`／`skills/ad-compliance-jp`（公開前）
+- **併用**（同時に開く）: `skills/search-console-jp`（実測）／`skills/growth-teardown-jp`（上位の解剖）／`skills/local-seo-jp`（商圏がある事業）／`skills/demand-timing-jp`

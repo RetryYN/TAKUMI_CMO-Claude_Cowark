@@ -214,6 +214,14 @@ description: ブランドの構築とレギュレーション — 人格・見�
 - **名前を決めてから商標を調べる**（後から変えられない）
 - **AI が商標や法規の可否を断定する**（調査までが AI。判断は人間・専門家）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **B. 勝ち筋を決める**
+
+- **前段**（先に決まっているべきこと）: `skills/messaging-design-jp`（**何を言い続けるかが先**）／`skills/winning-position-jp`
+- **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/business-writing`／`skills/web-design`／`skills/content-design`／`skills/sns-jp`／`skills/engagement-reply-jp`（トーンの正本）
+- **併用**（同時に開く）: `skills/design-evidence-jp`（数値の正本）／`skills/ad-compliance-jp`（公開前チェックリストの中身）
+
 ## 出典
 
 **【一次情報・確認済み】**

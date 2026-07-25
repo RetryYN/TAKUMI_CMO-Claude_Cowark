@@ -169,6 +169,15 @@ description: 顧客データの分析手法 — RFM・デシル・ABC・コホ�
 - **分析して終わる**（打ち手と反証条件まで書いて完了）
 - **個人情報を分析用に持ち込む**（取得の時点で落とす）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **A. 環境と人を知る**
+
+- **前段**（先に決まっているべきこと）: `skills/kpi-design-jp`（何を測るか）／`skills/ga4-jp`（そもそも取れているか）
+- **後段**（ここで決めたら次に開く）: `skills/stp-jp`（実データで切り直す）／`skills/referral-advocacy-jp`（語ってくれる層）／`skills/cro-jp`（落ちている段）
+- **併用**（同時に開く）: `skills/quant-research-jp`（偏りの扱い）／`skills/voc-research-jp`（**「なぜ」は行動データに写っていない**）
+- **正本が別**: 継続・解約の運用は `/リテンション`（`procedures/takumi-retention.md`）
+
 ## 出典
 
 **【一次情報・入手先】**

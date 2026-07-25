@@ -141,6 +141,14 @@ description: 伸びるコンテンツの構造 — 配信され、保存・引�
 - **平均の底上げに時間を使う**（平均的な結果しか出ない）
 - **アルゴリズムの噂を根拠にする**（公式ヘルプで確認できることだけを設計の根拠にする）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/channel-planning-jp`（その媒体の役割）／`skills/growth-teardown-jp`（伸びている実物）
+- **後段**（ここで決めたら次に開く）: `skills/content-design`（設計に落とす）／`skills/seo-jp`／`skills/sns-jp`／`skills/video-script`
+- **併用**（同時に開く）: `skills/hypothesis-design-jp`（実験枠）／`skills/kpi-design-jp`（どの段で落ちたか）／`skills/demand-timing-jp`
+
 ## 出典
 
 **【一次情報・確認済み】**

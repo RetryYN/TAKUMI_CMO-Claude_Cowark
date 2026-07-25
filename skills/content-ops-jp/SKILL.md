@@ -219,6 +219,15 @@ Google の自己評価の問いには、次が含まれる:
 - **独自の情報を1つも入れない**（既にある情報の再構成だけでは通らない）
 - **監査を毎月やろうとする**（重すぎて続かない）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **C. 計画する**
+
+- **前段**（先に決まっているべきこと）: `skills/channel-planning-jp`（媒体の役割）／`skills/kpi-design-jp`（何を伸ばすのか）
+- **後段**（ここで決めたら次に開く）: `skills/seo-jp`（直す）／`skills/breakout-content-jp`（当たりを再現する）／`skills/messaging-design-jp`（柱から外れた資産）
+- **併用**（同時に開く）: `skills/search-console-jp`（**カニバリは実測で確かめる**）／`skills/growth-teardown-jp`／`skills/demand-timing-jp`
+- **正本が別**: 実行手順は `docs/parts/content-audit.md`（**削除・統合は不可逆で人間承認**）
+
 ## 出典
 
 **【一次情報・確認済み】**

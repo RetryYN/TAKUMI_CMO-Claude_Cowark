@@ -160,6 +160,14 @@ description: 勝ち筋の設計 — 広告費を使わずに勝てる場所を�
 - **捨てる決断をしない**（「一応やっておく」が資源を溶かす）
 - **反証条件を書かない**（間違った場所で戦い続けても気づけない）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **B. 勝ち筋を決める**
+
+- **前段**（先に決まっているべきこと）: `skills/market-analysis-jp`／`skills/stp-jp`／`skills/growth-teardown-jp`（実物で見た非対称）
+- **後段**（ここで決めたら次に開く）: `skills/messaging-design-jp`（言い続けること）／`skills/channel-planning-jp`（どの面で）／`skills/offer-design-jp`（何を差し出す）／`skills/kpi-design-jp`（何で測る）
+- **併用**（同時に開く）: `skills/scale-strategy-jp`（その戦い方は規模に合うか）／`skills/business-model-jp`（勝っても続くか）／`skills/micro-business-jp`（一人〜少人数なら）
+
 ## 出典・確からしさ
 
 - **本スキルは特定の書籍・研究の数値を引用していない。** 差別化・集中・非対称性は戦略論で広く扱われる概念だが、

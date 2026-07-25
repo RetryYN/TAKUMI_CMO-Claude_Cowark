@@ -190,6 +190,15 @@ description: 定量調査の設計と読み方 — サンプル数・偏り・�
 - **他社調査を原典に当たらず引用する**（調査主体の利害を確認していない）
 - **限界を書かない**（読み手が気づかないまま意思決定に混ざる）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **A. 環境と人を知る**
+
+- **前段**（先に決まっているべきこと）: `skills/hypothesis-design-jp`（何を確かめるのか。判定基準は着手前に固定する）
+- **後段**（ここで決めたら次に開く）: `skills/logical-writing`（結果を意思決定に変える）／`skills/customer-analytics-jp`（実データで裏を取る）
+- **併用**（同時に開く）: `skills/voc-research-jp`（数字が説明しない「なぜ」）／`skills/social-insight-jp`（公的統計の使い方）／`skills/cro-jp`（差の読み方は同じ）
+- **正本が別**: 価格をいくらにするかの決定は `skills/offer-design-jp`（調査は材料までしか出さない）
+
 ## 出典
 
 **【一次情報・入手先】**

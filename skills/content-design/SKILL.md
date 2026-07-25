@@ -88,3 +88,12 @@ description: コンテンツ設計（C×P×T） — 記事/SNS長文/オウン�
 - ネタは `knowledge/sns/<platform>/queue.md`（takumi-sns と同じ台帳。SNS以外の記事は `knowledge/sns/blog/queue.md`）に **Inbox →（検証済み）Ready →（使用後）Used** で管理。別の queue ファイルを新設しない
 - ストック目標を決めて充足する（例: 記事4本分・SNS 3日分）。目標割れが「作るべきサイン」
 - 公開後はメトリクスを記録し、次のテーマ選定に反映する（伸びた C×P×T の組み合わせを増やす）
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/messaging-design-jp`（柱）／`skills/channel-planning-jp`（媒体の役割）
+- **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/storytelling`／`skills/seo-jp`／`skills/sns-jp`／`skills/video-script`
+- **併用**（同時に開く）: `skills/breakout-content-jp`（伸びる構造）／`skills/demand-timing-jp`（出す時期）／`skills/psych-target-jp`
+- **正本が別**: カレンダーは `docs/parts/content-calendar.md`。既存資産の棚卸しは `skills/content-ops-jp`
