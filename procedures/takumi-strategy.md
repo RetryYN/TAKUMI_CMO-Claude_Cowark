@@ -8,12 +8,17 @@
 
 1. **インプット収集**: `knowledge/brands/<slug>/brand.yaml`（プロフィール・ポジショニング・ICP・ブランドガイド）、**顧客の声**（`knowledge/brands/<slug>/knowledge/voc/`。無ければ **/顧客の声** を先に回す提案 — **顧客の言葉が無いままのポジショニングは推測**であり、そのことを立案の冒頭で明示する）、既存の競合/市場リサーチ（無ければ /リサーチ を先に回す提案）、**下流から返った計測**（`knowledge/brands/<slug>/analytics/` や outcome-verifier 集計があれば取り込む＝∞の上り。計測が無い・古い場合は **/計測**（procedures/takumi-analytics.md）で取りに行ってから立案する）。
 2. **立案の委譲**: cmo-strategist に委譲する。委譲プロンプトには上記インプットの**絶対パス**を明記（相対は synced 環境で不達）。Agent ツールが無い環境ではメインループが agents/cmo-strategist.md を Read して自ら作法に従い立案し、その旨を1行記録（conventions §4）。
+2b. **勝ち筋の確定（最上流）**: `skills/winning-position-jp` に従い「**なぜ我々が勝てるのか**」を一文で確定する。広告費が効きにくい場所を選び、**非対称な強み**（競合が真似するには何かを失うもの）を特定し、**やらないこと**を決める。**ここが KPIツリーとメッセージングの上流** — 勝ち筋が無いまま指標と主張を作らない。
 3. **成果物の永続化**（アクティブ区画内でのみ）:
    - `knowledge/brands/<slug>/strategy/strategy.md` … 3C・ポジショニング・ロードマップ
    - `knowledge/brands/<slug>/strategy/kpi-tree.yaml` … KPIツリー（**有料指標を持たない**＝ゼロ広告費の不変条件）。**形は docs/domain-model.md「ワークスペース検証」が正本** — `root:` の下に `name` / `kind`（先行 | 遅行）/ `children` を再帰させる。`python3 <プラグインルート>/scripts/lint.py --workspace .` で機械検証できる
+   - `knowledge/brands/<slug>/strategy/winning-position.md` … **勝ち筋**（戦う場所・勝てる理由・カテゴリの括り・積み上げる資産・やらないこと・**外れたと分かる条件**）。正本は `skills/winning-position-jp`
    - `knowledge/brands/<slug>/strategy/messaging.md` … **メッセージングハウス**（ポジショニング1文 + 言い続ける柱1〜3 + 各柱の証拠 + 言わないこと）。**作法の正本は `skills/messaging-design-jp`。** 面を張るには張るべき主張が要る — 媒体ごとに違うことを言えば包囲網は点の集合に戻る。柱は**最大3つ**、各柱に**検証可能な証拠**を持たせ、証拠が用意できない柱は降ろす
    - `knowledge/brands/<slug>/strategy/roadmap.md` … 施策ロードマップ（集客/ブランディングを分け、**7割計画**）。**7割計画は数字にする** — 各施策に見積時間とドライバー（KPIノード）を持たせ、`docs/parts/capacity-plan.md` で埋まり具合（計画合計 ÷ 実働×0.7）を出す。**100%を超えたら足す前に落とす**
-4. **壁打ち**: strategy-advisor に持ち込み VERDICT（GO / GO-WITH-CHANGES / RETHINK）を得て確定する（長く効く判断のため必須）。
+4. **壁打ち（守りと攻めの両方・1ターンで並列委譲）**:
+   - **strategy-advisor** … VERDICT（GO / GO-WITH-CHANGES / RETHINK）。**破綻していないか**
+   - **growth-challenger** … CHALLENGE（SHARPEN / PARTIAL / BOLD-ENOUGH）。**無難すぎないか**
+   **どちらか片方だけで確定しない。** 守りだけを回すと、減点されないが誰の記憶にも残らない計画に収束する。両者が衝突したら、ユーザーに**どちらの側に倒すか**を選ばせる（AI が勝手に無難な方へ倒さない）。
 5. **戦略ドシエの出力**: docs/conventions.md 準拠の HTMLレポート（report-template 骨格）で戦略ドシエを生成し届ける（アーティファクト発行→不可ならファイル→保存パス明示）。deliverable-writer に委譲。
 6. **計画を下流へ流す（∞の下り）**: ロードマップから最初の打ち手を **/キャンペーン**（複数媒体の統括）または **/カスタマイズ**（定常タスク登録）へ接続する。
 
