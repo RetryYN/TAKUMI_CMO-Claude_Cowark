@@ -92,12 +92,12 @@ fable が月次上限・不達で `Agent terminated early due to an API error` �
 
 | エージェント | preload するスキル | なぜ毎回要るか |
 |---|---|---|
-| `cmo-strategist` | `winning-position-jp` `stp-jp` `kpi-design-jp` `scale-strategy-jp` | 勝ち筋・誰に・何で測る・規模。**4点が揃わない戦略は出せない** |
+| `cmo-strategist` | `winning-position-jp` `stp-jp` `kpi-design-jp` `scale-strategy-jp` `offer-design-jp` `hypothesis-design-jp` | 勝ち筋・誰に・何で測る・規模。**4点が揃わない戦略は出せない**。＋本文が「`offer-design-jp` に従い」「施策には必ず仮説（`hypothesis-design-jp` の型）」と**必読を指示している**ので2本を追加（2026-07-26） |
 | `growth-challenger` | `winning-position-jp` `offer-design-jp` `referral-advocacy-jp` `demand-timing-jp` | 11の問いのうち4つ（オファー・紹介・時期・規模）が**この4本に対応** |
 | `strategy-advisor` | `kpi-design-jp` `hypothesis-design-jp` `channel-planning-jp` | 壁打ちの論点がほぼこの3本に落ちる |
 | `risk-forecaster` | `kpi-design-jp` `hypothesis-design-jp` | 「時間が経つと壊れるもの」は指標定義と前提の話 |
-| `pre-send-verifier` | `ad-compliance-jp` | **送出前の法規チェックが本務** |
-| `privacy-auditor` | `ga4-jp` | PII 禁止・データ保持の一次情報がここ |
+| `pre-send-verifier` | `ad-compliance-jp` `psych-target-jp` | **送出前の法規チェックが本務**。＋倫理境界（恐怖訴求・偽の希少性）は本文が必読を指示しており、**2026-07-26 の実機検証でこのエージェントだけが Read を拒まれて UNVERIFIABLE を返した**ので preload に移した |
+| `privacy-auditor` | `ga4-jp` `gtm-jp` `search-console-jp` | PII 禁止・データ保持の一次情報がここ。＋本文が3本とも「Read してから監査する」と指示していたので preload へ（2026-07-26） |
 | `design-critic` | `web-design` `design-evidence-jp` `psych-ux-jp` `ad-compliance-jp` | 審査基準そのもの |
 | `design-artisan` | `web-design` `design-evidence-jp` `psych-ux-jp` | 生成の規範（数値の正本を含む） |
 | `deliverable-writer` | `ad-compliance-jp` `logical-writing` | 最終稿は必ず法規を通り、構成の型が要る |
@@ -106,6 +106,15 @@ fable が月次上限・不達で `Agent terminated early due to an API error` �
 **preload は「毎回必ず要るもの」だけにする。** 全文が注入されるので、
 迷ったら入れないほうがよい。依頼ごとに変わる規範は **Skill ツールで実行中に取る**
 （`skills:` は preload を決めるだけで、載せなかったスキルも呼べる）。
+
+> **境界線（2026-07-26 に機械化）**: 本文が `skills/<name>` の**必読**を指示している
+> （「必ず」「に従い」「Read し」等）なら preload に載せる。**`lint.py` #34 が強制する。**
+> 「→ `skills/x`」「条件が合えば併読」のような**振り分けの案内は対象外** — 全部載せると文脈を食い潰す。
+>
+> なぜこの線か: **Read は当てにできる経路ではない**。2026-07-26 の実機検証（E-2）で、
+> **同じ環境・同じセッションなのにエージェントによって Read が通ったり拒まれたりした**
+> （risk-forecaster / design-critic / deliverable-writer は成功、pre-send-verifier は拒否）。
+> 一方 preload は V78 で両者とも効いていた。**判定の根拠にするものは preload、参考は Read。**
 
 ### escalations E6 への効き（重要）
 

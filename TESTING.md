@@ -20,10 +20,13 @@ hooks はローカル Cowork では未配線（→ escalations E4）のため、
 | 層 | 何を担保するか | 実行場所 | コマンド／手段 | 誰が回すか |
 |---|---|---|---|---|
 | **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメインモデル不変条件・hook スクリプト単体の判定ロジック | ローカル / GitHub Actions | `python3 scripts/lint.py` ／ `python3 -m unittest discover -s tests -t .` ／ `bash scripts/test-hooks.sh` ／ `shellcheck` | CI（push・PR で自動） |
-| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork 実機**（cloud 基本／ローカルは配線が環境依存 → E4。ゲート項目は発火を実測して判定） | `/匠検証 full` を `tasks/plugin-verify.yaml` にコピー →「plugin-verify やって」（代替: 末尾の貼り付けプロンプト） | 人間（リリース前ゲート） |
+| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork 実機**（cloud 基本／ローカルは配線が環境依存 → E4。ゲート項目は発火を実測して判定） | Cowork で **`/匠検証 full`** と言うだけ（v5.1.0 以降。ファイルの配置は不要） | 人間（リリース前ゲート） |
 
 **Tier 1 が緑でも Tier 2 は代替できない**（hook の配線有無は静的検査では分からない）。逆に Tier 2 は
-毎コミット回せないため、回帰の常時検出は Tier 1 が担う。配布判断は「Tier 1 緑 ＋ 直近の Tier 2 が FAIL 0」で行う。
+毎コミット回せないため、回帰の常時検出は Tier 1 が担う。配布判断は
+**「Tier 1 緑 ＋ 直近の Tier 2 が同バージョン・`env=cloud`・FAIL 0」**で行う。
+**ローカルランは cloud ランを代替しない** — 配線が環境依存で、永続フォルダ未接続なら `knowledge/` 系を測れない。
+機械可読の証跡は TESTING.md の `<!-- tier2-verified: <version> env=<cloud|local> -->` マーカーで、lint #26 が突き合わせる。
 
 ## 判定済み
 
@@ -584,17 +587,68 @@ E4 は「解決済み」にはせず、環境依存で振れる課題として�
 
 ---
 
+## 第9ラン: Tier 2 実機検証（v5.0.0 / 2026-07-26 / **Cowork ローカル**）
+
+<!-- tier2-verified: 5.0.0 env=local -->
+
+**Tier 1: OK ／ Tier 2: PASS 27 / FAIL 0 / SKIP 8（+ 挙動未実施 30）。**
+環境: Cowork ローカル（Windows ホスト + Linux サンドボックス）／永続フォルダ**未接続**／
+ブラウザ系統は claude-in-chrome のみ（playwright 不在）／Bash は `mcp__workspace__bash`。
+
+> **ゲート配線の確定**: 本ランでは hooks は**配線されていた**。V40（ゼロ課金ゲート）で最初の deny を観測し、
+> 以降 URL Guard / 匠ゲート / Credential Guard / RM Guard / Brand Isolation Guard / OV Gate / Critic Gate /
+> 並列ゲートの計8系統で実 deny・実 warn を観測。**ゲート項目を「ローカルだから SKIP」にせず全て実測した。**
+> → escalations E4 に追記（**2ラン連続で配線されていたが、解決とはしない**）。
+
+**主な PASS**: V1〜V5（ブラウザ系統・読み取りフリー・変更ゲート・解除フロー・Credential Guard。
+`ref_2 type="password"` を読んだ時点で入力に至らず停止する自己規律まで確認）／V7・V12・V17・V23（到達性）／
+V20 Money Watch（Unicode エスケープ経由の日本語も検知）／V21 strategy-advisor（`RETHINK` + CHANGE-1〜8）／
+V22 pre-send-verifier（`NO-GO`。未置換変数を根拠つきで指摘し、**薬機法領域として書き換えず人間へ返した**）／
+V35 OV Gate・Critic Gate／V39 RM Guard／V41 Brand Isolation Guard（誤爆ゼロ）／V43 名称正規化。
+
+**新規測定の3件**:
+
+| # | 結果 | 観測事実 |
+|---|---|---|
+| **V78** preload | **PASS** | outcome-verifier が `kpi-design-jp` §0/§9/§10 を**ファイルを読まずに逐語引用**。design-critic は 4.5:1 / 3:1 / 3:1 を WCAG・JIS X 8341-3 の出所つきで提示。**preload は効く** |
+| **V79** 並列ゲート | **PASS（+観測）** | 4体同時では警告なし（**誤爆ゼロ**）。5体目相当で `【並列ゲート・試運転(warn)】` を注入。**ただし取りこぼしを観測**（下記 O-1） |
+| **V80** タスクループ | **PASS** | 完了条件 → design-artisan → design-critic `REVISE`(FIX-1〜6) → 反映 → `PASS`。**差し戻し1周で収束**（上限2周以内） |
+
+**V10 で判明**: design-artisan の既定 fable が `You've hit your monthly spend limit` で即時終了 →
+**`model: sonnet` を明示して再委譲し復旧**。エージェント本文に書いてあった手順どおりで、**記述は正しかった**。
+
+### この ラン から開発側に返った5件（v5.3.0 で対応済み）
+
+| # | 内容 | 対応 |
+|---|---|---|
+| **W-1** | lint の WARN が「最終ラン=2.0.0」のまま7リリース分積み上がっていた | 本節でマーカーを `5.0.0 env=local` に更新。**あわせてマーカーに `env=` を新設** — バージョンだけだと「ローカルで通ったから配布可」と読める。lint #26 は env≠cloud のとき別文言で WARN する |
+| **D-1** | takumi-verify.md が「実在しないパック名を書いても通知は出ない」と書いていたが、実装は**名前を検査しておらず** `sns-nonexistent=off` でも「無効: sns-nonexistent」を注入した | **手順書ではなく実装を直した**。打ち間違いは「通知は切れたと出るのに実体は ON のまま」＝**切ったつもりで切れていない**状態を作る。`hooks/scripts/packs-known.txt` を名前の正本にし、未知の名前は「**不明なパック名**」として**別枠で**警告する。lint #33 が takumi-config.md の Pack 定義表・`takumi-sns-*.md` との三者一致を機械検査 |
+| **E-1** | outputs マウント（FUSE）で `rm` が `Operation not permitted` になり後片付けが不能だった。`mcp__cowork__allow_cowork_file_delete` で削除許可を取って解消したが、**C節はその正規手段に触れていなかった**（「別の削除手段を探さない・残置して報告」で止まっていた） | C節に追記。**試してよいのはこの1つだけ**で、対象は**自分が作ったファイルの個別削除**に限る（`rm -r`・グロブ・フォルダ削除は許可を取っても禁止＝RM Guard の対象のまま） |
+| **E-2** | **同一セッション・同一環境なのに Read の可否がエージェントで割れた**。risk-forecaster / design-critic / deliverable-writer は成功、**pre-send-verifier だけ拒否**され psych-target-jp の照合を UNVERIFIABLE で返した（申告自体は正常動作） | **Read は当てにできる経路ではない**と確定し、**判定の根拠は preload に寄せた**。pre-send-verifier に `psych-target-jp`、privacy-auditor に `gtm-jp`/`search-console-jp`、cmo-strategist に `offer-design-jp`/`hypothesis-design-jp` を追加。lint #34 が「本文が**必読**を指示している skills は preload に載っていること」を機械強制する（振り分けの案内は対象外 — 全部載せると文脈を食い潰す） |
+| **O-1** | 並列ゲートで **API エラー等で異常終了した委譲の枠が残る**（残枠 4→1。TTL 30分で消える設計） | session-start で `agents_running` を消す（**セッション開始時点で走っている委譲は無い**ので安全）。**取りこぼしが残る状態で deny へ昇格しない** — 正当な委譲を殺す。V79 の PASS 基準に自己修復の確認を追加 |
+
+### 未実施（次の cloud ランで測る）
+
+V8（自然文発火）／V11（ダッシュボード）／V15（スキル化）／V16・V18・V19（Slack・タスク登録）／
+V27（golden G1〜G34）／**V44〜V48・V50〜V77・V81〜V83 のルーティング挙動**。
+**到達性は機械確認済み**（11手順書・9部品・3正本の計23ファイル、MISSING ゼロ）だが、**挙動そのものは未検証**。
+**V84（`user-invocable: false` の実効）・V85（定常タスクの登録と自己最適化）は v5.1.0/v5.2.0 で追加のため本ラン対象外。**
+
+**配布判断には cloud ランが別途要る。** ローカルは hook 配線が環境依存（E4）で、
+永続フォルダ未接続なら `knowledge/` 系（ブランド区画・ダッシュボード・実データのワークスペース検証）を測れない。
+V49 も本ランは合成ディレクトリでの機構確認にとどまり、**実データでの検証は未実施**。
+
+---
+
 ## Tier 2 実機検証の未実施分（開発側からの依頼）
 
-<!-- tier2-verified: 2.0.0 -->
+**第8ラン（v2.0.0 / 2026-07-25）から第9ラン（v5.0.0）まで7リリース分、実機ランが空いた。**
+リリースチェックリスト項目5（人間が実行・自動化不可）が未消化のまま積み上がった記録として残す。
 
-**最後に実機で測ったのは第8ラン（v2.0.0 / 2026-07-25）。** 以降 v2.0.1 → 2.0.2 → 2.1系 → 2.2.2 → 2.2.3 →
-2.3.0 → 2.4.0 → 2.5.0 → 2.6.0 → 2.7.0 → 2.7.1 → 2.8.0 と繰り上げたが、**実機ランは1度も行っていない**。
-リリースチェックリスト項目5（人間が実行・自動化不可）が未消化のまま積み上がっている。
-
-`scripts/lint.py` は上の `tier2-verified` マーカーと `plugin.json` の version を突き合わせ、
-一致しなければ **WARN** を出す（CI は落とさない — 実機検証は人間にしかできないため）。
-実機ランを記録したらマーカーの数字を更新する。
+`scripts/lint.py` は上の `tier2-verified` マーカー（**バージョン + 実行環境**）と `plugin.json` の version を
+突き合わせ、一致しなければ **WARN** を出す（CI は落とさない — 実機検証は人間にしかできないため）。
+**バージョンが一致していても env が cloud でなければ別文言で WARN する**（配布判断は cloud ランでしか代替できない）。
+実機ランを記録したらマーカーを更新する。
 
 ### 事前実行済み（dev環境ラン 2026-07-25 / WSL Linux・Cowork 外）
 

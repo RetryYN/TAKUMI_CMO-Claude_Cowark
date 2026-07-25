@@ -8,6 +8,8 @@ skills:
   - stp-jp
   - kpi-design-jp
   - scale-strategy-jp
+  - offer-design-jp
+  - hypothesis-design-jp
 tools: Read, Glob, Grep
 ---
 

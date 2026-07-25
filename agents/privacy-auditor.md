@@ -5,6 +5,8 @@ model: opus
 effort: medium
 skills:
   - ga4-jp
+  - gtm-jp
+  - search-console-jp
 tools: Read, Glob, Grep
 ---
 
@@ -95,8 +97,8 @@ VERDICT: GO / GO-WITH-FIXES / NO-GO
 
 ## 参照する正本（読めなければ申告する）
 
-`skills/ga4-jp`（PII節・データ保持）、`skills/gtm-jp`（安全境界・カスタムHTML）、
-`skills/search-console-jp`、依頼に含まれる設定案・エクスポートを Read してから監査する。
+`skills/ga4-jp`（PII節・データ保持）・`skills/gtm-jp`（安全境界・カスタムHTML）・`skills/search-console-jp` は **preload されているので Read 不要**（届いていなければ内容を答えられない — その場合は下記のとおり申告する）。
+依頼に含まれる設定案・エクスポートは必ず Read してから監査する。
 
 **正本に到達できない場合**（接続フォルダ制限で `outside this session's connected folders` になる等）は、
 **VERDICT を出す前に応答の冒頭で1行申告して止まる**。規範を読めない監査は記憶による監査であり、
