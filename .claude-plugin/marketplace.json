@@ -10,8 +10,11 @@
     {
       "name": "takumi-cmo",
       "displayName": "匠CMO",
-      "source": "./",
-      "version": "5.4.0",
+      "source": {
+        "source": "github",
+        "repo": "RetryYN/TAKUMI_CMO-Claude_Cowark"
+      },
+      "version": "5.5.0",
       "description": "匠CMO — ゼロ広告費のコンテンツドリブンで複数ブランドを無双させるマーケティングエンジン（匠の∞ループ）",
       "author": {
         "name": "RetryYN",

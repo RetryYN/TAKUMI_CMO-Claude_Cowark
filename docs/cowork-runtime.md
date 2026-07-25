@@ -27,7 +27,33 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 | `scripts/` | lint / bump / hooks テスト | しない（dev-side） |
 | `takumi/` `tests/` | ドメインモデル（Python）と単体テスト | しない（dev-side。Tier 1 と `--workspace` 検証で使う。[domain-model.md](domain-model.md)） |
 | `.github/` | CI（lint / unittest / shellcheck / hooks） | しない（dev-side） |
-- 配布前のローカル検証に CLI `claude plugin validate .` が使える（marketplace/plugin.json スキーマ・frontmatter・hooks.json の JSON 妥当性）。ただし CLI 検証が通っても Cowork で hook が発火する保証にはならない（§2）。
+- 配布前のローカル検証に CLI `claude plugin validate` が使える。**必ず manifest のパスを直接渡す** —
+  `claude plugin validate .`（ディレクトリ指定）は marketplace.json しか見ず**コンポーネントを歩かない**（2026-07-26 実測）。
+  ただし CLI 検証が通っても Cowork で hook が発火する保証にはならない（§2）。
+
+### 1b. プラグインの入れ方は3通りあり、**更新できるのは1つだけ**（2026-07-26 に実測して確定）
+
+| 入れ方 | 更新 | 備考 |
+|---|---|---|
+| **GitHub から marketplace を追加**（`RetryYN/TAKUMI_CMO-Claude_Cowark`） | **できる**（リポジトリを clone するので相対パスも解決する） | **これが唯一の正しい配布経路** |
+| marketplace.json への**直URL**を追加 | 追加自体は通るが**install で落ちる** | 後述 |
+| **ローカルアップロード**（フォルダ・zip を直接） | **できない** | 取得先が無いので「マーケットプレイスの更新に失敗しました」になる。**入れ直すには削除して marketplace から追加し直す** |
+
+**直URL が落ちる理由**（一次情報 + 実測）:
+
+> 「URL ベースの marketplace は **marketplace.json 自体しかダウンロードしない**。
+> サーバ上のプラグインファイルは落とさないので、相対パスは解決できない。
+> URL 配布では GitHub・npm・git URL のソースを使うこと」
+
+2026-07-26 に手元で再現: `"source": "./"` のまま URL で追加 → install すると
+`ENOTDIR: not a directory, scandir .../plugins/marketplaces/retryyn-takumi-cmo`
+（marketplace.json が**ファイルとして**そのパスに置かれ、ディレクトリではないため）。
+
+**したがって `marketplace.json` の source は相対パスにしない。**
+本プラグインは明示 github ソースにしてある（どの経路でも解決する）。`lint #38` が相対パスを機械的に禁じる。
+
+> **これが「追加の仕方によって壊れる」種類の不具合であることに注意。** git clone 経由では動くので、
+> 開発側の手元では最後まで再現しない。**利用者がどう入れたかを訊かないと切り分けられない。**
 
 ## 2. hooks の配線挙動（最重要）
 
