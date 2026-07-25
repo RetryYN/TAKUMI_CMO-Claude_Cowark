@@ -12,30 +12,10 @@ GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 
 # ヒアドキュメント本文を除去した「コマンドの骨格」を判定対象にする。
 # 検証報告・ナレッジ・lessons.md など、区画パスを**引用するだけ**の文書を書けなくなる誤爆を防ぐ
-# （2026-07-25 ローカル実機検証 F3 で実測）。ただしヒアドキュメントをシェル解釈系
-# （bash/sh/zsh/dash/ksh/eval）に食わせている場合は本文がコマンドなので除去しない。
-# hook ペイロードは JSON なので改行が literal な \n（2文字）で来る。行単位で見るため実改行へ戻す。
-CMD_TEXT="$(printf '%s' "$STDIN_TEXT" | sed 's/\\n/\
-/g')"
-CMD_SKELETON="$(printf '%s' "$CMD_TEXT" | awk '
-  BEGIN { skip = 0; term = "" }
-  {
-    if (skip) {
-      line = $0
-      gsub(/^[ \t]+|[ \t]+$/, "", line)
-      if (line == term) { skip = 0; term = "" }
-      next
-    }
-    print
-    if (match($0, /<<-?[ \t]*['"'"'"]?[A-Za-z_][A-Za-z0-9_]*['"'"'"]?/)) {
-      # シェル解釈系に食わせるヒアドキュメントは本文もコマンド → 除去しない
-      if ($0 ~ /(^|[^[:alnum:]_-])(bash|sh|zsh|dash|ksh|eval)([ \t]|$)/) next
-      tag = substr($0, RSTART, RLENGTH)
-      sub(/<<-?[ \t]*/, "", tag)
-      gsub(/['"'"'"]/, "", tag)
-      skip = 1; term = tag
-    }
-  }')"
+# （2026-07-25 ローカル実機検証 F3 で実測）。
+# 実装は _common.sh の cmd_skeleton に集約した（2026-07-26 — ここにしか無かったため
+# RM Guard が同じ穴を再発明していた。O-1 と多行フェイルオープンの両方の原因）。
+CMD_SKELETON="$(cmd_skeleton)"
 
 # ブランド区画パスに触れていなければ即通過
 printf '%s' "$CMD_SKELETON" | grep -qE 'knowledge/brands/[a-z0-9][a-z0-9-]*' || exit 0

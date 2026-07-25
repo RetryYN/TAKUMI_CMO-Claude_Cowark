@@ -15,7 +15,9 @@ printf '%s' "$STDIN_TEXT" | grep -q 'k_done' || exit 0
 printf '%s' "$STDIN_TEXT" | grep -q 'touch' || exit 0
 # 初期化・掃除（rm を含むコマンド）は免除 — takumi-start 手順2 の
 # `rm -f memory/.workflow/{...,k_done,...}` が前タスクの bulk_send 残留時に誤爆しデッドロックするため
-printf '%s' "$STDIN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm([[:space:]]|$)' && exit 0
+# 単語境界で見るので CMD_TEXT（実改行へ戻したテキスト）を使う —
+# STDIN_TEXT のままだと `\n` の "n" が境界を潰し、2行目以降の rm を見落として免除が効かない
+printf '%s' "$CMD_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm([[:space:]]|$)' && exit 0
 
 # 2) 不可逆送出を宣言していないタスクは対象外
 [ -f "$WF_DIR/bulk_send" ] || exit 0
