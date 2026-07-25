@@ -13,7 +13,7 @@ argument-hint: <記事/LPのURL または 商材の説明> [投稿先: tiktok/yo
    - 黄金構造（0-3秒フック→価値→実証→CTA）で絵コンテ表を作成
    - 指定された投稿先の型（尺・比率・テロップ量）に調整。指定がなければ TikTok系/YouTube/Reels の3バージョン
 3. **文言の品質**: コピーは copywriting スキル（13字ルール）、実証は実数値のみ（捏造禁止・ないものは `[要確認]`）、CTA はブランドの導線と同一文言
-4. **検収**: SKILL.md 末尾のチェックリストで自己検査。lessons.md（knowledge/feedback/）があれば反映。**最終稿は skills/ad-compliance-jp/SKILL.md の表現規制チェック（景表法・薬機法・ステマ表記等）を必ず通してから納品**
+4. **検収**: SKILL.md 末尾のチェックリストで自己検査。lessons.md（knowledge/feedback/）があれば反映。**最終稿は skills/ad-compliance-jp/SKILL.md の表現規制チェック（景表法・ステマ表記等）を必ず通してから納品**（**薬機法領域・医療は対象外 — 書き換えず停止して人間・専門家へ返す**）
 5. **出力**: `knowledge/drafts/videoscript-<name>-<date>.md` に保存し、チャットにも絵コンテ表を表示。複数プラットフォーム版は差分（尺・フック・テロップ）を明示
 
 ## 注意
