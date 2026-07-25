@@ -118,6 +118,27 @@ rm -f "$TAKUMI_WF_DIR/verify_allowlist"
 out=$(printf '{"url":"https://en.wikipedia.org/wiki/Password"}' | bash "$SC/url-guard.sh")
 check "verify-allowlist: フラグ削除後は平常動作" EMPTY "$out"
 
+# 9c. navigate-warn: Step E（変更前記録）未完了のままの遷移を警告する
+#     （2026-07-26 全体CHECK で検出: hooks.json に登録されている11本のうち、この1本だけ
+#      CI で一度も実行されていなかった。「登録されている」と「動作が検査されている」は別物）
+rm -f "$TAKUMI_WF_DIR/active" "$TAKUMI_WF_DIR/e_done"
+out=$(printf '{"tool_name":"mcp__playwright__browser_navigate","tool_input":{"url":"https://example.com/"}}' | bash "$SC/navigate-warn.sh")
+check "navigate-warn: 作業前（active なし）は無反応" EMPTY "$out"
+echo t > "$TAKUMI_WF_DIR/active"
+out=$(printf '{"tool_name":"mcp__playwright__browser_navigate","tool_input":{"url":"https://example.com/"}}' | bash "$SC/navigate-warn.sh")
+check "navigate-warn: 作業中で Step E 未完了なら警告" 'additionalContext.*Step E' "$out"
+# 警告であってブロックではない — deny に化けると通常のページ遷移が全て止まる
+if printf '%s' "$out" | grep -q 'permissionDecision'; then
+  echo "FAIL: navigate-warn が deny を返している（警告のみのはず）"; FAIL=1
+else
+  echo "PASS: navigate-warn: deny ではない（遷移は止めない）"
+fi
+printf '%s' "$out" | json_valid && echo "PASS: navigate-warn: 出力JSONが妥当" || { echo "FAIL: navigate-warn: JSON不正"; FAIL=1; }
+touch "$TAKUMI_WF_DIR/e_done"
+out=$(printf '{"tool_name":"mcp__playwright__browser_navigate","tool_input":{"url":"https://example.com/"}}' | bash "$SC/navigate-warn.sh")
+check "navigate-warn: Step E 完了後は無反応" EMPTY "$out"
+rm -f "$TAKUMI_WF_DIR/e_done"
+
 # 10. session-start: JSON 妥当性
 if printf '{}' | bash "$SC/session-start.sh" | json_valid; then
   echo "PASS: session-start JSON"
