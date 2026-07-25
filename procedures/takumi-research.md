@@ -31,6 +31,7 @@
 | Webサイト・LP の品質・速度 | docs/parts/site-audit.md |
 | **基礎分析**（「戦略を立てたい」「市場を知りたい」「事業を見直したい」） | **docs/parts/foundation-analysis.md**（①環境 ②STP ③ビジネスモデル/CF ④顧客データ ⑤調査設計） |
 | 市場・競合・自社の環境（PEST/5F/3C/SWOT/VRIO/バリューチェーン） | `skills/market-analysis-jp` |
+| **社会文脈から人物像**（「どんな人が顧客か」「ペルソナを作って」「生活実態を知りたい」「訴求が刺さらない理由」） | **docs/parts/context-to-persona.md** + `skills/social-insight-jp`（作法の正本） |
 | 誰に売るか（セグメント・ターゲット・ポジショニング） | `skills/stp-jp` |
 | **儲かるか・現金が回るか**（収益構造・損益分岐点・CCC・獲得コスト） | `skills/business-model-jp` + `takumi/domain/unit_economics.py` |
 | 顧客データの集計（RFM/コホート/ファネル/ジャーニー/JTBD） | `skills/customer-analytics-jp` |
