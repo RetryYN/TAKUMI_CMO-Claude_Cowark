@@ -27,6 +27,9 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | 媒体種別 | `ChannelKind` | 値オブジェクト | **Owned**: SNS / コンテンツ / Webサイト / オウンドメディア / メール ／ **Earned**: 広報・連携。**Paid は持たない**（ゼロ広告費） |
 | 景品類の提供 | `PremiumOffer` | 値オブジェクト | 紹介特典・キャンペーン景品1件。景品表示法の限度額を超えていれば拒否する |
 | 景品の提供方法 | `PremiumKind` | 値オブジェクト | 総付景品 / 一般懸賞 / 共同懸賞。**自動分類はしない**（呼び出し側が宣言する） |
+| 損益分岐点 | `BreakEven` | 値オブジェクト | 固定費と変動費率から分岐点・必要売上・安全余裕率。**変動費率1以上は拒否**（分岐点が存在しない） |
+| キャッシュサイクル | `CashCycle` | 値オブジェクト | CCC（棚卸+売上債権−仕入債務）と必要運転資金。負のCCCは「現金を生む構造」 |
+| オーガニック獲得コスト | `OrganicAcquisitionCost` | 値オブジェクト | 時間×単価÷獲得件数。**ゼロ広告費でも時間が原価**。獲得0件は判定不能（0円ではない） |
 | ゲート | `Gate` | ドメインサービス（hook） | 不変条件の機械強制（Brand Isolation / ゼロ課金 / 送出監査 等） |
 
 ## 匠の∞ループ（中核のドメインサービス）
@@ -79,6 +82,7 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | `Campaign` | 実装済み | `tests/test_campaign.py` |
 | `UpstreamLoop` / `DownstreamLoop` / `PlanHandoff` / `MeasurementHandoff` | 実装済み | `tests/test_loop.py` |
 | `PremiumOffer` / `PremiumKind` | 実装済み | `tests/test_premium.py` |
+| `BreakEven` / `CashCycle` / `OrganicAcquisitionCost` | 実装済み（**KPIツリーとは意図的に非依存** — 「動かす指標」と「続ける/やめる指標」を混ぜない） | `tests/test_unit_economics.py` |
 | `Task` | **コード化しない** — ランタイム側の表現（`tasks/*.yaml` + `docs/steps-reference.md` の A〜K）が正本。Python に写すと二重管理になる | — |
 | `Gate` | **コード化しない** — 実体は `hooks/scripts/*.sh`。判定ロジックは `scripts/test-hooks.sh` が保証する | — |
 
