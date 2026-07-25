@@ -17,6 +17,8 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
+from .enum_guard import require_enum
+
 # slug: 小文字英数字とハイフン。先頭末尾はハイフン不可。2〜40字。
 _SLUG_RE = re.compile(r"^[a-z0-9][a-z0-9-]*[a-z0-9]$")
 _SLUG_MIN = 2
@@ -82,6 +84,9 @@ class Brand:
     name: str
     status: BrandStatus = BrandStatus.ACTIVE
     created: str | None = None
+
+    def __post_init__(self) -> None:
+        require_enum(self.status, BrandStatus, "status（ブランドの状態）")
 
     @classmethod
     def new(

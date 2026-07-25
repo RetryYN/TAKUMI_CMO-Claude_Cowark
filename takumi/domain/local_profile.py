@@ -23,6 +23,8 @@ import re
 from dataclasses import dataclass
 from enum import Enum
 
+from .enum_guard import require_enum
+
 _SPACES = re.compile(r"[\s　]+")
 
 
@@ -135,6 +137,9 @@ class ReviewSolicitation:
 
     target: SolicitationTarget
     incentive: bool | None = None
+
+    def __post_init__(self) -> None:
+        require_enum(self.target, SolicitationTarget, "target（頼む相手）")
 
     def violations(self) -> list[str]:
         """止める理由を列挙する。空リスト＝止める理由が見つからなかった。"""
