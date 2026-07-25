@@ -13,11 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
-# 有料広告に紐づく指標（部分一致・大文字小文字/空白無視）。ゼロ広告費のためツリーに置けない。
-_PAID_METRICS = (
-    "cac", "ltv", "roas", "cpa", "cpc", "cpm",
-    "adspend", "広告費", "広告予算", "出稿", "入札",
-)
+from .paid_guard import EN_PAID_METRICS, JA_PAID_METRICS, find_paid_token
 
 
 class KpiKind(Enum):
@@ -36,12 +32,11 @@ class KpiNode:
     children: list["KpiNode"] = field(default_factory=list)
 
     def __post_init__(self) -> None:
-        normalized = self.name.lower().replace(" ", "").replace("　", "")
-        for token in _PAID_METRICS:
-            if token in normalized:
-                raise ValueError(
-                    f"KPIツリーに有料指標は置けません（ゼロ広告費）: {self.name!r}"
-                )
+        hit = find_paid_token(self.name, JA_PAID_METRICS, EN_PAID_METRICS)
+        if hit:
+            raise ValueError(
+                f"KPIツリーに有料指標は置けません（ゼロ広告費）: {self.name!r}（検出語: {hit}）"
+            )
 
     def to_dict(self) -> dict:
         return {
@@ -75,6 +70,23 @@ class KpiTree:
 
     def leaves(self) -> list[KpiNode]:
         return [n for n in self._walk(self.root) if not n.children]
+
+    def find(self, name: str) -> KpiNode | None:
+        """名前でノードを引く（同名は先に見つかった方。ツリー内で名前は一意に保つ）。"""
+        for node in self._walk(self.root):
+            if node.name == name:
+                return node
+        return None
+
+    def leaves_under(self, name: str) -> list[str]:
+        """指定ノード配下の葉の名前。ノード自身が葉ならそれ自身を返す。
+
+        ∞の下り（UpstreamLoop.hand_down）で「この目標のために手元で動かす指標」を出す。
+        """
+        node = self.find(name)
+        if node is None:
+            raise ValueError(f"KPIツリーにありません: {name!r}")
+        return [n.name for n in self._walk(node) if not n.children]
 
     def to_dict(self) -> dict:
         return {"root": self.root.to_dict()}

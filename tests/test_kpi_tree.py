@@ -24,6 +24,19 @@ class TestKpiNode(unittest.TestCase):
         for ok in ("指名検索数", "エンゲージ率", "記事公開数", "被リンク数"):
             self.assertEqual(KpiNode(ok, KpiKind.LEADING).name, ok)
 
+    def test_no_false_positive_on_substrings(self):
+        """過剰検知もガードの失敗。ラテン文字は単語境界で照合する。
+
+        2026-07-25 の回帰: Channel("Threads") が "ads" の部分一致で弾かれた。
+        指標側も同じ形（cache→cac 等）を踏まないことを固定する。
+        """
+        for ok in ("Threads の保存率", "cache ヒット率", "Roadmap 消化率"):
+            self.assertEqual(KpiNode(ok, KpiKind.LEADING).name, ok)
+        # 単語として現れれば従来どおり拒否する
+        for bad in ("CPC", "ad spend", "月間 ROAS"):
+            with self.assertRaises(ValueError):
+                KpiNode(bad, KpiKind.LAGGING)
+
 
 class TestKpiTree(unittest.TestCase):
     def _tree(self):
@@ -43,6 +56,23 @@ class TestKpiTree(unittest.TestCase):
         self.assertIn("記事公開数", leaves)
         self.assertIn("エンゲージ率", leaves)
         self.assertNotIn("オーガニック流入", leaves)  # 子を持つので葉ではない
+
+    def test_find(self):
+        tree = self._tree()
+        self.assertEqual(tree.find("オーガニック流入").kind, KpiKind.LEADING)
+        self.assertIsNone(tree.find("フォロワー数"))
+
+    def test_leaves_under(self):
+        tree = self._tree()
+        self.assertEqual(tree.leaves_under("オーガニック流入"), ["記事公開数"])
+        # 葉そのものを指したらそれ自身
+        self.assertEqual(tree.leaves_under("記事公開数"), ["記事公開数"])
+        # 根を指したら全葉
+        self.assertEqual(tree.leaves_under("北極星: 指名検索数"), ["記事公開数", "エンゲージ率"])
+
+    def test_leaves_under_unknown_node(self):
+        with self.assertRaises(ValueError):
+            self._tree().leaves_under("フォロワー数")
 
     def test_forbid_paid_anywhere(self):
         with self.assertRaises(ValueError):
