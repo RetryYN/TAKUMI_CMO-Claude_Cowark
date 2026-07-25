@@ -12,30 +12,44 @@ source "$SCRIPT_DIR/_common.sh"
 
 GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 
+# --- 走査対象テキスト（2026-07-26 に2件を修正）---
+# 1) **多行コマンドで2行目以降の `rm -rf` を見落としていた（フェイルオープン）**。
+#    ペイロードは JSON なので改行が literal な `\n` で来る。下の `[^[:alnum:]_-]` 境界に対して
+#    `\n` の "n" は英数字なので境界が成立せず、`cd /tmp\nrm -rf outputs/` が素通りしていた。
+#    → 実改行へ戻した CMD_TEXT を使う（_common.sh）。
+# 2) **ヒアドキュメント本文の文字列に反応していた（誤爆・O-1）**。削除操作を一切していない
+#    レポート生成スクリプトを `cat > x.py <<'EOF' … EOF` で書き出しただけで deny した。
+#    → 本文を落とした骨格を使う。本文をインタプリタに食わせる形は落とさない（_common.sh）。
+#
+# 注: `cat > x.sh <<EOF … EOF` の後に `bash x.sh` と続ければ本ガードは素通りするが、それは元から同じ
+#（`bash x.sh` に rm は現れない）。RM Guard は敵対的な回避を防ぐ仕組みではなく、
+# **自分の後片付けが拡大解釈で一括削除に化けるのを止める**ためのもの（先頭コメント参照）。
+SCAN_TEXT="$(cmd_skeleton)"
+
 # 対象コマンド判定（該当しなければ即通過）
 DANGEROUS=0
 # rm の再帰フラグ（-r/-R/--recursive、-rf 等の複合も拾う）
-if printf '%s' "$STDIN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]]+(-[[:alnum:]]*[rR]|--recursive)'; then
+if printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]]+(-[[:alnum:]]*[rR]|--recursive)'; then
   DANGEROUS=1
 # rm のグロブ一括（rm ... * / rm dir/*.png 等）
-elif printf '%s' "$STDIN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]][^;|&]*\*'; then
+elif printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]][^;|&]*\*'; then
   DANGEROUS=1
 # find -delete / git clean / PowerShell Remove-Item -Recurse
-elif printf '%s' "$STDIN_TEXT" | grep -qE '(^|[^[:alnum:]_-])find[[:space:]][^;|&]*-delete'; then
+elif printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])find[[:space:]][^;|&]*-delete'; then
   DANGEROUS=1
-elif printf '%s' "$STDIN_TEXT" | grep -qE '(^|[^[:alnum:]_-])git[[:space:]]+clean'; then
+elif printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])git[[:space:]]+clean'; then
   DANGEROUS=1
-elif printf '%s' "$STDIN_TEXT" | grep -qiE 'remove-item[^;|&]*-recurse'; then
+elif printf '%s' "$SCAN_TEXT" | grep -qiE 'remove-item[^;|&]*-recurse'; then
   DANGEROUS=1
 fi
 [ "$DANGEROUS" = "1" ] || exit 0
 
 # 免除: memory/.workflow/ 配下のみを対象とするフラグ掃除（再帰フラグなし）は素通し
 # 例: rm -f memory/.workflow/{b4_done,e_done} / rm memory/.workflow/verify_*
-if printf '%s' "$STDIN_TEXT" | grep -q 'memory/\.workflow/' && \
-   ! printf '%s' "$STDIN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]]+(-[[:alnum:]]*[rR]|--recursive)'; then
+if printf '%s' "$SCAN_TEXT" | grep -q 'memory/\.workflow/' && \
+   ! printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]]+(-[[:alnum:]]*[rR]|--recursive)'; then
   # rm の対象パスが .workflow 以外を含まないことを確認（含む場合はゲート対象）
-  if ! printf '%s' "$STDIN_TEXT" | sed 's|memory/\.workflow/[^[:space:]]*||g' | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]][^;|&]*[[:alnum:]/*]'; then
+  if ! printf '%s' "$SCAN_TEXT" | sed 's|memory/\.workflow/[^[:space:]]*||g' | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]][^;|&]*[[:alnum:]/*]'; then
     exit 0
   fi
 fi

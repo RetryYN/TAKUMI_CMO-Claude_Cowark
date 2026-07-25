@@ -204,6 +204,8 @@ out=$(printf '{"tool_name":"Bash","tool_input":{"command":"touch memory/.workflo
 check "ov: bulk_sendあり・ov_doneなしは deny" 'OV Gate' "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"rm -f memory/.workflow/{b4_done,e_done,k_done,bulk_send,psv_done} && touch memory/.workflow/active"}}' | bash "$SC/ov-gate.sh")
 check "ov: 初期化rmは誤爆しない" EMPTY "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cd /tmp\\nrm -f memory/.workflow/k_done\\ntouch memory/.workflow/k_done"}}' | bash "$SC/ov-gate.sh")
+check "ov: 多行コマンド2行目のrmでも免除が効く" EMPTY "$out"
 echo "VERIFIED 3/3" > "$TAKUMI_WF_DIR/ov_done"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"touch memory/.workflow/k_done"}}' | bash "$SC/ov-gate.sh")
 check "ov: ov_doneありは通過" EMPTY "$out"
@@ -231,6 +233,32 @@ out=$(printf '{"tool_name":"Bash","tool_input":{"command":"rm memory/.workflow/v
 check "rm-guard: .workflow内グロブは通過" EMPTY "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"ls outputs/"}}' | bash "$SC/rm-guard.sh")
 check "rm-guard: rmなしコマンドは通過" EMPTY "$out"
+# --- ヒアドキュメント本文の扱い（2026-07-26 O-1）---
+# cat / tee の本文はファイルへ書き出されるデータで実行されない → 走査から外す。
+# bash / sh / python へ渡る本文は実行される → 外さない（フェイルクローズ）。
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat > /tmp/g.py <<EOF\\n# 後片付けに rm -rf は使わない、と説明する行\\nEOF\\npython3 /tmp/g.py"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: cat>file のヒアドキュメント本文は通過" EMPTY "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"tee /tmp/g.md <<EOF\\nrm -r について書いた文章\\nEOF"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: tee のヒアドキュメント本文は通過" EMPTY "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"bash <<EOF\\nrm -rf /tmp/x\\nEOF"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: bash へ渡す本文は deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat <<EOF | sh\\nrm -rf /tmp/x\\nEOF"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: インタプリタへパイプする本文は deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"python3 - <<PY\\nimport os\\n# rm -rf の説明\\nPY"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: python へ渡す本文は deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat > /tmp/g.py <<EOF\\nhello\\nEOF\\nrm -rf outputs/"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 終端後の本物の rm -rf は deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat > /tmp/g.py <<EOF\\nhello\\nEOF\\nrm outputs/*.png"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 終端後の本物のグロブ削除は deny" 'RM Guard' "$out"
+# --- 多行コマンドの2行目以降（2026-07-26 に実測したフェイルオープン）---
+# ペイロードでは改行が literal な \n で来るため、`[^[:alnum:]_-]` 境界に対して
+# `\n` の "n" が英数字として働き、2行目以降の rm -rf が一致しなかった。
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cd /tmp\\nrm -rf outputs/"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 多行コマンド2行目の rm -rf は deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo start\\nls\\nrm outputs/*.png"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 多行コマンド3行目のグロブ削除は deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cd /tmp\\nrm outputs/one.png"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 多行コマンドの個別rmは通過" EMPTY "$out"
 export TAKUMI_GATE_MODE=warn
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"rm -rf outputs/"}}' | bash "$SC/rm-guard.sh")
 check "rm-guard: warnモードは注入のみ" 'additionalContext.*RM Guard' "$out"
