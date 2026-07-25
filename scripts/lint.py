@@ -254,6 +254,74 @@ if _parts_dir.is_dir():
         if not (_parts_dir / ref).is_file():
             err(f"docs/parts/index.md: 実体のない部品を参照 {ref}")
 
+# --- 15. domain-model.md の宣言と takumi/domain・tests の実体を突合
+#         （2026-07-25 全体CHECK で検出: Strategy/Campaign/Loop が「Phase 3/4 で実装」と
+#          書かれたまま実体もテストも存在しなかった。宣言だけが先行する負債を機械で止める） ---
+_dm = ROOT / "docs/domain-model.md"
+if _dm.is_file():
+    _dm_text = read(_dm)
+    _domain_src = "".join(read(p) for p in sorted((ROOT / "takumi/domain").glob("*.py")))
+    _defined = set(re.findall(r"^class\s+([A-Za-z_]\w*)", _domain_src, re.M))
+
+    def _table(heading: str) -> list[list[str]]:
+        """`## <heading>` 直下の md テーブルの本文行を列リストで返す。"""
+        m = re.search(rf"^##+ {re.escape(heading)}.*?$(.*?)(?=^##\s|\Z)", _dm_text, re.M | re.S)
+        if not m:
+            err(f"docs/domain-model.md: 見出し『{heading}』が見つからない（正本の構造が変わった）")
+            return []
+        rows = []
+        for line in m.group(1).splitlines():
+            line = line.strip()
+            if not line.startswith("|") or set(line) <= set("|- "):
+                continue
+            cols = [c.strip() for c in line.strip("|").split("|")]
+            if cols and cols[0] in ("対象", "日本語（ユビキタス）"):
+                continue  # ヘッダ行
+            rows.append(cols)
+        return rows
+
+    # (a) 実装状況表: 宣言したクラスが takumi/domain に実在し、宣言したテストが実在するか
+    _impl_ids: set[str] = set()
+    for cols in _table("実装状況"):
+        if len(cols) < 3:
+            continue
+        target, state, tests = cols[0], cols[1], cols[2]
+        ids = re.findall(r"`([A-Za-z_]\w*)`", target)
+        _impl_ids.update(ids)
+        # 「コード化しない」と明記した行はランタイム側の表現なので実体を要求しない
+        if "コード化しない" in state:
+            if re.search(r"`tests/[\w./-]+`", tests):
+                err(f"docs/domain-model.md 実装状況: 『{target}』は"
+                    f"コード化しない宣言なのにテストを宣言している（どちらかに寄せること）")
+            continue
+        for cid in ids:
+            if cid not in _defined:
+                err(f"docs/domain-model.md 実装状況: `{cid}` を実装済みと宣言しているが "
+                    f"takumi/domain/*.py に class 定義がない（宣言だけが先行している）")
+        for tp in re.findall(r"`(tests/[\w./-]+\.py)`", tests):
+            if not (ROOT / tp).is_file():
+                err(f"docs/domain-model.md 実装状況: 宣言されたテスト {tp} が存在しない")
+        if not re.search(r"`tests/[\w./-]+\.py`", tests) and ids:
+            err(f"docs/domain-model.md 実装状況: 『{target}』にテストの宣言がない"
+                f"（TDD: 集約にはテストを紐づける）")
+
+    # (b) ユビキタス言語表のコード名が実装状況表に必ず現れる（Task/Channel の取りこぼし防止）
+    for cols in _table("ユビキタス言語 ↔ コードの対応"):
+        if len(cols) < 2:
+            continue
+        for cid in re.findall(r"`([A-Za-z_]\w*)`", cols[1]):
+            if cid not in _impl_ids:
+                err(f"docs/domain-model.md: ユビキタス言語 `{cid}` が実装状況表にない"
+                    f"（実装するか『コード化しない』と明記すること）")
+
+    # (c) 逆方向: takumi/domain に実在する公開クラスが正本に載っているか
+    for cid in sorted(_defined):
+        if cid.startswith("_"):
+            continue
+        if f"`{cid}`" not in _dm_text:
+            err(f"docs/domain-model.md: takumi/domain の `{cid}` が正本に載っていない"
+                f"（ユビキタス言語と1対1にすること）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'references').glob('*/SKILL.md')))} "
