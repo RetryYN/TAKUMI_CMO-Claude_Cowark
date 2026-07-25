@@ -173,3 +173,16 @@ session-rules (3) 違反であり、ad-compliance-jp の対象にもなる。
 - **前段**（先に決まっているべきこと）: `skills/offer-design-jp`（**何を差し出すかが先**）／`skills/voc-research-jp`（断られる理由）
 - **後段**（ここで決めたら次に開く）: `skills/ad-compliance-jp`（公開前）／`skills/cro-jp`（申込導線で測る）
 - **併用**（同時に開く）: `skills/copywriting`（見出し）／`skills/psych-nudge-jp`／`skills/psych-target-jp`／`skills/psych-ux-jp`／`skills/web-design`
+
+## 出典
+
+**【社内基準】** — 本スキルの内容は**外部の一次情報ではなく、本プロダクトの型・運用経験**に基づく。
+目安であって、引用可能な根拠ではない。
+
+- セールスフォーミュラ、提案書テンプレート、LP構成、信頼構築パーツ
+
+**【重要】提案書に書く数値・実績は本スキルの管轄外。**
+導入事例・料金・効果の数値は、**顧客が実在の判断に使う**。
+- 効果・優位性の表現（No.1・最大・◯%改善）は `skills/ad-compliance-jp` を必ず通す（景表法）
+- 出所を辿れない数値を提案書に書かない（`docs/開発ワークフロー.md` §0b-2）
+- 事例に実在の顧客名・数値を載せるときは**当人の同意**を確認する

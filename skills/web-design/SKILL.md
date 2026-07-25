@@ -77,3 +77,21 @@ description: Webデザイン/LP設計 — レイアウト・タイポグラフ�
 - **後段**（ここで決めたら次に開く）: `skills/cro-jp`（改善の仮説）／`skills/ad-compliance-jp`（公開前）
 - **併用**（同時に開く）: `skills/design-evidence-jp`（**数値の正本**）／`skills/psych-ux-jp`（心理の根拠）／`skills/seo-jp`
 - **正本が別**: ビジュアル成果物は design-artisan → design-critic のループ（`docs/parts/index.md`）
+
+## 出典
+
+**【社内基準】** — 本スキルの内容は**外部の一次情報ではなく、本プロダクトの型・運用経験**に基づく。
+目安であって、引用可能な根拠ではない。
+
+- レイアウト・タイポグラフィ・カラー・コンポーネントの各基準、LP構成、禁止事項
+
+**【重要】`resources/` 配下も同じ規律が効く。** 本文が「必読」で開く以上、正本と同じ強さで読まれる。
+各ファイルの末尾に出典節があるので、**数値を引く前にそこを見る**:
+
+| ファイル | 確からしさ |
+|---|---|
+| `resources/lp-cro.md` | **改善率の数値は【二次情報・原典未取得】。提案の根拠に引用しない**（方向だけ使う） |
+| `resources/ux-laws.md` | UX法則の名称は原典があるが**原文は未取得**。名前を借りるだけにする |
+| `resources/jp-taste.md` | 日本市場の嗜好性。**調査ベースと書かれた比率は原典未取得** |
+| `resources/implementation.md` / `motion.md` / `motion-advanced.md` | Web標準API は一次情報あり。設計判断は社内基準 |
+| `resources/verify-checklist.md` | 社内基準（design-critic の審査基準） |

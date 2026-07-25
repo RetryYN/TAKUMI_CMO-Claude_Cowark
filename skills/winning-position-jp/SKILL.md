@@ -168,7 +168,9 @@ description: 勝ち筋の設計 — 広告費を使わずに勝てる場所を�
 - **後段**（ここで決めたら次に開く）: `skills/messaging-design-jp`（言い続けること）／`skills/channel-planning-jp`（どの面で）／`skills/offer-design-jp`（何を差し出す）／`skills/kpi-design-jp`（何で測る）
 - **併用**（同時に開く）: `skills/scale-strategy-jp`（その戦い方は規模に合うか）／`skills/business-model-jp`（勝っても続くか）／`skills/micro-business-jp`（一人〜少人数なら）
 
-## 出典・確からしさ
+## 出典
+
+- **【社内基準】** 本スキルの内容は外部の一次情報ではなく、本プロダクトの型・運用経験に基づく。**目安であって、引用可能な根拠ではない**
 
 - **本スキルは特定の書籍・研究の数値を引用していない。** 差別化・集中・非対称性は戦略論で広く扱われる概念だが、
   ここでは**ゼロ広告費という制約下での判断手順**として再構成している

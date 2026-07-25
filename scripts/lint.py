@@ -652,6 +652,66 @@ if _hook_test.is_file():
             err(f"hooks/scripts/{_p.name}: hooks.json に登録も他スクリプトからの source もされていない"
                 f"（動かない置き去りファイル。登録するか消すこと）")
 
+# --- 24. スキルの確からしさ（その数字はどこから来たのか）
+#         （2026-07-26 全体CHECK で検出。42スキルのうち10本が確からしさについて何も
+#          書いておらず、うち sns-jp は総務省調査由来の利用率6件を**出典なしで**載せていた。
+#          出典が無いので**1年古くなっていたことに誰も気づけなかった**（令和6年度→令和7年度）。
+#          さらに web-design/resources/lp-cro.md は「CVR最適化の**数値根拠**」と題して
+#          改善率を5つ並べながら出典ゼロ — §0b が「特に危ない」と名指しした種類の数値が
+#          「根拠」という名前で置かれていた。
+#          **SKILL.md だけでなく配下（resources/）も対象**にする。本文が「必読」で開く以上、
+#          正本と同じ強さで読まれるため） ---
+_PROV_LABELS = ("一次情報", "二次情報", "未確認", "社内基準")
+for _sk in sorted((ROOT / "skills").glob("**/*.md")):
+    _t = read(_sk)
+    _rel = _sk.relative_to(ROOT)
+    if not re.search(r"^## 出典", _t, re.M):
+        err(f"{_rel}: `## 出典` の節が無い（**外部出典がゼロなら「無い」と書く**。"
+            f"【社内基準】として型・経験則であることを明記する。"
+            f"空欄は書き忘れと区別がつかない → docs/開発ワークフロー.md §0b-2）")
+    elif not any(f"【{_l}" in _t for _l in _PROV_LABELS):
+        err(f"{_rel}: `## 出典` にラベルが1つも無い"
+            f"（【一次情報・確認済み】【一次情報・出所は特定済み／原文は未取得（要確認）】"
+            f"【二次情報・原典未取得】【未確認】【社内基準】のどれかを必ず書く。"
+            f"**読み手は外部の事実と社内の型を同じ強さで受け取る** → §0b-2）")
+
+# --- 25. 同じ数字が2箇所にあるとき、片方だけ古くなるのを止める（SNS利用率）
+#         （2026-07-26 全体CHECK で検出。social-insight-jp と sns-jp が同じ全年代利用率を
+#          持っており、**両方が別の壊れ方をしていた** — sns-jp は値そのものが1年古く
+#          （令和6年度）、social-insight-jp は値は新しいのに**出典の年度表記が令和6年度のまま**
+#          だった。数字の重複は避けられない（片方は媒体選定表、片方は社会観察の一次情報）ので、
+#          **一致することを機械で保証する**） ---
+_SNS_PLATFORMS = ("LINE", "YouTube", "Instagram", "X", "TikTok", "Facebook")
+_si = ROOT / "skills/social-insight-jp/SKILL.md"
+_sj = ROOT / "skills/sns-jp/SKILL.md"
+if _si.is_file() and _sj.is_file():
+    # 正本: social-insight-jp の「SNS等の利用率（全年代…）」の1項目（次の行まで続く）
+    _m = re.search(r"SNS等の利用率（全年代[^）]*）[:：](.+?)(?=\n\s*\n)", read(_si), re.S)
+    if not _m:
+        err("skills/social-insight-jp/SKILL.md: 「SNS等の利用率（全年代…）」の項目が見つからない"
+            "（**この6つの値の正本**。書式を変えたら lint #25 も直すこと）")
+    else:
+        _src = {p: v for p, v in re.findall(r"\b(LINE|YouTube|Instagram|X|TikTok|Facebook)\s+([\d.]+)%",
+                                            _m.group(1))}
+        # 引く側: sns-jp のチャネル選定表
+        _dst = {p: v for p, v in re.findall(r"^\|\s*(LINE|YouTube|Instagram|X|TikTok|Facebook)\s*\|\s*([\d.]+)%",
+                                            read(_sj), re.M)}
+        for _p in _SNS_PLATFORMS:
+            if _p not in _src:
+                err(f"skills/social-insight-jp/SKILL.md: 利用率に {_p} が無い（6媒体そろえる）")
+            elif _p not in _dst:
+                err(f"skills/sns-jp/SKILL.md: チャネル選定表に {_p} が無い（6媒体そろえる）")
+            elif _src[_p] != _dst[_p]:
+                err(f"SNS利用率の {_p} が食い違っている: "
+                    f"social-insight-jp={_src[_p]}% / sns-jp={_dst[_p]}% "
+                    f"（**正本は social-insight-jp §2**。同じ数字が2箇所にあるので、"
+                    f"**片方だけ更新すると誰も気づけない** — 実際そうなっていた）")
+        # 出典の年度も一致させる（値だけ直して年度表記が古いまま、という壊れ方が実際に起きた）
+        for _f, _t in ((_si, read(_si)), (_sj, read(_sj))):
+            if "令和7年度" not in _t:
+                err(f"{_f.relative_to(ROOT)}: SNS利用率の調査年度（令和7年度）が書かれていない"
+                    f"（**値と年度はセットで更新する**。総務省の同調査は毎年6月頃に更新される）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "

@@ -386,7 +386,7 @@ dataLayer.push({'gtm.blocklist': ['customScripts']});
 
 ---
 
-# 出典
+## 出典
 
 **【一次情報・確認済み】** すべて公式ドキュメントを本文取得して確認
 
