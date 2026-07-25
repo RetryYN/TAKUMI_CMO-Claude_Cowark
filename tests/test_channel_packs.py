@@ -23,6 +23,7 @@ CHANNEL_PACKS = {
     ChannelKind.WEBSITE: "procedures/takumi-website.md",
     ChannelKind.OWNED_MEDIA: "procedures/takumi-ownedmedia.md",
     ChannelKind.EMAIL: "procedures/takumi-email.md",
+    ChannelKind.EARNED: "procedures/takumi-pr.md",
 }
 
 
