@@ -29,3 +29,12 @@ design-critic の審査項目、および TAKUMI-CMO の Verify ステップで�
 - [ ] リンクテキストが「こちら」（文脈で行き先が分かること）
 - [ ] アニメーションが意味を持たない装飾 / 300ms超
 - [ ] print で崩れる（レポート系のみ）
+
+## 出典
+
+**【社内基準】** — design-critic の審査基準そのもの。外部の規格ではない。
+
+- Critical / High / Medium の分類と各項目
+
+**正本が別**: アクセシビリティの根拠は `implementation.md`（WCAG / MDN）。
+数値の扱いは `lp-cro.md` の出典節（**改善率は引用しない**）。

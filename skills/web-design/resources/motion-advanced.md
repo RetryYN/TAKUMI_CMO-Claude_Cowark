@@ -95,3 +95,17 @@ CSS だけでスクロール連動が書け、compositor スレッドで動く�
 ```
 
 酔いの三大要因（避ける/reduce で必ず殺す）: パララックス多用、大面積の横スワイプ遷移、前景と背景の速度差。
+
+## 出典
+
+**【一次情報・出所は特定済み／原文は未取得（要確認）】**
+
+- `IntersectionObserver` / Scroll-driven Animations API / `prefers-reduced-motion` は
+  いずれも Web 標準。**本ファイルは仕様書・MDN を取得して確認していない**。
+  **ブラウザ対応状況は特に動く**ため、実装前に MDN / Can I use を当たる
+  （対応前提で書いたコードは、対応していない環境で黙って動かない）
+
+**【社内基準】**
+
+- easing / duration の判定テーブル、FLIP の適用条件、
+  reduced-motion を「消す」ではなく「置換する」という方針

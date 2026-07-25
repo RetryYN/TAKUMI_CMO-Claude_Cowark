@@ -97,3 +97,14 @@ description: コンテンツ設計（C×P×T） — 記事/SNS長文/オウン�
 - **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/storytelling`／`skills/seo-jp`／`skills/sns-jp`／`skills/video-script`
 - **併用**（同時に開く）: `skills/breakout-content-jp`（伸びる構造）／`skills/demand-timing-jp`（出す時期）／`skills/psych-target-jp`
 - **正本が別**: カレンダーは `docs/parts/content-calendar.md`。既存資産の棚卸しは `skills/content-ops-jp`
+
+## 出典
+
+**【社内基準】** — 本スキルの内容は**外部の一次情報ではなく、本プロダクトの型・運用経験**に基づく。
+目安であって、引用可能な根拠ではない。
+
+- 構成パターン（P）・加工方法（T）の分類、演出レイヤー、ネタ帳・ストック運用
+- 品質ガード（1コンテンツ1メッセージ等）
+
+**正本が別**: 媒体ごとの相場・利用率は `skills/sns-jp`（**そちらは総務省調査が出典**）。
+伸びる構造は `skills/breakout-content-jp`、既存コンテンツの棚卸しは `skills/content-ops-jp`。
