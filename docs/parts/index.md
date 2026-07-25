@@ -13,7 +13,7 @@
 | タスク型 | 部品 |
 |---|---|
 | 計画 | content-calendar.md（投稿カレンダー・配信/送信計画・制作スケジュール — 作って終わりでなく queue.md と定常タスクへの接続まで） / **pre-setup-council.md（設定前の合議）**— 計測基盤・ワークフロー・指標の新設など「後から直すのが高くつく」変更の**直前に必ず通す関所** |
-| リサーチ | style-research.md（デザイン・配色） / deep-research.md（徹底洗い出し） / sns-research.md（SNSトレンド・競合） / **growth-teardown.md（伸びているアカウント・サイトの分解 — 実物を観測して仮説に変える）** |
+| リサーチ | **foundation-analysis.md（基礎分析の背骨 — 環境→STP→ビジネスモデル/キャッシュフロー→顧客データ→調査設計）** / style-research.md（デザイン・配色） / deep-research.md（徹底洗い出し） / sns-research.md（SNSトレンド・競合） / **growth-teardown.md（伸びているアカウント・サイトの分解 — 実物を観測して仮説に変える）** |
 | 収集 | asset-collect.md（画像素材・ライセンス証跡） / video-asset-collect.md（動画素材） |
 | クリエイティブ | imagegen.md（画像生成・Gemini実証） / videogen.md（動画生成・Gemini実証） / image-edit.md（バナー合成・クロマキー） / video-edit.md（WebM・アルファ・注釈アニメ） / page-improve.md（ページ改善モック） / content-to-lp.md（コンテンツ/ビジュアル→LP） / video-content-script.md（オーガニック動画コンテンツ台本） |
 | 分析 | site-audit.md（速度・SEO・品質） / sns-research.md（数値読み） / messaging-audit.md（メッセージング一貫性の点検＝ドリフト検出） / capacity-plan.md（工数配分・7割計画の実体化） / 各媒体パックの分析タスク |
