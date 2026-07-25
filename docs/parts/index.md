@@ -2,7 +2,7 @@
 
 > リサーチ・収集 = **Delvework**（掘る）、クリエイティブ・掃き出し = **Forgecraft**（鍛えて返す）。分析・計画は両者の蝶番。
 
-コマンド（カテゴリー）は媒体・対象ごと。動詞（リサーチ/収集/クリエイティブ/分析/掃き出し）はタスクレベルで、**各パックのタスクがここの部品を Read して使う**。単発依頼（「Geminiで画像作って」等）もここへ直接ルーティングしてよい（変更操作は /タスク開始 のゲート下）。
+コマンド（カテゴリー）は媒体・対象ごと。動詞（リサーチ/収集/クリエイティブ/分析/掃き出し）はタスクレベルで、**各パックのタスクがここの部品を Read して使う**。単発依頼（「Geminiで画像作って」等）もここへ直接ルーティングしてよい（変更操作は takumi-start のゲート下）。
 
 > **1つのタスクの回し方は [task-loop.md](task-loop.md) が横断の正本**（**① 構える → ② 作る → ③ 咎める → ④ 確かめる**、級と1対1、差し戻しは**最大2周**）。
 > design-artisan→design-critic の2周も、pre-send-verifier→承認→outcome-verifier も、その具体化。
@@ -22,7 +22,7 @@
 | 収集 | asset-collect.md（画像素材・ライセンス証跡） / video-asset-collect.md（動画素材） |
 | クリエイティブ | imagegen.md（画像生成・Gemini実証） / videogen.md（動画生成・Gemini実証） / image-edit.md（バナー合成・クロマキー） / video-edit.md（WebM・アルファ・注釈アニメ） / page-improve.md（ページ改善モック） / content-to-lp.md（コンテンツ/ビジュアル→LP） / video-content-script.md（オーガニック動画コンテンツ台本） |
 | 分析 | **content-audit.md（コンテンツ監査 — 伸ばす/直す/統合する/落とすの4分類。増やす前に持っているものを直す）** / **scale-strategy.md（規模に合わせた戦略 — 弱者/強者・射程距離・1位を取れるまでの細分化・一点集中）** / site-audit.md（速度・SEO・品質） / sns-research.md（数値読み） / messaging-audit.md（メッセージング一貫性の点検＝ドリフト検出） / capacity-plan.md（工数配分・7割計画の実体化） / 各媒体パックの分析タスク |
-| 掃き出し | wp-publish.md（WordPress記事公開・下書き→承認→公開） / design-sync.md（Claude Design 同期・既定ルート） / design-handoff.md（**人間編集ハンドオフ** — DesignSync 認可なし環境のUIルート。critic PASS 後に「Design に送って手直ししますか？」→ 編集後回収。**発火は広く解釈**: 「手直ししたい」「自分で調整」「いじれるようにして」等、完成済みビジュアルに人間が手を入れたい意図が読めれば全部ここ） / canva-export.md（Canva 書き出し） / 各媒体の投稿・配信・入稿（必ず /タスク開始 経由 + 不可逆なら pre-send-verifier） |
+| 掃き出し | wp-publish.md（WordPress記事公開・下書き→承認→公開） / design-sync.md（Claude Design 同期・既定ルート） / design-handoff.md（**人間編集ハンドオフ** — DesignSync 認可なし環境のUIルート。critic PASS 後に「Design に送って手直ししますか？」→ 編集後回収。**発火は広く解釈**: 「手直ししたい」「自分で調整」「いじれるようにして」等、完成済みビジュアルに人間が手を入れたい意図が読めれば全部ここ） / canva-export.md（Canva 書き出し） / 各媒体の投稿・配信・入稿（必ず takumi-start 経由 + 不可逆なら pre-send-verifier） |
 
 メディア系の技術地図（ffmpegレシピ・形式カバレッジ・素材パック規約）は docs/media-pipeline.md が正本。
 

@@ -14,7 +14,7 @@
 
 **初回のみ**: `knowledge/config/accounts.md` を確認し、記録がなければ**どの素材サイトのアカウント（無料/有料）を持っているか**をユーザーに質問して記録する。有料アカウントがあるサイトを優先巡回先にする（DL制限・クレジット表記条件・解像度が変わるため。2回目以降はこの記録を読むだけで質問しない）。
 
-`knowledge/sites/` の素材サイトナレッジを確認（あればフェーズ②で最短巡回）。初回はフェーズ①としてマッピングする（/タスク開始 経由。ただし探索・閲覧のみなら読み取りフリー）。
+`knowledge/sites/` の素材サイトナレッジを確認（あればフェーズ②で最短巡回）。初回はフェーズ①としてマッピングする（takumi-start 経由。ただし探索・閲覧のみなら読み取りフリー）。
 
 | サイト | 向き | 固有ルール（初回マッピング時に実数を確認して knowledge/sites/<site>/index.md に記録） |
 |---|---|---|
@@ -40,7 +40,7 @@ Bing/Google 画像検索は「発見」用途のみ。**権利不明の拾い画
 
 ### 5. 取り込み
 
-- blob/画像URL の fetch を第一とし、ダウンロードボタン経由の場合は**専用DLフォルダ**（Downloads 本体は接続しない — imagegen 部品（docs/parts/imagegen.md） の取り込み表と同じ原則）を使う。fetch → `knowledge/assets/<用途>/<name>.<ext>` に保存（/タスク開始 のゲート下で実施）
+- blob/画像URL の fetch を第一とし、ダウンロードボタン経由の場合は**専用DLフォルダ**（Downloads 本体は接続しない — imagegen 部品（docs/parts/imagegen.md） の取り込み表と同じ原則）を使う。fetch → `knowledge/assets/<用途>/<name>.<ext>` に保存（takumi-start のゲート下で実施）
 - 加工（リサイズ・切り抜き）が必要なら Pillow 規範に従う（**人物写真の印象改変は禁止**）
 
 ### 6. 出典台帳（正本: knowledge/assets/sources.md）

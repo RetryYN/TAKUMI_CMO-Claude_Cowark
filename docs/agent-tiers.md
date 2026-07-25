@@ -175,7 +175,7 @@ PreToolUse(Agent) で `memory/.workflow/agents_running` に1行 append、PostToo
 **完了シグナルを取りこぼすと枠が残る**ので、TTL（既定30分）を過ぎた行は掃除する
 （掃除が無いと、失敗した委譲1件で以後ずっと枠が減ったままになる）。
 
-**既定は `warn`（注入のみ）。** 他のゲートと同じ段階導入（TESTING.md「GATE_MODE 昇格」）だが、
+**既定は `warn`（注入のみ）。** 他のゲートと同じ段階導入（TESTING.md「GATE_MODE 昇格」節）だが、
 理由はこのゲート固有:
 
 > **並列上限は「止めそこねても事故にならない」種類の規約である。**

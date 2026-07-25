@@ -21,9 +21,9 @@ fi
 # 初期セットアップ: 未回答のときだけ1行案内（回答済みなら何も注入しない = コンテキスト消費ゼロ）
 SETUP_FILE="$PROJECT_DIR/knowledge/config/setup.yaml"
 if [ -d "$PROJECT_DIR/knowledge" ] && [ ! -f "$SETUP_FILE" ]; then
-  PREFIX="${PREFIX}【セットアップ】初期ヒアリング未回答。最初の依頼の前に /セットアップ（procedures/takumi-setup.md）を1行で案内すること（強制はしない）。 "
+  PREFIX="${PREFIX}【セットアップ】初期ヒアリング未回答。最初の依頼の前に /匠設定（procedures/takumi-setup.md）を1行で案内すること（強制はしない）。 "
 elif [ -f "$SETUP_FILE" ] && grep -q "completed: pending" "$SETUP_FILE" 2>/dev/null; then
-  PREFIX="${PREFIX}【セットアップ】未回答の項目が残っている（setup.yaml: pending）。区切りの良いタイミングで /セットアップ の続きを1行で案内。 "
+  PREFIX="${PREFIX}【セットアップ】未回答の項目が残っている（setup.yaml: pending）。区切りの良いタイミングで /匠設定 の続き（procedures/takumi-setup.md）を1行で案内。 "
 fi
 
 # タスクPack設定（knowledge/config/packs.conf）: off のパックを通知に含める
@@ -69,4 +69,4 @@ if [ -f "$RULES_FILE" ]; then
 fi
 
 # フォールバック（rules ファイル欠損時）
-warn_session "${PREFIX}【TAKUMI-CMO】session-rules.txt が見つかりません（プラグイン破損の可能性）。docs/conventions.md と各 takumi コマンドの手順に従い、変更操作は必ず /タスク開始 から行うこと。"
+warn_session "${PREFIX}【TAKUMI-CMO】session-rules.txt が見つかりません（プラグイン破損の可能性）。docs/conventions.md と各 takumi コマンドの手順に従い、変更操作は必ずタスク開始手順（procedures/takumi-start.md）から行うこと。"

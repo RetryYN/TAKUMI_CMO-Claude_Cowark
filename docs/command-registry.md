@@ -45,7 +45,7 @@
 
 新しい媒体を増やす＝パック1個追加。できることを増やす＝部品（docs/parts/）の追加。**エンジン側（ワークフロー層）は一切変えない。**
 
-**動的パック**: 媒体の個別コマンド（例: /note /ペライチ）は **/匠設定** で生成する — 登録 + 初期マッピング（フェーズ①・読み取り専用）+ ワークスペース `.claude/commands/` への専用コマンド生成を1コマンドで実行（プラグイン本体は増やさない）。**/匠設定 の媒体選択でも自動生成**する — SNS=`/<媒体名>運用`（/X運用 等）。以後の単一媒体依頼は専用コマンドが第一入口（/匠発信 は複数媒体・媒体不明時の受け皿）。**有料広告媒体の動的パック（旧 /<媒体名>広告）は廃止**（ゼロ広告費）。**求人媒体パックも廃止**（オウンドメディア＝自社ブログに置換）。**既存パックに該当しない完全別ワークは非表示の親「その他ワーク」の配下**に生成する（親判定表の正本は procedures/takumi-add-work.md §4 — registry.yaml に `parent:` を記録）。
+**動的パック**: 媒体の個別コマンド（例: `note運用` `ペライチ運用` — **ワークスペース側に生成される名前**であって、プラグインの登録9本ではない）は **/匠設定** で生成する — 登録 + 初期マッピング（フェーズ①・読み取り専用）+ ワークスペース `.claude/commands/` への専用コマンド生成を1コマンドで実行（プラグイン本体は増やさない）。**/匠設定 の媒体選択でも自動生成**する — SNS=`/<媒体名>運用`（/X運用 等）。以後の単一媒体依頼は専用コマンドが第一入口（/匠発信 は複数媒体・媒体不明時の受け皿）。**有料広告媒体の動的パック（旧 /<媒体名>広告）は廃止**（ゼロ広告費）。**求人媒体パックも廃止**（オウンドメディア＝自社ブログに置換）。**既存パックに該当しない完全別ワークは非表示の親「その他ワーク」の配下**に生成する（親判定表の正本は procedures/takumi-add-work.md §4 — registry.yaml に `parent:` を記録）。
 
 ## 命名ルール
 
@@ -316,9 +316,15 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 
 Cowork の配布は marketplace 同期＝**このリポジトリがそのまま配布物**（削除ビルドは存在しない）。/匠検証・TESTING・scripts/・.github/ は**品質保証機能として同梱する**（利用者が「プラグインを検証して」でいつでもセルフテストでき、CI が push ごとに回帰を担保する設計）。配布＝以下がすべて緑であること:
 
+> **公式バリデータは必ず manifest のパスを直接渡す。** `claude plugin validate .`（ディレクトリ指定）は
+> **marketplace.json しか見ず、agents/commands/skills を歩かない**。2026-07-26 に実測: agents の
+> frontmatter を意図的に壊した状態でもディレクトリ指定は緑になった。**偽の緑が出る側の使い方をしない。**
+
 - [ ] `python scripts/lint.py` → `lint: OK`（双方向突合）
 - [ ] `bash scripts/test-hooks.sh` → `ALL PASS`（防御系回帰）
+- [ ] **`claude plugin validate .claude-plugin/plugin.json --strict` → `Validation passed`**（公式バリデータ。**スキーマの正本は自前で持たない**）
+- [ ] **`claude plugin validate .claude-plugin/marketplace.json --strict` → `Validation passed`**
 - [ ] CI（GitHub Actions）最新 run が success
-- [ ] Cowork 実機での直近の `/匠検証 full` 結果が TESTING.md 末尾に記録され、FAIL 0（未解消 FAIL があれば配布延期）
+- [ ] Cowork 実機での直近の `/匠検証 full` 結果が TESTING.md に記録され、**同バージョン・`env=cloud`・FAIL 0**（`env=local` は配布判断に使えない）
 - [ ] `.claude-plugin/` の version が配布告知と一致（bump 忘れは更新反映されない）
 - [ ] docs/escalations.md の上申事項が最新（プラグインで根治不可の限界が README「既知の限界」と齟齬なく開示されている）

@@ -11,8 +11,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install PyYAML（frontmatter を本物の YAML パーサで検査するため）
+        run: python3 -m pip install --quiet pyyaml
       - name: Run lint
         run: python3 scripts/lint.py
+
+  # 自前の lint とは別に、**公式のバリデータ**を配布前ゲートとして通す。
+  # 2026-07-26 に導入。自前 lint の frontmatter パーサは行単位の素朴な実装で、
+  # agents/design-artisan.md の description に「model: sonnet」と書かれていた事故
+  # （YAML として壊れ、**実行時に frontmatter 全体が無言で捨てられる**）を8日間見逃していた。
+  # 公式バリデータは1回で検出した。**スキーマの正本は自前で持たない。**
+  #
+  # 注意: `claude plugin validate .`（ディレクトリ指定）は marketplace.json だけを見て
+  # **コンポーネントを歩かない**。上の事故を仕込んだ状態でもディレクトリ指定は緑になる（実測）。
+  # 必ず **manifest のパスを直接**渡すこと。
+  official-validate:
+    name: 公式バリデータ（配布前ゲート）
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Claude Code CLI
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Validate plugin manifest（agents/commands/skills/hooks も歩く）
+        run: claude plugin validate .claude-plugin/plugin.json --strict
+      - name: Validate marketplace manifest
+        run: claude plugin validate .claude-plugin/marketplace.json --strict
 
   tests:
     name: ドメインモデル単体テスト（DDD 集約・TDD）

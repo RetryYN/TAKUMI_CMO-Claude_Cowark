@@ -64,9 +64,9 @@ EOF
 [ -z "$VIOLATION" ] && exit 0
 
 if [ -z "$ACTIVE" ]; then
-  MSG="【Brand Isolation Guard】アクティブブランドが未確定のまま、ブランド区画（knowledge/brands/$VIOLATION/）への書き込みが試みられました。全変更操作はアクティブブランド確定が前段です — まず /ブランド でアクティブブランドを確定してください。"
+  MSG="【Brand Isolation Guard】アクティブブランドが未確定のまま、ブランド区画（knowledge/brands/$VIOLATION/）への書き込みが試みられました。全変更操作はアクティブブランド確定が前段です — まず /匠設定 でアクティブブランドを確定してください。"
 else
-  MSG="【Brand Isolation Guard】アクティブブランド『$ACTIVE』以外の区画（knowledge/brands/$VIOLATION/）への書き込みはブロックされます。ブランドをまたぐ書き込み＝相互汚染を防ぐためです。対象ブランドに切り替えてから操作してください（/ブランド で切替）。"
+  MSG="【Brand Isolation Guard】アクティブブランド『$ACTIVE』以外の区画（knowledge/brands/$VIOLATION/）への書き込みはブロックされます。ブランドをまたぐ書き込み＝相互汚染を防ぐためです。対象ブランドに切り替えてから操作してください（/匠設定 で切替）。"
 fi
 
 if [ "$GATE_MODE" = "deny" ]; then

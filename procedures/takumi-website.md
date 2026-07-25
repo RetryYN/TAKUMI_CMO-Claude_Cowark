@@ -13,4 +13,4 @@
 | 「Designに反映して」「書き出して」 | 掃き出し | docs/parts/design-sync.md / docs/parts/canva-export.md |
 
 - 連続依頼（例:「診断して改善案まで」）は 分析→クリエイティブ→掃き出し のワークフローとして連結する
-- 実サイトへの変更操作は必ず /タスク開始（A〜K）経由。成果物は docs/conventions.md 準拠
+- 実サイトへの変更操作は必ず takumi-start（A〜K）経由。成果物は docs/conventions.md 準拠

@@ -84,7 +84,7 @@ class TestDownstreamLoop(unittest.TestCase):
             DownstreamLoop.hand_up(s, {"フォロワー数": 8000.0})
 
     def test_stalled_nodes_flags_replanning(self):
-        """前回比が閾値未満のノード＝ /戦略 の再立案フラグ。"""
+        """前回比が閾値未満のノード＝ /匠戦略 の再立案フラグ。"""
         s = _strategy()
         previous = {"記事公開数": 4.0, "オーガニック流入": 1000.0, "エンゲージ率": 0.05}
         current = {"記事公開数": 4.0, "オーガニック流入": 1200.0, "エンゲージ率": 0.05}

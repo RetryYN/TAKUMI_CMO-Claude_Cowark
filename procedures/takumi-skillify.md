@@ -27,7 +27,7 @@ argument-hint: [対象（省略時は直近の会話・作業から自動抽出�
 |---|---|---|
 | **手順（スキル）** | 「同じやり方で再実行できる方法」— ユーザーが教えた手順、2回以上繰り返した作業パターン、試行錯誤の末に確立したやり方 | ワークスペースの `.claude/skills/<name>/SKILL.md` |
 | **暗黙知（ナレッジ）** | 「調べても出てこない事実」— 業界事情、社内ルール、取引先の癖、この人しか知らない背景・判断基準 | `knowledge/tacit/<topic>.md` |
-| **好み（既存）** | 成果物への OK/NG | `knowledge/feedback/lessons.md`（/メモリ保存 の管轄） |
+| **好み（既存）** | 成果物への OK/NG | `knowledge/feedback/lessons.md`（takumi-feedback の管轄） |
 
 ## スキル化の手順
 
