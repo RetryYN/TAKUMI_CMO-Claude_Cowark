@@ -247,6 +247,12 @@ _COUNT_PATTERNS = [
     (re.compile(r"メニューに並ぶのはこの(\d+)本"), lambda: _n_cmd, "登録コマンド"),
     (re.compile(r"内部手順含め(\d+)本"), lambda: _n_proc, "手順書"),
     (re.compile(r"内部手順 (\d+) / 手順書 (\d+)"), lambda: (_n_proc - _n_cmd, _n_proc), "内部手順/手順書"),
+    # 2026-07-25 の攻めスキル追加時に検出: 助数詞の「本」やスペースが無い書き方が
+    # 上のパターンを全部すり抜け、takumi-verify.md V17/V34 が 13/30 のまま残っていた。
+    # 「規約は機械検査とセット」の原則どおり、見つけた形は必ずパターンに足す。
+    (re.compile(r"登録コマンド(\d+)（commands/）\+ 内部手順(\d+) = 手順書(\d+)"),
+     lambda: (_n_cmd, _n_proc - _n_cmd, _n_proc), "登録/内部手順/手順書"),
+    (re.compile(r"procedures/ 全(\d+)本"), lambda: _n_proc, "手順書"),
 ]
 for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
     if not f.is_file():
