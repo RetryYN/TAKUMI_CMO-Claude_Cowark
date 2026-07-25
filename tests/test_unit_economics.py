@@ -136,10 +136,11 @@ class TestNotAKpiNode(unittest.TestCase):
     def test_module_does_not_depend_on_kpi_tree(self):
         """import を実際に走査する（文字列検索では docstring の解説まで拾ってしまう）。"""
         import ast
+        from pathlib import Path
 
         import takumi.domain.unit_economics as ue
 
-        tree = ast.parse(open(ue.__file__, encoding="utf-8").read())
+        tree = ast.parse(Path(ue.__file__).read_text(encoding="utf-8"))
         imported: list[str] = []
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):

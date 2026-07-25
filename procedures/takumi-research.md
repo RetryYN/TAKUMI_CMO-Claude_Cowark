@@ -33,6 +33,7 @@
 | 市場・競合・自社の環境（PEST/5F/3C/SWOT/VRIO/バリューチェーン） | `skills/market-analysis-jp` |
 | **社会文脈から人物像**（「どんな人が顧客か」「ペルソナを作って」「生活実態を知りたい」「訴求が刺さらない理由」） | **docs/parts/context-to-persona.md** + `skills/social-insight-jp`（作法の正本） |
 | 誰に売るか（セグメント・ターゲット・ポジショニング） | `skills/stp-jp` |
+| **規模に合わせた戦略**（「大手に勝てない」「どこで1位を取るか」「どこまで絞るか」「一人でどう戦うか」） | **docs/parts/scale-strategy.md** + `skills/scale-strategy-jp` + `takumi/domain/market_share.py` |
 | **儲かるか・現金が回るか**（収益構造・損益分岐点・CCC・獲得コスト） | `skills/business-model-jp` + `takumi/domain/unit_economics.py` |
 | 顧客データの集計（RFM/コホート/ファネル/ジャーニー/JTBD） | `skills/customer-analytics-jp` |
 | アンケート・定量調査の設計と読み | `skills/quant-research-jp` |
