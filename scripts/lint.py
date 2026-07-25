@@ -90,6 +90,11 @@ for f in md_files:
             err(f"{f.relative_to(ROOT)}: 参照切れ {ref}")
 
 # --- 5. agents frontmatter ---
+# model は**エイリアスのみ**。フルモデルID（claude-opus-5 等）はバージョン固定であり、
+# そのモデルが退役した日に該当エージェントが止まる（プラグインは配布物なので開発側では気づけない）。
+# 一次情報:「エイリアスはプロバイダごとの推奨バージョンを指し、時間とともに更新される。
+# 特定バージョンに固定したい場合はフルモデル名を使う」（model-config）。
+# → 固定したくないので、ここで弾く。級との対応は #21 が docs/agent-tiers.md と突合する。
 VALID_MODELS = {"sonnet", "opus", "haiku", "fable", "inherit"}
 for a in (ROOT / "agents").glob("*.md"):
     fm = frontmatter(a)
@@ -97,7 +102,9 @@ for a in (ROOT / "agents").glob("*.md"):
         if key not in fm:
             err(f"agents/{a.name}: frontmatter に {key} がない")
     if fm.get("model") and fm["model"] not in VALID_MODELS:
-        err(f"agents/{a.name}: model '{fm['model']}' が不正（{VALID_MODELS}）")
+        err(f"agents/{a.name}: model '{fm['model']}' が不正（{sorted(VALID_MODELS)}）。"
+            "**フルモデルIDの直書きはバージョン固定であり、そのモデルが退役した日に止まる** — "
+            "エイリアスで書けばモデル世代の更新に自動で追従する")
     if fm.get("name") and fm["name"] != a.stem:
         err(f"agents/{a.name}: name '{fm['name']}' がファイル名と不一致")
 
