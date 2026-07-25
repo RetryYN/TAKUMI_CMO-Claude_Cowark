@@ -12,7 +12,7 @@
    - `knowledge/brands/<slug>/strategy/strategy.md` … 3C・ポジショニング・ロードマップ
    - `knowledge/brands/<slug>/strategy/kpi-tree.yaml` … KPIツリー（**有料指標を持たない**＝ゼロ広告費の不変条件）。**形は docs/domain-model.md「ワークスペース検証」が正本** — `root:` の下に `name` / `kind`（先行 | 遅行）/ `children` を再帰させる。`python3 <プラグインルート>/scripts/lint.py --workspace .` で機械検証できる
    - `knowledge/brands/<slug>/strategy/messaging.md` … **メッセージングハウス**（ポジショニング1文 + 言い続ける柱1〜3 + 各柱の証拠 + 言わないこと）。**作法の正本は `skills/messaging-design-jp`。** 面を張るには張るべき主張が要る — 媒体ごとに違うことを言えば包囲網は点の集合に戻る。柱は**最大3つ**、各柱に**検証可能な証拠**を持たせ、証拠が用意できない柱は降ろす
-   - `knowledge/brands/<slug>/strategy/roadmap.md` … 施策ロードマップ（集客/ブランディングを分け、7割計画）
+   - `knowledge/brands/<slug>/strategy/roadmap.md` … 施策ロードマップ（集客/ブランディングを分け、**7割計画**）。**7割計画は数字にする** — 各施策に見積時間とドライバー（KPIノード）を持たせ、`docs/parts/capacity-plan.md` で埋まり具合（計画合計 ÷ 実働×0.7）を出す。**100%を超えたら足す前に落とす**
 4. **壁打ち**: strategy-advisor に持ち込み VERDICT（GO / GO-WITH-CHANGES / RETHINK）を得て確定する（長く効く判断のため必須）。
 5. **戦略ドシエの出力**: docs/conventions.md 準拠の HTMLレポート（report-template 骨格）で戦略ドシエを生成し届ける（アーティファクト発行→不可ならファイル→保存パス明示）。deliverable-writer に委譲。
 6. **計画を下流へ流す（∞の下り）**: ロードマップから最初の打ち手を **/キャンペーン**（複数媒体の統括）または **/カスタマイズ**（定常タスク登録）へ接続する。
