@@ -1,9 +1,16 @@
 ---
 description: プラグイン自己検証 — 検証項目を自動実行し、PASS/FAIL/SKIP の検証報告書を生成する（開発者へのフィードバック用）。Use when ユーザーが「検証して」「セルフテストして」「動作確認して」「プラグインのテストを回して」と求めたとき、またはプラグイン更新後の動作確認時。
-argument-hint: [quick（普段の簡易点検） | full（全項目） | perfect（全項目+evals+E2E+網羅率マトリクス）]（省略時は quick）
+argument-hint: [quick（普段の簡易点検） | full（全項目） | evals（golden タスクだけを回す） | perfect（全項目+evals+E2E+網羅率マトリクス）]（省略時は quick）
 ---
 
 プラグインの自己検証を実行してください。モード: $ARGUMENTS
+
+| モード | 実行する節 |
+|---|---|
+| `quick`（既定） | A節（基盤）+ D節（機械チェック） |
+| `full` | A / B / D / E 節の全項目 |
+| **`evals`** | **V27 のみ**（`docs/evals.md` の golden タスク）。スキル・エージェントを直した直後に、その行だけを回すための軽量モード |
+| `perfect` | full の全項目 + F節（evals 全件・E2E・網羅率マトリクス） |
 
 > **実タスク形式での実行（推奨）**: `templates/verify-task.yaml` をワークスペースの `tasks/plugin-verify.yaml` にコピーし「plugin-verify やって」で起動すると、takumi-start → A〜K の本物の経路で検証が走る（ゲート・フェーズ判定・ログ記録が通り道で実地に効くため、チャット貼り付けより実運用に近い）。
 
@@ -114,13 +121,13 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V37 | 運用系ルーティング | (a) ブラウザ操作を含むタスクを /カスタマイズ で登録（ドライラン可） (b) 「無人運用前チェックして」と依頼 | (a) create_trigger を選ばず**ローカル登録（このコンピュータで実行）を案内**する (b) unattended-ops.md の前チェック手順に到達しログイン○✗一覧の形で報告する |
 | V38 | 記録系内部手順の発火 | (a) 「何ができるの？」 (b) ダミー成果物に修正指示（「ここ直して、トーンが硬い」） (c) /レポート で「作業ログ」を選択 (d) 「ログを整理して」（ドライラン可） | (a) takumi-demo のガイドツアーが始まる (b) takumi-feedback 経由で knowledge/feedback/lessons.md に学習記録が追記される (c) takumi-reporting の作業ログが出る (d) takumi-memory の圧縮手順に到達する |
 
-**perfect の報告書には「網羅率マトリクス」を必ず含める**: 行=プラグインの全構成要素（コマンド13 / 内部手順17 / 部品19 / リファレンス16 / エージェント7 / hooks 10 / テンプレ / ループ）、列=検証方法（実機E2E / 委譲テスト / Read到達 / 機械チェック / 未カバー）。**未カバーの要素は「未カバー」と明示する**（黙って省略しない — 網羅したフリが最大の検証事故）。
+**perfect の報告書には「網羅率マトリクス」を必ず含める**: 行=プラグインの全構成要素（**件数は実体を数える** — コマンド `commands/*.md` / 手順 `procedures/*.md` / 部品 `docs/parts/*.md` / リファレンス `references/*/SKILL.md` / エージェント `agents/*.md` / hooks `hooks/scripts/*.sh` / テンプレ / ループ。この行に固定の数字を書かない — 陳腐化して「網羅したフリ」の温床になる）、列=検証方法（実機E2E / 委譲テスト / Read到達 / 機械チェック / 未カバー）。**未カバーの要素は「未カバー」と明示する**（黙って省略しない — 網羅したフリが最大の検証事故）。
 
 ### E. 評価ハーネス（**Tier 2** — full のみ）
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
-| V27 | golden タスク | docs/evals.md の G1〜G9 を実行 | 各タスクの PASS 基準（機械判定）を満たす。FAIL は evals.md の運用に従い本体を修正して記録 |
+| V27 | golden タスク | docs/evals.md の G1〜G34 を実行（`evals` モードならこの項目だけを単独で回せる。平時は**変更したスキル/エージェントに対応する行だけ**でよい） | 各タスクの PASS 基準（機械判定）を満たす。FAIL は evals.md の運用に従い本体を修正して記録 |
 | V35 | 新2ゲート発火実測 | (a) `touch memory/.workflow/bulk_send` 後に `touch memory/.workflow/k_done` を Bash 実行 (b) `touch memory/.workflow/critic_pending` 後にダミーPNGをユーザーに送付試行。終了後フラグを掃除 | (a)【OV Gate】(b)【Critic Gate】の **deny** が観測される（両ゲートとも 2026-07-24 に deny 昇格済み）。**deny が出なければゲート不発として FAIL** — 実際のツール名を報告に記載（V25 は機械テストであり実機 matcher の代替にならない）。deny 後は正規手順（ov_done 書込 / critic_pass）で通過することまで確認 |
 
 ## 報告書（必ず2形式）
