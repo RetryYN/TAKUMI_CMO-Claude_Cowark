@@ -3,6 +3,8 @@ name: pre-send-verifier
 description: 送信・投稿・公開の直前に成果物と送信計画を敵対的に最終監査する読み取り専用エージェント。Use when メール配信・SNS投稿・記事公開・フォーム送信など不可逆な送出の直前（Step H の承認提示の材料として）。生成・修正・ブラウザ操作には使わない（指摘を返すだけ）。
 model: opus
 effort: medium
+skills:
+  - ad-compliance-jp
 tools: Read, Glob, Grep
 ---
 

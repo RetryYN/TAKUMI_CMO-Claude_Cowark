@@ -72,6 +72,30 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 - **移設の代償**: 自動発火するため、業務の入口がコマンドを飛ばしてスキルに逸れうる。session-rules (3) で「業務の入口は必ずコマンド／手順書。変更操作の前に該当手順書へ合流する」を規定し、**V50 で実測する**。
 - 移設しても**手順書からの明示 Read は従来どおり有効**（conventions §1 のパス解決規則）。二重の到達経路になる。
 
+### 4c. プラグイン同梱エージェントの frontmatter（2026-07-26 に一次情報で確認）
+
+公式仕様（[plugins-reference](https://code.claude.com/docs/en/plugins-reference)）:
+
+> Plugin agents support `name`, `description`, `model`, `effort`, `maxTurns`, `tools`,
+> `disallowedTools`, `skills`, `memory`, `background`, and `isolation` frontmatter fields.
+> **For security reasons, `hooks`, `mcpServers`, and `permissionMode` are not supported
+> for plugin-shipped agents.**
+
+- **`model`**: `sonnet` / `opus` / `haiku` / **`fable`** / フルモデルID / `inherit`（既定 `inherit`）
+- **`effort`**: `low` / `medium` / `high` / `xhigh` / `max`。**セッションの effort を上書きする**。
+  **使える段はモデルによる** — 公式の対応表に **Haiku は載っていない＝非対応**
+  （[model-config](https://code.claude.com/docs/en/model-config)）。
+  **「effort の尺度はモデルごとに較正されており、同じ段名がモデル間で同じ値を表さない」**
+- **`skills`**: 起動時に**スキルの全文**をエージェントの文脈へ注入する（説明文だけではない）。
+  載せなかったスキルも Skill ツールで実行中に呼べる。
+  **→ E6（委譲先が `skills/**` を Read できない）に対して、ファイルを読まずに規範を届ける経路になる。**
+- **ただし `skills:` の失敗は静か**: 「listed skill が見つからないか無効な場合、スキップして
+  **デバッグログに警告を出す**」。**名前を1文字間違えると規範ゼロで走る。**
+  `scripts/lint.py` #21 が実在確認をする＋エージェント本文の「正本を Read する」指示は残す（二重化）。
+
+**級（戦略級／戦術級／職人級／作業者級）とモデル・エフォート・preload の割当は
+[agent-tiers.md](agent-tiers.md) が正本。**
+
 ## 5. cloud / ローカルの分断（資産）
 
 - クラウドセッションの作業場はコンテナ内のみ、ローカルは別ファイルシステム。**資産（knowledge/tasks/memory/コマンド）は自動同期されない**（escalations E3）。継続運用は「フォルダを追加」で業務フォルダを接続して永続化する。

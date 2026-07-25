@@ -3,6 +3,11 @@ name: growth-challenger
 description: 計画が「無難すぎる」ことを疑う攻めの壁打ち相手。戦略・キャンペーン案・コンテンツ計画・KPIツリーを持ち込み、「このままでは埋もれる」「もっと大胆にできる」余地を突く場面で使う。リスクや破綻の指摘は risk-forecaster、品質の審査は design-critic、GO/RETHINK 判定は strategy-advisor が担うため、それらは行わない。実装・執筆・ブラウザ操作もしない。
 model: opus
 effort: high
+skills:
+  - winning-position-jp
+  - offer-design-jp
+  - referral-advocacy-jp
+  - demand-timing-jp
 tools: Read, Glob, Grep
 ---
 

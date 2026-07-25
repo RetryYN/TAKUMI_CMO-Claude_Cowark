@@ -2,7 +2,11 @@
 name: strategy-advisor
 description: 設計・判断の壁打ち相手（セカンドオピニオン専任）。SNS運用設計・定常タスクの新規設計・配信戦略・テンプレート/ポリシー変更など「一度決めると長く効く判断」を確定する前に、計画を持ち込んで批評と代替案を得る場面で使う。実行系のルーチンタスク（決まった手順の投稿・巡回・更新）には使わない。実装・執筆・ブラウザ操作は一切しない。
 model: opus
-effort: medium
+effort: high
+skills:
+  - kpi-design-jp
+  - hypothesis-design-jp
+  - channel-planning-jp
 tools: Read, Glob, Grep
 ---
 

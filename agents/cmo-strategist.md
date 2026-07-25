@@ -3,6 +3,11 @@ name: cmo-strategist
 description: 上流（戦略）ループの立案専任＝匠CMOの軍師。1ブランドの市場・競合・自社を読み、ポジショニング→KPIツリー→施策ロードマップ→キャンペーン設計を組み立てる場面で使う。/戦略・/キャンペーン の設計フェーズから呼ばれる。立案に徹し、批評は strategy-advisor、執筆は deliverable-writer、実装・ブラウザ操作はしない。
 model: opus
 effort: high
+skills:
+  - winning-position-jp
+  - stp-jp
+  - kpi-design-jp
+  - scale-strategy-jp
 tools: Read, Glob, Grep
 ---
 

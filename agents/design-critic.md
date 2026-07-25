@@ -3,6 +3,11 @@ name: design-critic
 description: デザインレビュー専任エージェント。design-artisan が生成したモックアップHTMLを skills/web-design のチェックリストで批評し、修正指示を返す。修正ループ（生成→批評→修正）の批評役。生成や修正の実作業はしない。
 model: opus
 effort: medium
+skills:
+  - web-design
+  - design-evidence-jp
+  - psych-ux-jp
+  - ad-compliance-jp
 tools: Read, Glob, Grep
 ---
 

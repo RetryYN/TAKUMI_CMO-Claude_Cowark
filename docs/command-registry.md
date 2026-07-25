@@ -37,7 +37,7 @@
 | **コマンド** | カテゴリーレベル（媒体・対象のタスクパック）。要望は引数に自由に書かせる | `commands/`（登録20本・日本語名）+ `procedures/takumi-*.md`（内部手順含め37本） |
 | **ワークフロー** | 進め方 = タスクの連なり。A〜K 実行チェーン + タスク5型の連結 | `docs/steps-reference.md` + hooks のゲート + フェーズ①〜④ |
 | **タスク** | 単一の仕事。動詞レベル: **リサーチ / 収集 / クリエイティブ / 分析 / 掃き出し** | `tasks/*.yaml`（/カスタマイズ のタスク登録 = takumi-task が生成）+ `docs/parts/`（部品） |
-| **サブエージェント** | 専門作業の職人。タスクから呼ばれる | `agents/`（10体: writer / artisan / critic / advisor / pre-send-verifier / outcome-verifier / **cmo-strategist**（上流ループの立案）/ **risk-forecaster**（設定前のトラブル予測。構造から破綻を特定）/ **privacy-auditor**（PII・同意の監査）/ **growth-challenger**（攻めの壁打ち。止める側が5体に対し攻める側が0体だった偏りの是正）） |
+| **サブエージェント** | 専門作業の職人。タスクから呼ばれる。**配役・モデル・エフォート・preload スキルの正本は [agent-tiers.md](agent-tiers.md)**（戦略級／戦術級／職人級／作業者級の4級） | `agents/`（10体: writer / artisan / critic / advisor / pre-send-verifier / outcome-verifier / **cmo-strategist**（上流ループの立案）/ **risk-forecaster**（設定前のトラブル予測。構造から破綻を特定）/ **privacy-auditor**（PII・同意の監査）/ **growth-challenger**（攻めの壁打ち。止める側が5体に対し攻める側が0体だった偏りの是正）） |
 
 **実行粒度の3段**（全パック共通）: ①タスク単体で完結 ②ワークフローで解決（タスク連結） ③まるっと（パックの定常ループ一式）。振り分け原則は `docs/parts/index.md`。
 
@@ -219,7 +219,8 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 - [ ] 新しい媒体 → 原則 **/ワーク追加**（ワークスペース側に動的生成。プラグインは変更しない）。プラグイン標準パックに昇格させる場合のみ `commands/<日本語名>.md` + `procedures/takumi-<name>.md` を追加
 - [ ] 新しいSNS標準媒体 → `procedures/takumi-sns-<name>.md` 追加とセットで **4点配線**: ①takumi-sns の振り分け表 ②takumi-sns §0 の媒体名リスト ③takumi-setup 質問1の選択肢 ④この台帳の内部手順一覧（2026-07-24 Threads 追加時に④が漏れた教訓）
 - [ ] 新しい能力 → `docs/parts/<name>.md`（部品）+ parts/index.md に行追加。**コマンドは増やさない**
-- [ ] 新しい執筆リファレンス（skills/）→ session-rules(3) と **該当サブエージェント（deliverable-writer / design-artisan / design-critic / pre-send-verifier）の参照表にも配線**（エージェントは自分でルールを読まないため、定義ファイルに書かないと届かない）
+- [ ] 新しい執筆リファレンス（skills/）→ session-rules(3) と **該当サブエージェント（deliverable-writer / design-artisan / design-critic / pre-send-verifier）の参照表にも配線**（エージェントは自分でルールを読まないため、定義ファイルに書かないと届かない）。**毎回必ず要る規範なら `skills:` に preload も足す**（→ [agent-tiers.md](agent-tiers.md)。ただし **preload は名前を間違えても静かに落ちる**ので、本文の「正本を Read する」指示は消さない）
+- [ ] 新しいサブエージェント → **級を先に決めて** [agent-tiers.md](agent-tiers.md) の配役表に行を足す（`model`・`effort`・preload。**lint が表と実体を突合する**）
 - [ ] この台帳に1行追加（カテゴリー + Pack）
 - [ ] 定常実行するものはループ台帳にも追加
 - [ ] README のコマンド数を更新
