@@ -79,11 +79,11 @@ for p in procedures:
         if not used:
             err(f"procedures/{p.name}: どのコマンド・手順からも参照されない孤児")
 
-# --- 4. md 内のプラグイン内パス参照の実在（templates/ references/ docs/ agents/） ---
+# --- 4. md 内のプラグイン内パス参照の実在（templates/ skills/ docs/ agents/） ---
 md_files = list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) + \
     list(ROOT.glob("agents/*.md")) + list(ROOT.glob("docs/*.md")) + \
-    list(ROOT.glob("references/**/*.md")) + [ROOT / "README.md"]
-pat = re.compile(r"(?<![\w/.])((?:templates|references|docs|agents)/[\w./-]+\.(?:md|html|yaml|sql|json|txt))")
+    list(ROOT.glob("skills/**/*.md")) + [ROOT / "README.md"]
+pat = re.compile(r"(?<![\w/.])((?:templates|skills|docs|agents)/[\w./-]+\.(?:md|html|yaml|sql|json|txt))")
 for f in md_files:
     for ref in set(pat.findall(read(f))):
         if not (ROOT / ref).is_file():
@@ -101,8 +101,8 @@ for a in (ROOT / "agents").glob("*.md"):
     if fm.get("name") and fm["name"] != a.stem:
         err(f"agents/{a.name}: name '{fm['name']}' がファイル名と不一致")
 
-# --- 6. references SKILL.md frontmatter ---
-for s in (ROOT / "references").glob("*/SKILL.md"):
+# --- 6. skills SKILL.md frontmatter ---
+for s in (ROOT / "skills").glob("*/SKILL.md"):
     fm = frontmatter(s)
     for key in ("name", "description"):
         if key not in fm:
@@ -130,7 +130,7 @@ if fs_procs - reg_en:
 # --- 8. 旧 delve-* 名の残骸チェック（takumi-* 全面リネーム後、delve- は一切残らない。TESTING.md は履歴として除外） ---
 OLD_NAME = re.compile(r"\bdelve-[a-z]", re.I)
 for f in list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) + \
-         list(ROOT.glob("docs/**/*.md")) + list(ROOT.glob("references/**/*.md")) + \
+         list(ROOT.glob("docs/**/*.md")) + list(ROOT.glob("skills/**/*.md")) + \
          [ROOT / "README.md", ROOT / "hooks/scripts/session-rules.txt"]:
     if not f.is_file():
         continue
@@ -139,7 +139,7 @@ for f in list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) +
 
 # --- 9. ファイル内の異常重複（同一の長い行が3回以上 = 一括置換バグの兆候） ---
 import collections as _coll
-for f in list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) +          list(ROOT.glob("docs/**/*.md")) + list(ROOT.glob("agents/*.md")) +          list(ROOT.glob("references/**/*.md")):
+for f in list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) +          list(ROOT.glob("docs/**/*.md")) + list(ROOT.glob("agents/*.md")) +          list(ROOT.glob("skills/**/*.md")):
     cnt = _coll.Counter(
         l.strip() for l in read(f).splitlines()
         if len(l.strip()) > 60 and not l.strip().startswith(("|---", "```", "#", ">", "-"))
@@ -169,7 +169,7 @@ ident_targets = (
     list(ROOT.glob("hooks/scripts/*")) + list(ROOT.glob("scripts/*"))
     + list(ROOT.glob("templates/*")) + list(ROOT.glob("commands/*.md"))
     + list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md"))
-    + list(ROOT.glob("agents/*.md")) + list(ROOT.glob("references/**/*.md"))
+    + list(ROOT.glob("agents/*.md")) + list(ROOT.glob("skills/**/*.md"))
     + [ROOT / "README.md"]
 )
 for f in ident_targets:
@@ -224,15 +224,15 @@ for f in ROOT.glob("templates/*"):
             err(f"templates/{f.name}: 廃止カテゴリー『{word}』が残存"
                 f"（現行カテゴリーは docs/command-registry.md が正本）")
 
-# --- 13. references の本数を書いた記述が実体と一致するか（2026-07-24 実機検証 F5） ---
-_ref_count = len(list((ROOT / "references").glob("*/SKILL.md")))
-_ref_pat = re.compile(r"references/（(\d+)本）")
+# --- 13. skills の本数を書いた記述が実体と一致するか（2026-07-24 実機検証 F5） ---
+_ref_count = len(list((ROOT / "skills").glob("*/SKILL.md")))
+_ref_pat = re.compile(r"skills/（(\d+)本）")
 for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
     if not f.is_file():
         continue
     for m in _ref_pat.finditer(read(f)):
         if int(m.group(1)) != _ref_count:
-            err(f"{f.relative_to(ROOT)}: references の本数が実体と不一致"
+            err(f"{f.relative_to(ROOT)}: skills の本数が実体と不一致"
                 f"（記述={m.group(1)} / 実体={_ref_count}）")
 
 # --- 14. docs/parts/ の実体と index.md の突合（2026-07-25 合議で検出: parts は台帳突合の対象外だった） ---
@@ -323,7 +323,7 @@ if _dm.is_file():
                 f"（ユビキタス言語と1対1にすること）")
 
 # --- 17. evals.md の golden タスクが全スキル・全エージェントを覆っているか
-#         （2026-07-25 全体CHECK で検出: references 20本中16本・agents 9体中6体が未収載のまま
+#         （2026-07-25 全体CHECK で検出: skills 20本中16本・agents 9体中6体が未収載のまま
 #          「新しい失敗事例が出たら追加する」という運用規約だけが書かれていた） ---
 _evals = ROOT / "docs/evals.md"
 if _evals.is_file():
@@ -334,7 +334,7 @@ if _evals.is_file():
         m.group(1)
         for m in re.finditer(r"^\|\s*G\d+\s*\|\s*([a-z0-9-]+):", _evals_text, re.M)
     }
-    _skill_names = {s.parent.name for s in (ROOT / "references").glob("*/SKILL.md")}
+    _skill_names = {s.parent.name for s in (ROOT / "skills").glob("*/SKILL.md")}
     _agent_names = {a.stem for a in (ROOT / "agents").glob("*.md")}
     for name in sorted(_skill_names - _covered):
         err(f"docs/evals.md: スキル {name} の golden タスクがない"
@@ -421,9 +421,26 @@ if (_ws / "knowledge").is_dir():
         if not _ws_errors:
             print(f"lint: ワークスペース検証 OK（{_ws}）")
 
+# --- 19. 主要ディレクトリが空でないこと
+#         （2026-07-25 references→skills 移設時に検出: ディレクトリ名を変えると
+#          集合を舐める検査（#6/#13/#17）が空集合になり、素通りで lint OK が出てしまった。
+#          「0件だから違反も0件」は最も危険な緑） ---
+for _name, _pattern, _min in (
+    ("commands", "commands/*.md", 10),
+    ("procedures", "procedures/takumi-*.md", 25),
+    ("agents", "agents/*.md", 5),
+    ("skills", "skills/*/SKILL.md", 15),
+    ("hooks", "hooks/scripts/*.sh", 8),
+    ("docs/parts", "docs/parts/*.md", 15),
+):
+    _n = len(list(ROOT.glob(_pattern)))
+    if _n < _min:
+        err(f"{_name}: {_n}件しか見つからない（最低 {_min} 件のはず）。"
+            f"ディレクトリ名の変更・移動で検査が空振りしている可能性がある")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
-      f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'references').glob('*/SKILL.md')))} "
+      f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
       f"version={plugin['version']}")
 for w in warns:
     print(f"WARN: {w}")

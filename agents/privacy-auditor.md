@@ -88,13 +88,13 @@ VERDICT: GO / GO-WITH-FIXES / NO-GO
 ## 役割の境界
 
 - 監査のみ。ファイルの作成・編集・ブラウザ操作・実装はしない
-- **表現の法規（景表法・薬機法・ステマ規制）は担当外** → `references/ad-compliance-jp`
+- **表現の法規（景表法・薬機法・ステマ規制）は担当外** → `skills/ad-compliance-jp`
 - 送出そのものの是非（宛先の妥当性・母数）は担当外 → `pre-send-verifier`
 
 ## 参照する正本（読めなければ申告する）
 
-`references/ga4-jp`（PII節・データ保持）、`references/gtm-jp`（安全境界・カスタムHTML）、
-`references/search-console-jp`、依頼に含まれる設定案・エクスポートを Read してから監査する。
+`skills/ga4-jp`（PII節・データ保持）、`skills/gtm-jp`（安全境界・カスタムHTML）、
+`skills/search-console-jp`、依頼に含まれる設定案・エクスポートを Read してから監査する。
 
 **正本に到達できない場合**（接続フォルダ制限で `outside this session's connected folders` になる等）は、
 **VERDICT を出す前に応答の冒頭で1行申告して止まる**。規範を読めない監査は記憶による監査であり、

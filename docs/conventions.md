@@ -7,7 +7,7 @@ HTML成果物（レポート・モックアップ・ガイド・ダッシュボ�
 ## 1. HTMLレポートの作成
 
 - 骨格は `templates/report-template.html`、判断基準は `templates/design-principles.md`
-- **プラグイン内パスの解決規則（全手順共通の正本）**: `templates/` `references/` `docs/` `agents/` への参照は、①`${CLAUDE_PLUGIN_ROOT}/<path>` → ②相対パス → ③Glob `**/<filename>` の順で解決する（synced 環境では相対が不達になるため。手順書に素の相対パスが書かれていてもこの規則で読む）
+- **プラグイン内パスの解決規則（全手順共通の正本）**: `templates/` `skills/` `docs/` `agents/` への参照は、①`${CLAUDE_PLUGIN_ROOT}/<path>` → ②相対パス → ③Glob `**/<filename>` の順で解決する（synced 環境では相対が不達になるため。手順書に素の相対パスが書かれていてもこの規則で読む）
 - CSS の改変は `--accent` のみ可。テーブルは `.tbl` コンテナで横スクロール封じ込め、画像は max-width 100%
 - **執筆は deliverable-writer エージェントに委譲**する。委譲プロンプトには入力データと出力先の**絶対パス**を明記（相対パスは誤解決される）
 - **Agent ツールが使えない環境**（Cowork チャット等でサブエージェント未供給の場合）では、委譲プロンプトをユーザーに手渡ししない。main ループが該当エージェント定義（agents/*.md）を Read して自分でその作法に従い執筆し、成果物に「委譲不可のため直執筆」と1行記録する

@@ -8,12 +8,12 @@ argument-hint: <記事/LPのURL または 商材の説明> [投稿先: tiktok/yo
 ## 手順
 
 1. **素材の把握**: 入力が URL なら knowledge/styles/・該当ブランドの既存データを優先再利用（なければ read_page で訴求・実績数値・CTA文言を抽出）。キービジュアルが添付されていればそのトーン・コピーも入力に加える
-2. **references/video-ad/SKILL.md を Read** し、その動画構成規範に従う（オーガニック動画に翻案）:
+2. **skills/video-ad/SKILL.md を Read** し、その動画構成規範に従う（オーガニック動画に翻案）:
    - 最強の1訴求を選定（1動画1メッセージ）→ フック型を選びフック代案3本
    - 黄金構造（0-3秒フック→価値→実証→CTA）で絵コンテ表を作成
    - 指定された投稿先の型（尺・比率・テロップ量）に調整。指定がなければ TikTok系/YouTube/Reels の3バージョン
 3. **文言の品質**: コピーは copywriting スキル（13字ルール）、実証は実数値のみ（捏造禁止・ないものは `[要確認]`）、CTA はブランドの導線と同一文言
-4. **検収**: SKILL.md 末尾のチェックリストで自己検査。lessons.md（knowledge/feedback/）があれば反映。**最終稿は references/ad-compliance-jp/SKILL.md の表現規制チェック（景表法・薬機法・ステマ表記等）を必ず通してから納品**
+4. **検収**: SKILL.md 末尾のチェックリストで自己検査。lessons.md（knowledge/feedback/）があれば反映。**最終稿は skills/ad-compliance-jp/SKILL.md の表現規制チェック（景表法・薬機法・ステマ表記等）を必ず通してから納品**
 5. **出力**: `knowledge/drafts/videoscript-<name>-<date>.md` に保存し、チャットにも絵コンテ表を表示。複数プラットフォーム版は差分（尺・フック・テロップ）を明示
 
 ## 注意

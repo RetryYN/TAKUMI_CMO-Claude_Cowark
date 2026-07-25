@@ -18,7 +18,7 @@
 | Webサイト・LP のデザイン | docs/parts/style-research.md |
 | Webサイト・LP の品質・速度 | docs/parts/site-audit.md |
 | 徹底的に全部 | docs/parts/deep-research.md |
-| オウンドメディア・検索市場（SEO） | procedures/takumi-ownedmedia.md のリサーチ節 + references/seo-jp/SKILL.md（キーワード・検索意図・競合記事の読み取りのみ） |
+| オウンドメディア・検索市場（SEO） | procedures/takumi-ownedmedia.md のリサーチ節 + skills/seo-jp/SKILL.md（キーワード・検索意図・競合記事の読み取りのみ） |
 
 ## 2. 共通ルール
 

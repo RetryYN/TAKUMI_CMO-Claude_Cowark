@@ -11,7 +11,7 @@
 
 ## 手順
 
-1. **前提を読む**: references/content-design/SKILL.md（カレンダー設計・投稿頻度の規範）+ 対象媒体パックの制約（見える範囲・レート・費用）+ knowledge/sns/<媒体>/queue.md（既存ストック）+ knowledge/config/loops.yaml（既存の定常枠）
+1. **前提を読む**: skills/content-design/SKILL.md（カレンダー設計・投稿頻度の規範）+ 対象媒体パックの制約（見える範囲・レート・費用）+ knowledge/sns/<媒体>/queue.md（既存ストック）+ knowledge/config/loops.yaml（既存の定常枠）
 2. **枠を決める**: 期間 × 媒体 × 頻度。祝日・業界イベント・採用スケジュール（賞与後・期末）を考慮。訴求フレームの配分は psych-nudge-jp（継続接点=利得基調、締切案件のみ損失）
 3. **行を埋める**: 1行 = 日付 / 媒体 / テーマ / 訴求フレーム / 素材の有無 / 状態（案・制作中・予約済み）。中身の生成はここでは深追いせず「テーマ+一言方針」まで（本文制作は各クリエイティブ部品の仕事）
 4. **成果物**: knowledge/sns/calendar-<期間>.md（表）+ 必要なら docs/conventions.md 準拠のHTMLカレンダー。ユーザー承認を取る

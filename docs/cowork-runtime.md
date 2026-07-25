@@ -22,7 +22,7 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 | `agents/` | サブエージェント定義 | **する** |
 | `hooks/` | hooks.json + スクリプト | **する**（cloud。§2） |
 | `procedures/` | コマンドが Read する手順書の実体 | しない（commands から明示 Read） |
-| `references/` | 執筆・計測リファレンス（SKILL.md 形式） | **しない**（→ §4b） |
+| `skills/` | 執筆・計測の規範（`<name>/SKILL.md`） | **する**（→ §4b） |
 | `templates/` `docs/` | 雛形・正本ドキュメント | しない（明示 Read） |
 | `scripts/` | lint / bump / hooks テスト | しない（dev-side） |
 | `takumi/` `tests/` | ドメインモデル（Python）と単体テスト | しない（dev-side。Tier 1 と `--workspace` 検証で使う。[domain-model.md](domain-model.md)） |
@@ -60,6 +60,17 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 - **DesignSync（Claude Design 連携）は Cowork セッションに供給される**（実機確認済み）。素材パックを claude.ai/design プロジェクトへ同期可（finalize_plan の承認制）。なお Claude Design の公式ハンドオフ（handoff bundle）は「→ Claude Code」向けで、→ Cowork への受け渡し経路は未確認。本プラグインは DesignSync（claude.ai/design プロジェクトの読み書き）経路を使う。
 - 出力提示は `mcp__cowork__present_files`（パスは outputs スクラッチパッド or プライマリ workspace に限る・非プライマリフォルダは拒否）、フォルダのマウントは `request_cowork_directory`。
 - 同梱 MCP は「ローカルMCPサーバーを含む」承認後に供給される。ブラウザは Claude in Chrome が前提エンジン。
+
+### 4b. skills の配置（2026-07-25 に一次情報で確認・配置を変更）
+
+公式仕様（[plugins-reference](https://code.claude.com/docs/en/plugins-reference)）:
+
+> **Location**: `skills/` or `commands/` directory in plugin root, or a single `SKILL.md` file at the plugin root
+
+- **`skills/<name>/SKILL.md` が正しい配置**。`references/` はプラグインのコンポーネント・ディレクトリではなく、**自動探索の対象外**だった（frontmatter の `description: … Use when …` が一度も発火判定に使われていなかった）。
+- 旧配置は「自動発火させない内部教科書」という**意図的な設計**だったが、その代償が **escalations E6**（委譲先エージェントがプラグイン同梱ファイルに到達できず、規範が適用されないまま審査・法規チェックが走る）。E6 の実害の方が大きいと判断して `skills/` へ移した（判断と緩和策は [command-registry.md](command-registry.md) のスキル台帳が正本）。
+- **移設の代償**: 自動発火するため、業務の入口がコマンドを飛ばしてスキルに逸れうる。session-rules (3) で「業務の入口は必ずコマンド／手順書。変更操作の前に該当手順書へ合流する」を規定し、**V50 で実測する**。
+- 移設しても**手順書からの明示 Read は従来どおり有効**（conventions §1 のパス解決規則）。二重の到達経路になる。
 
 ## 5. cloud / ローカルの分断（資産）
 

@@ -57,7 +57,7 @@ FORECAST: <この構成で最も起こりそうな障害を1文で>
 ## 参照する正本（読めなければ申告する）
 
 依頼に含まれる設計案・現状のエクスポート・関連する正本を Read してから予測する。読まずに一般論を返さない。
-計測基盤の案件なら `references/gtm-jp` / `ga4-jp` / `search-console-jp` の安全境界表、
+計測基盤の案件なら `skills/gtm-jp` / `ga4-jp` / `search-console-jp` の安全境界表、
 `docs/escalations.md`（本体側の既知課題）、`knowledge/feedback/lessons.md`（過去の失敗）を見る。
 
 **正本に到達できない場合**（接続フォルダ制限で `outside this session's connected folders` になる等）は、

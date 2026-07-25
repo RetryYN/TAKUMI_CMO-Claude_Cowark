@@ -1,7 +1,7 @@
 # 台帳（Registry）── 4層アーキテクチャの正本
 
 **このファイルがコマンド・部品・定常ループの一覧の正本。** 追加・改名・削除は必ずここを同時に更新する。
-`/検証` はこの台帳と `commands/`・`procedures/`・`docs/parts/`・`references/` の実体の突合を検証項目に含める。
+`/検証` はこの台帳と `commands/`・`procedures/`・`docs/parts/`・`skills/` の実体の突合を検証項目に含める。
 
 ## 世界観 — 匠の∞（無限）ループ（2026-07-25 ユーザー決定でリブランド）
 
@@ -20,9 +20,9 @@
 
 | 徳 | 定義 | 実装（この徳を担う実体） |
 |---|---|---|
-| **心** | ユーザー行動を心理学から読み解き、市場を開拓する。手法は**心理プロファイリング**（意思決定スタイル・不安・関係段階の3軸判定）と**CBT の認知の歪み**（全か無か／破局視／べき思考を特定し、購買・応募のブレーキを文面で外す） | `references/psych-target-jp`（プロファイリング3軸判定表・CBT応用・倫理境界）/ `psych-nudge-jp`（訴求フレーム選択・禁忌表・EAST自己審査）/ `psych-ux-jp`（視線・情報密度・配色・EFOの心理根拠）/ `takumi-research`（背景の掘り起こし）。**倫理境界**: 心理学は不安の解消に使い増幅（恐怖訴求・偽の希少性）は禁止（session-rules (3)）／読み手を「診断」する物言いをせずプロファイルは書き手側の内部判断に留める／判定基準は「事実を分かりやすく伝えた結果か、事実を歪めて作った感情か」／送信前は pre-send-verifier がこの基準への適合も監査する |
-| **技** | ユーザーにも AI にも届く形に磨き上げ、伝わることを実現する。*ユーザーに届く*＝**品質**／*AI に届く*＝**面**（マルチメディアの包囲網） | **品質**: `references/seo-jp`（検索意図）/ `cro-jp`（転換率）/ `design-evidence-jp`（可読性・コントラスト等の実証基準）/ `web-design` / 執筆スキル群 ＋ **design-artisan → design-critic の審査ループ**（Critic Gate が PASS 前の引き渡しを機械遮断）。**面**: テキスト（`takumi-ownedmedia`）× 画像・動画（`takumi-content` ＋ `docs/parts/imagegen`・`image-edit`・`video-content-script`、`templates/banner-compose.py`・`chromakey.py`・`guide-anim.py`）× SNS 7媒体（`takumi-sns`）を横断し、**`takumi-campaign` が複数媒体を1目標で束ねて包囲網を形成する** |
-| **体** | データを取り、仮説を裏付け、AI の実行力で加速する。**指標を読むだけでなく計測基盤そのものを組む** | A〜K ワークフロー（実ブラウザでの計測・公開・変更前記録）/ `knowledge/data/takumi.db`（計測DB）/ `outcome-verifier`（証跡のある確定数だけを成果に数える）/ `knowledge/sites/`（攻略済みサイトの地図）／**計測基盤の構築**: `references/gtm-jp`（タグ・トリガー・変数・データレイヤーの設定／SNS からの CV 計測）・`ga4-jp`（キーイベント・カスタムディメンション・探索・アトリビューション）・`search-console-jp`（AI検索での露出を一次情報で取得）。GTM の公開は人間承認（ロールバック可）、カスタムHTMLタグは AI 自律禁止。**指標の定義そのものを新設するときだけ** `docs/parts/pre-setup-council.md`（合議＝関所。顔ぶれは案件で選ぶ） |
+| **心** | ユーザー行動を心理学から読み解き、市場を開拓する。手法は**心理プロファイリング**（意思決定スタイル・不安・関係段階の3軸判定）と**CBT の認知の歪み**（全か無か／破局視／べき思考を特定し、購買・応募のブレーキを文面で外す） | `skills/psych-target-jp`（プロファイリング3軸判定表・CBT応用・倫理境界）/ `psych-nudge-jp`（訴求フレーム選択・禁忌表・EAST自己審査）/ `psych-ux-jp`（視線・情報密度・配色・EFOの心理根拠）/ `takumi-research`（背景の掘り起こし）。**倫理境界**: 心理学は不安の解消に使い増幅（恐怖訴求・偽の希少性）は禁止（session-rules (3)）／読み手を「診断」する物言いをせずプロファイルは書き手側の内部判断に留める／判定基準は「事実を分かりやすく伝えた結果か、事実を歪めて作った感情か」／送信前は pre-send-verifier がこの基準への適合も監査する |
+| **技** | ユーザーにも AI にも届く形に磨き上げ、伝わることを実現する。*ユーザーに届く*＝**品質**／*AI に届く*＝**面**（マルチメディアの包囲網） | **品質**: `skills/seo-jp`（検索意図）/ `cro-jp`（転換率）/ `design-evidence-jp`（可読性・コントラスト等の実証基準）/ `web-design` / 執筆スキル群 ＋ **design-artisan → design-critic の審査ループ**（Critic Gate が PASS 前の引き渡しを機械遮断）。**面**: テキスト（`takumi-ownedmedia`）× 画像・動画（`takumi-content` ＋ `docs/parts/imagegen`・`image-edit`・`video-content-script`、`templates/banner-compose.py`・`chromakey.py`・`guide-anim.py`）× SNS 7媒体（`takumi-sns`）を横断し、**`takumi-campaign` が複数媒体を1目標で束ねて包囲網を形成する** |
+| **体** | データを取り、仮説を裏付け、AI の実行力で加速する。**指標を読むだけでなく計測基盤そのものを組む** | A〜K ワークフロー（実ブラウザでの計測・公開・変更前記録）/ `knowledge/data/takumi.db`（計測DB）/ `outcome-verifier`（証跡のある確定数だけを成果に数える）/ `knowledge/sites/`（攻略済みサイトの地図）／**計測基盤の構築**: `skills/gtm-jp`（タグ・トリガー・変数・データレイヤーの設定／SNS からの CV 計測）・`ga4-jp`（キーイベント・カスタムディメンション・探索・アトリビューション）・`search-console-jp`（AI検索での露出を一次情報で取得）。GTM の公開は人間承認（ロールバック可）、カスタムHTMLタグは AI 自律禁止。**指標の定義そのものを新設するときだけ** `docs/parts/pre-setup-council.md`（合議＝関所。顔ぶれは案件で選ぶ） |
 
 **三徳をつなぐのがデータ**: 心が立てた仮説を技が形にし、体が実測する。実測は KPIツリー（∞の上り）へ返り、次の仮説の材料になる。データは目的ではなく三徳をつなぐ血流であり、**KPIツリーが三徳と∞ループの共通の背骨**になる。
 
@@ -111,9 +111,15 @@
 
 SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `docs/media-pipeline.md`、無人運用・承認キュー・クラウド→ローカル移行は `docs/unattended-ops.md`、プラットフォーム上申事項（プラグインで根治不可の課題と緩和策）は `docs/escalations.md` が正本。
 
-## 執筆リファレンス台帳（references/ — スキル一覧には登録しない内部教科書）
+## スキル台帳（`skills/` — 規範の正本）
 
-> 登録方針: references/ は**全て Read 専用**（skills/ 規約に置かず自動発火させない）。ワークスペース側で同名スキルが Skill 登録されている場合も正本はプラグインの references/ とし、更新はこちらに行う（二重管理の乖離防止）。
+> **配置方針（2026-07-25 変更）**: `skills/` に置く。**旧 `references/` は Cowork のプラグイン仕様上どのコンポーネントにも該当せず**、公式仕様は「skills は `skills/` または `commands/` 配下、あるいはルート直下の単一 `SKILL.md`」と定めている（[plugins-reference](https://code.claude.com/docs/en/plugins-reference)・一次情報）。
+>
+> 旧方針は「自動発火させない内部教科書」だった。これを覆した理由は **escalations E6** — 永続フォルダ未接続の環境で委譲先エージェントが `references/**` に到達できず、`outside this session's connected folders` で拒否される。規範がまったく適用されないまま design-critic の審査や法規チェックが走る状態は、自動発火を避ける利益より高くつく。
+>
+> **代償と緩和**: 自動発火するようになるため、業務の入口がコマンドを飛ばしてスキルに逸れる恐れがある。session-rules (3) に「**業務の入口は必ずコマンド／手順書。スキルが先に開いても、変更操作の前に該当手順書へ合流してブランド確定とゲートを通す**」を明記した。実際に逸れないかは Tier 2 の **V50** で実測する。
+>
+> ワークスペース側で同名スキルが登録されている場合も正本はプラグインの `skills/` とし、更新はこちらに行う（二重管理の乖離防止）。
 
 | リファレンス | 主な使い手 | 用途 |
 |---|---|---|
@@ -180,7 +186,7 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 - [ ] 新しい媒体 → 原則 **/ワーク追加**（ワークスペース側に動的生成。プラグインは変更しない）。プラグイン標準パックに昇格させる場合のみ `commands/<日本語名>.md` + `procedures/takumi-<name>.md` を追加
 - [ ] 新しいSNS標準媒体 → `procedures/takumi-sns-<name>.md` 追加とセットで **4点配線**: ①takumi-sns の振り分け表 ②takumi-sns §0 の媒体名リスト ③takumi-setup 質問1の選択肢 ④この台帳の内部手順一覧（2026-07-24 Threads 追加時に④が漏れた教訓）
 - [ ] 新しい能力 → `docs/parts/<name>.md`（部品）+ parts/index.md に行追加。**コマンドは増やさない**
-- [ ] 新しい執筆リファレンス（references/）→ session-rules(3) と **該当サブエージェント（deliverable-writer / design-artisan / design-critic / pre-send-verifier）の参照表にも配線**（エージェントは自分でルールを読まないため、定義ファイルに書かないと届かない）
+- [ ] 新しい執筆リファレンス（skills/）→ session-rules(3) と **該当サブエージェント（deliverable-writer / design-artisan / design-critic / pre-send-verifier）の参照表にも配線**（エージェントは自分でルールを読まないため、定義ファイルに書かないと届かない）
 - [ ] この台帳に1行追加（カテゴリー + Pack）
 - [ ] 定常実行するものはループ台帳にも追加
 - [ ] README のコマンド数を更新

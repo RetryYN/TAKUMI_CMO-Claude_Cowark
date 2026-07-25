@@ -10,8 +10,8 @@ argument-hint: <記事ファイル/URL> [公開 or 下書き（既定は下書�
 1. **前提確認**: アクティブブランドのブログ管理画面URL（brand.yaml / `knowledge/config`）。ログイン済みか（未ログインは人間に依頼・Credential Guard）。プラットフォームが WordPress でなければ該当媒体手順へ切り替える。
 2. **タスク開始**: 変更操作のため takumi-start を通す（変更前記録）。
 3. **入稿（下書き）**: 新規投稿 → タイトル・本文（見出し構造を保持）・アイキャッチ（`knowledge/brands/<slug>/channels/content/` の画像）を設定。
-4. **SEO 整備**: references/seo-jp/SKILL.md に従い、タイトルタグ・メタディスクリプション・スラッグ（英数）・カテゴリ/タグ・OGP（SEOプラグインがあれば）。関連する既存記事へ内部リンクを2〜3本。
-5. **表現チェック**: 公開前に references/ad-compliance-jp/SKILL.md（景表法・ステマ規制・PR表記・体験談の打消し表示）を通す。
+4. **SEO 整備**: skills/seo-jp/SKILL.md に従い、タイトルタグ・メタディスクリプション・スラッグ（英数）・カテゴリ/タグ・OGP（SEOプラグインがあれば）。関連する既存記事へ内部リンクを2〜3本。
+5. **表現チェック**: 公開前に skills/ad-compliance-jp/SKILL.md（景表法・ステマ規制・PR表記・体験談の打消し表示）を通す。
 6. **承認と公開**: 公開は**不可逆送出** → pre-send-verifier 監査 + ユーザー承認を得てから publish。承認が無ければ下書きのまま「公開はご確認後に」と報告する。
 7. **記録**: 公開URL・スラッグ・公開日を `knowledge/brands/<slug>/channels/ownedmedia/` に控える。完了後 outcome-verifier で初動（インデックス・オーガニック流入）を追う導線に接続。
 

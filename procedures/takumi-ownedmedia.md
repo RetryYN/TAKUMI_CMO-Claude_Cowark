@@ -16,7 +16,7 @@ TAKUMI-CMO の集客・ブランディングの中核＝**オウンドメディ�
 | 要望の型 | タスク | 部品 / 接続先 |
 |---|---|---|
 | 「競合ブログ/検索意図を調べて」 | リサーチ | docs/parts/deep-research.md / docs/parts/sns-research.md |
-| 「記事を書いて/アイキャッチ作って」 | クリエイティブ | /コンテンツ（procedures/takumi-content.md）へ。SEO記事は references/seo-jp/SKILL.md |
+| 「記事を書いて/アイキャッチ作って」 | クリエイティブ | /コンテンツ（procedures/takumi-content.md）へ。SEO記事は skills/seo-jp/SKILL.md |
 | 「WordPressに公開/更新して」 | 掃き出し | docs/parts/wp-publish.md（下書き→承認→公開・SEOメタ・内部リンク） |
 | 「記事カレンダー/更新計画」 | 計画 | docs/parts/content-calendar.md（公開スケジュール→queue→定常タスク） |
 | 「流入/回遊を測って」 | 分析 | outcome-verifier（オーガニック流入・回遊・CV→KPIツリー反映） |

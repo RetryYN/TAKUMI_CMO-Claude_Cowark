@@ -52,4 +52,4 @@ deliverable-writer は HTML レポート執筆前にこのファイルを読む�
 
 ## 数値の根拠
 
-本ファイルは統一骨格の正本。個別の数値判断（フォント・行長・コントラスト・CTA・グラフ選択）の実証根拠は `references/design-evidence-jp/SKILL.md` を参照。
+本ファイルは統一骨格の正本。個別の数値判断（フォント・行長・コントラスト・CTA・グラフ選択）の実証根拠は `skills/design-evidence-jp/SKILL.md` を参照。

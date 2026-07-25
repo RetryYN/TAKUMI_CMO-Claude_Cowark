@@ -49,4 +49,4 @@ argument-hint: <対象ページURL> [改善の目的（例: CVR向上 / 読み�
 
 ## 転換率観点の改善
 
-応募率・CV改善が目的の依頼では references/cro-jp/SKILL.md + references/psych-ux-jp/SKILL.md（心理判断表）+ references/design-evidence-jp/SKILL.md（実証数値: FV完結1.64倍・CTA位置・行長等）を Read し、仮説（現状→変更→期待指標）を明示してから改善案を作る。効果検証の集計は outcome-verifier。
+応募率・CV改善が目的の依頼では skills/cro-jp/SKILL.md + skills/psych-ux-jp/SKILL.md（心理判断表）+ skills/design-evidence-jp/SKILL.md（実証数値: FV完結1.64倍・CTA位置・行長等）を Read し、仮説（現状→変更→期待指標）を明示してから改善案を作る。効果検証の集計は outcome-verifier。

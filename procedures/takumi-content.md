@@ -24,6 +24,6 @@
 | 「動画コンテンツの構成」「フック案」 | クリエイティブ | docs/parts/video-content-script.md |
 | 「Design/Canvaへ」「書き出し準備」 | 掃き出し | docs/parts/design-sync.md / docs/parts/canva-export.md |
 
-- 公開向けコピー・クリエイティブは references/ad-compliance-jp/SKILL.md（景表法・ステマ規制・PR表記）のチェック必須
+- 公開向けコピー・クリエイティブは skills/ad-compliance-jp/SKILL.md（景表法・ステマ規制・PR表記）のチェック必須
 - **有料出稿・課金は AI 禁止（ゼロ課金ゲート＝URL Guard／Money Watch）**。TAKUMI-CMO は費用を1円も使わない。投稿など不可逆送出は pre-send-verifier 監査 + ユーザー承認
 - 技術地図（形式・レシピ・素材パック）は docs/media-pipeline.md

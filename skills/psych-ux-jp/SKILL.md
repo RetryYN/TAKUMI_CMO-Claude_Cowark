@@ -5,7 +5,7 @@ description: UI/UXデザイン心理と社会心理の日本実務基準 — LP�
 
 # UI/UXデザイン心理スキル（日本実務ベース）
 
-> 役割分担: 本スキルは「なぜそう置くか」の心理根拠。**具体的な数値（px・比率・色コード）の正本は references/design-evidence-jp/SKILL.md** — 両方に載っている値（44px・F字等）は design-evidence-jp を優先する。
+> 役割分担: 本スキルは「なぜそう置くか」の心理根拠。**具体的な数値（px・比率・色コード）の正本は skills/design-evidence-jp/SKILL.md** — 両方に載っている値（44px・F字等）は design-evidence-jp を優先する。
 
 ## 視線・レイアウト判断表
 
