@@ -80,4 +80,43 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | `Gate` | **コード化しない** — 実体は `hooks/scripts/*.sh`。判定ロジックは `scripts/test-hooks.sh` が保証する | — |
 
 各対象は「テストを先に書いて red → 実装 → green」（[開発ワークフロー.md](開発ワークフロー.md) §2）。
+
+## ワークスペース検証（ドメインモデルを実データに適用する）
+
+`scripts/lint.py --workspace <path>`（既定はカレントディレクトリ）が、利用者の `knowledge/` を
+ドメインモデルで検証する。実装は `takumi/workspace.py`、テストは `tests/test_workspace.py`。
+**`knowledge/` が無ければ何も起きない**ため、プラグインリポジトリ単体の lint（CI）には影響しない。
+
+読み込みは呼び出し側から注入する（lint は PyYAML の `safe_load`、テストは `json.loads`）。
+ドメイン層に YAML パーサへの依存を持ち込まないため。PyYAML が無い環境では WARN でスキップする。
+
+### 検証するファイルと形（ランタイム ↔ ドメインの対応）
+
+| ファイル | 対応するオブジェクト | 検証 |
+|---|---|---|
+| `knowledge/brands.yaml` | `BrandRegistry.from_dict` | slug の妥当性・一意性。台帳と `knowledge/brands/<slug>/` の**双方向一致**（片方だけの存在を検出） |
+| `knowledge/.active-brand` | `BrandRegistry.active` | 台帳の `active:` と一致（食い違うとセッションを跨ぐ引き継ぎでブランドを取り違える） |
+| `knowledge/brands/<slug>/strategy/kpi-tree.yaml` | `KpiTree.from_dict` | 有料指標を持たない。`root:` で包む形とノード直書きの両方を受ける |
+| `knowledge/brands/<slug>/strategy/campaigns/*.yaml` | `Campaign` の一部 | `goal_kpi` がその区画の KPIツリーに実在。`channels` が有料媒体でない |
+
+```yaml
+# knowledge/brands/<slug>/strategy/kpi-tree.yaml — KpiTree.to_dict() と同じ形
+root:
+  name: 指名検索のシェア     # 北極星（遅行）
+  kind: 遅行                # 先行 | 遅行
+  children:
+    - name: オーガニック流入
+      kind: 先行
+      children: []
+```
+
+```yaml
+# knowledge/brands/<slug>/strategy/campaigns/<name>.yaml — 検証されるキーは2つだけ
+goal_kpi: オーガニック流入   # KPIツリーに実在するノード名
+channels: [X, 自社ブログ]    # 文字列 or {name, kind}。有料媒体は不可
+# 以下は自由記述（検証しない）: schedule / modalities / owner / notes …
+```
+
+**寛容さの方針**: 実運用の YAML は自由記述を含む。**認識できるキーだけを検証し、知らないキーでは落とさない。**
+逆に、認識したうえで不変条件に反するものは必ず落とす。
 `scripts/lint.py` はワークスペースに `knowledge/brands/**` があればこのドメインモデルで妥当性検証する。
