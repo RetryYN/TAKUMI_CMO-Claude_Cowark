@@ -17,6 +17,7 @@
 | 競合コンテンツ・訴求 | procedures/takumi-content.md のリサーチ行（competitor コンテンツ・訴求の洗い出し） |
 | Webサイト・LP のデザイン | docs/parts/style-research.md |
 | Webサイト・LP の品質・速度 | docs/parts/site-audit.md |
+| **伸びている先の分解**（「伸びてる◯◯を参考にしたい」「なぜ伸びているのか」） | **docs/parts/growth-teardown.md** + `skills/growth-teardown-jp`（作法の正本） |
 | 徹底的に全部 | docs/parts/deep-research.md |
 | オウンドメディア・検索市場（SEO） | procedures/takumi-ownedmedia.md のリサーチ節 + skills/seo-jp/SKILL.md（キーワード・検索意図・競合記事の読み取りのみ） |
 
