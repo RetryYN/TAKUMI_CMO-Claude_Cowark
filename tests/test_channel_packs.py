@@ -48,15 +48,38 @@ class TestChannelPacks(unittest.TestCase):
             self.assertIn(kind, set(ChannelKind), f"{kind} は ChannelKind に存在しない")
 
     def test_every_pack_is_reachable_from_a_command(self):
-        """各パックが、いずれかのコマンドから参照されている（孤児でない）。"""
-        commands = "".join(
-            p.read_text(encoding="utf-8") for p in (ROOT / "commands").glob("*.md")
-        )
+        """各パックに、いずれかのコマンドから辿り着ける（孤児でない）。
+
+        2026-07-26 にコマンドを20本→9本へ束ねたため、**コマンドが直接パックを参照するとは
+        限らない**（例: /匠発信 → takumi-publish → takumi-sns）。守りたいのは
+        「文字列がコマンドファイルに載っていること」ではなく「**利用者から辿り着けること**」
+        なので、玄関の手順書を経由して実際に辿る。
+        """
+        proc_text = {
+            p.stem: p.read_text(encoding="utf-8")
+            for p in (ROOT / "procedures").glob("takumi-*.md")
+        }
+        ref = re.compile(r"procedures/(takumi-[a-z-]+)\.md")
+        reachable: set[str] = set()
+        frontier: list[str] = []
+        for c in (ROOT / "commands").glob("*.md"):
+            for name in ref.findall(c.read_text(encoding="utf-8")):
+                if name not in reachable:
+                    reachable.add(name)
+                    frontier.append(name)
+        while frontier:
+            for name in ref.findall(proc_text.get(frontier.pop(), "")):
+                if name not in reachable and name in proc_text:
+                    reachable.add(name)
+                    frontier.append(name)
+
         for kind, rel in CHANNEL_PACKS.items():
-            name = Path(rel).name
+            stem = Path(rel).stem
             self.assertIn(
-                name, commands,
-                f"{kind.value} のパック {name} を参照するコマンドが無い（利用者から到達できない）",
+                stem, reachable,
+                f"{kind.value} のパック {Path(rel).name} にコマンドから辿り着けない"
+                f"（束ねた玄関の手順書に振り分けを書く。"
+                f"ファイルは在るので参照切れ検査には掛からない＝いちばん気づけない壊れ方）",
             )
 
     def test_campaign_lists_every_channel(self):

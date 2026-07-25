@@ -252,18 +252,23 @@ for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + 
 #           コマンドが 16 本に増えていた。#13 は skills だけを見ており、他は素通りだった） ---
 _n_cmd = len(commands)
 _n_proc = len(procedures)
+# 内部手順 = 手順書 - コマンド台帳に載っている公開手順書。
+# （2026-07-26: 20本→9本に束ねるまでは 1コマンド=1手順書だったので 手順書-コマンド で
+#  正しかったが、1コマンドが複数手順書を束ねる今は成り立たない）
+_n_public_proc = len({en for en, jp in reg_rows if not jp.strip().startswith("（内部")})
+_n_internal_proc = _n_proc - _n_public_proc
 _COUNT_PATTERNS = [
     (re.compile(r"登録コマンド (\d+) 本"), lambda: _n_cmd, "登録コマンド"),
     (re.compile(r"コマンド台帳（登録(\d+)本）"), lambda: _n_cmd, "登録コマンド"),
     (re.compile(r"`commands/`（登録(\d+)本"), lambda: _n_cmd, "登録コマンド"),
     (re.compile(r"メニューに並ぶのはこの(\d+)本"), lambda: _n_cmd, "登録コマンド"),
     (re.compile(r"内部手順含め(\d+)本"), lambda: _n_proc, "手順書"),
-    (re.compile(r"内部手順 (\d+) / 手順書 (\d+)"), lambda: (_n_proc - _n_cmd, _n_proc), "内部手順/手順書"),
+    (re.compile(r"内部手順 (\d+) / 手順書 (\d+)"), lambda: (_n_internal_proc, _n_proc), "内部手順/手順書"),
     # 2026-07-25 の攻めスキル追加時に検出: 助数詞の「本」やスペースが無い書き方が
     # 上のパターンを全部すり抜け、takumi-verify.md V17/V34 が 13/30 のまま残っていた。
     # 「規約は機械検査とセット」の原則どおり、見つけた形は必ずパターンに足す。
     (re.compile(r"登録コマンド(\d+)（commands/）\+ 内部手順(\d+) = 手順書(\d+)"),
-     lambda: (_n_cmd, _n_proc - _n_cmd, _n_proc), "登録/内部手順/手順書"),
+     lambda: (_n_cmd, _n_internal_proc, _n_proc), "登録/内部手順/手順書"),
     (re.compile(r"procedures/ 全(\d+)本"), lambda: _n_proc, "手順書"),
 ]
 for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
@@ -490,7 +495,7 @@ if _testing.is_file():
 #          集合を舐める検査（#6/#13/#17）が空集合になり、素通りで lint OK が出てしまった。
 #          「0件だから違反も0件」は最も危険な緑） ---
 for _name, _pattern, _min in (
-    ("commands", "commands/*.md", 10),
+    ("commands", "commands/*.md", 6),
     ("procedures", "procedures/takumi-*.md", 25),
     ("agents", "agents/*.md", 5),
     ("skills", "skills/*/SKILL.md", 15),
@@ -755,6 +760,57 @@ for _f in md_files + [ROOT / "TESTING.md"]:
             if _m.group(1) not in _lint_set:
                 err(f"{_rel}: lint のチェック #{_m.group(1)} は `scripts/lint.py` に存在しない"
                     f"（改番・削除で引用が宙に浮いている）")
+
+
+# --- 28. 束ねた手順書に、コマンドから本当に辿り着けるか
+#         （2026-07-26 導入。コマンドを20本→9本に束ねたとき、**入口を消すのと中身を消すのは
+#          別物**である。台帳に「このコマンドが束ねている」と書いてあっても、玄関の手順書に
+#          振り分けを書き忘れれば、その機能は**誰からも開かれない状態で残る**（ファイルは
+#          存在するので参照切れ検査には掛からない＝いちばん気づけない壊れ方）。
+#          コマンド → 手順書 → 手順書 … と実際に辿って到達性を確かめる） ---
+_proc_text = {p.stem: read(p) for p in procedures}
+_reachable: set[str] = set()
+_frontier: list[str] = []
+for _c in commands:
+    for _r in re.findall(r"procedures/(takumi-[a-z-]+)\.md", read(_c)):
+        if _r not in _reachable:
+            _reachable.add(_r)
+            _frontier.append(_r)
+while _frontier:
+    _cur = _frontier.pop()
+    for _r in re.findall(r"procedures/(takumi-[a-z-]+)\.md", _proc_text.get(_cur, "")):
+        if _r not in _reachable and _r in _proc_text:
+            _reachable.add(_r)
+            _frontier.append(_r)
+for _en, _jp in reg_rows:
+    _jp = _jp.strip()
+    if _jp.startswith("（内部"):
+        continue
+    if _en not in _reachable:
+        err(f"procedures/{_en}.md: 台帳では /{_jp} が束ねていることになっているが、"
+            f"**コマンドから辿り着けない**（玄関の手順書に振り分けを書く。"
+            f"ファイルは在るので参照切れ検査には掛からない＝いちばん気づけない壊れ方）")
+
+
+# --- 29. コマンド名の規約（接頭辞「匠」＋ 漢語。カタカナ・英字を使わない）
+#         （2026-07-26 ユーザー決定。理由は2つ。(a) **他プラグインのコマンドと並んだとき、
+#          どれが匠CMO のものか分からなくなる** — 接頭辞が揃っていればメニューで固まって並ぶ。
+#          (b) 旧名はカタカナと英字が混ざっていた（リサーチ／エンゲージメント／SNS運用／
+#          Webサイト）。**規約は文章で書いてあっても守られない**ので機械で強制する） ---
+_KATAKANA = re.compile(r"[\u30A1-\u30FA\u30FC]")
+_ASCII_WORD = re.compile(r"[A-Za-z0-9]")
+for _c in commands:
+    _stem = _c.stem
+    if not _stem.startswith("匠"):
+        err(f"commands/{_c.name}: コマンド名が「匠」で始まっていない"
+            f"（**接頭辞は必須**。他プラグインのコマンドと並んだときに出所が分かるようにするため）")
+    _rest = _stem[1:] if _stem.startswith("匠") else _stem
+    if _KATAKANA.search(_rest):
+        err(f"commands/{_c.name}: コマンド名にカタカナが入っている"
+            f"（漢語にする。例: リサーチ→調査 / エンゲージメント→顧客 / セットアップ→設定）")
+    if _ASCII_WORD.search(_rest):
+        err(f"commands/{_c.name}: コマンド名に英数字が入っている"
+            f"（漢語にする。例: SNS運用→発信 / Webサイト→発信）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "

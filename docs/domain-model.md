@@ -57,7 +57,7 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 3. **上り**: `DownstreamLoop.hand_up` はツリーに無い指標の実測を受け取らない。測るなら先にツリーへ置く（定義を後から変えると過去と比較できない）。
 4. **区画**: キャンペーンと戦略のブランドが一致しない受け渡しは拒否する。
 
-補助の観測点: `Strategy.undriven_leaves()`（施策の当てがない指標）/ `DownstreamLoop.unmeasured_leaves()`（測る当てがない指標）/ `DownstreamLoop.stalled_nodes()`（伸びが閾値未満＝ /戦略 の再立案フラグ）。
+補助の観測点: `Strategy.undriven_leaves()`（施策の当てがない指標）/ `DownstreamLoop.unmeasured_leaves()`（測る当てがない指標）/ `DownstreamLoop.stalled_nodes()`（伸びが閾値未満＝ /匠戦略 の再立案フラグ）。
 
 ### ゼロ広告費は「指標」と「媒体」の両側で締める
 

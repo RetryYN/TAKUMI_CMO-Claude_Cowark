@@ -165,7 +165,7 @@ description: ビジネスライティング — 社内外のビジネス文書�
 - **前段**（先に決まっているべきこと）: `skills/brand-guideline-jp`（一人称・文体・敬体の正本）
 - **後段**（ここで決めたら次に開く）: `skills/ad-compliance-jp`（**対外文書も「表示」に当たりうる**）／`skills/engagement-reply-jp`（公開の場から個別対応へ移すとき）
 - **併用**（同時に開く）: `skills/logical-writing`（結論ファースト）／`skills/referral-advocacy-jp`（掲載・紹介の依頼メール）／`skills/copywriting`（件名13字）
-- **正本が別**: 一斉配信の運用は `/メール`（`procedures/takumi-email.md`）— **送信は人間**
+- **正本が別**: 一斉配信の運用は `/匠発信`（`procedures/takumi-email.md`）— **送信は人間**
 
 ## 出典
 
