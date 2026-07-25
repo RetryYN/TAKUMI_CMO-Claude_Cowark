@@ -346,6 +346,48 @@ if _evals.is_file():
     for name in sorted(_covered - _skill_names - _agent_names):
         err(f"docs/evals.md: golden タスクが実在しない対象 {name} を指している")
 
+# --- 18. 検証項目（V番号）と実タスク定義（verify-task.yaml）の突合
+#         （2026-07-25 全体CHECK で検出: 片側だけに項目を足す事故を機械が止められなかった。
+#          実際 V47/V48 の追加時に両ファイルで行順が入れ違う事故が起きている） ---
+_vfile = ROOT / "procedures/takumi-verify.md"
+_vtask = ROOT / "templates/verify-task.yaml"
+if _vfile.is_file() and _vtask.is_file():
+    _vtext, _ytext = read(_vfile), read(_vtask)
+    # 定義行: | V<n> [🔁] | <項目名> | … 。報告書の書式見本（2列目が "..."）は定義ではない
+    _defs: list[str] = []
+    _marked: set[str] = set()
+    for m in re.finditer(r"^\| (V\d+)( 🔁)? \| ([^|]*)\|", _vtext, re.M):
+        if m.group(3).strip() == "...":
+            continue
+        _defs.append(m.group(1))
+        if m.group(2):
+            _marked.add(m.group(1))
+    for v, n in _coll.Counter(_defs).items():
+        if n > 1:
+            err(f"procedures/takumi-verify.md: 検証項目 {v} が{n}回定義されている（V番号は一意）")
+
+    _defined = set(_defs)
+    _referenced = set(re.findall(r"\bV\d+\b", _ytext))
+    for v in sorted(_referenced - _defined):
+        err(f"templates/verify-task.yaml: 実在しない検証項目 {v} を参照している")
+    for v in sorted(_marked - _referenced):
+        err(f"templates/verify-task.yaml: 重点回帰（🔁）の {v} が実タスク定義に無い"
+            f"（takumi-verify.md で 🔁 を付けたら yaml にも項目を足す）")
+    for v in sorted(_referenced - _marked):
+        err(f"procedures/takumi-verify.md: {v} が yaml にあるのに 🔁 が付いていない"
+            f"（重点回帰セットは両ファイルで一致させる）")
+
+    # 実タスクの項目番号 (n) が 1..N の連番・重複なし（行の入れ違い・抜け番の検出）
+    _nums = [int(x) for x in re.findall(r'"\((\d+)\)', _ytext)]
+    if _nums:
+        _dupes = [n for n, c in _coll.Counter(_nums).items() if c > 1]
+        if _dupes:
+            err(f"templates/verify-task.yaml: 項目番号が重複 {sorted(_dupes)}")
+        _missing = sorted(set(range(1, max(_nums) + 1)) - set(_nums))
+        if _missing:
+            err(f"templates/verify-task.yaml: 項目番号に抜けがある {_missing}"
+                f"（1..{max(_nums)} の連番で書く）")
+
 # --- 16. ワークスペース検証（利用者の knowledge/brands/** をドメインモデルで検証）---
 #     プラグインリポジトリ単体では knowledge/ が無いので何も起きない。
 #     Cowork のワークスペースで回すと、台帳・区画・KPIツリー・キャンペーンの不変条件を実データに適用する。
