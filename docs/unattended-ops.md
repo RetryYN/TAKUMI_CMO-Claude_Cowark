@@ -20,21 +20,120 @@
 
 1. **各媒体に一度手動でログイン**（「ログイン状態を保持」を必ずチェック）し、パスワードはブラウザのパスワードマネージャに保存
 2. **Claude デスクトップをスタートアップ登録**: `Win+R` → `shell:startup` → Claude のショートカットを配置（PC起動で Cowork が立ち上がる）
-3. **定常タスクをスケジュール登録 — 実行環境で経路を選ぶ（最重要）**:
-   - **ブラウザ操作を伴うタスク → ローカル登録のみ**（デスクトップアプリの「このコンピュータで実行」スケジュール）。trigger 系（`create_trigger`）はクラウドの新規セッションとして発火するため実PCのログイン済み Chrome に届かず、**発火しても実行不能で空振りする**（2026-07-24 実測。この不整合で定常タスク3本が停止した）
-   - **ブラウザ操作を伴わないタスク（集計・レポート・ファイル処理等）→ trigger 系 MCP ツールでよい**（`create_trigger` / `list_triggers` / `update_trigger` / `delete_trigger` / `send_later`。※`create_scheduled_task` という名前のツールは存在しない）。登録時の必須知識:
-   - **cron は UTC 評価**。JST の希望時刻から9時間引く（例: 月曜 JST 9:00 → `0 0 * * 1`）。変換を誤ると9時間ズレて実行される
-   - **最小間隔は1時間**。毎時系は登録時刻にアンカーされ、発火時刻には数分のジッターが乗る
-   - **発火は新規セッションとして起動する**（登録した会話には戻らない）。元の会話に戻したい一回限りの用途は `send_later`
-   - **発火プロンプトは短く**（例: 「<タスク名>やって。終わったらダッシュボード更新して」）。詳細手順は `tasks/<タスク名>.yaml` に置き、発火時に読ませる。trigger の job_config にはプロンプト全文が埋め込まれ肥大化するため
-   - cron 書式の例（**下記のようなブラウザ操作タスクはローカル登録で。cron 変換の参考としてのみ示す**）:
-     - 毎週月曜 JST 9:00（`0 0 * * 1`） `/匠発信 <競合URL...> 競合定点観測`
-     - 毎日 JST 8:00（`0 23 * * *`） `/匠発信 Xのストック確認・充足`
-     - 毎月1日 JST 9:00（`0 0 1 * *`） `/匠発信 <自社URL> 健康診断`（サイト健康診断）
+3. **定常タスクをスケジュール登録** — 経路の選び方と登録の作法は下の §スケジュールの正本 に従う（ここには複製しない）
+
 4. **ブラウザの一意化 + ログインの同居確認**: 複数の Chrome（複数PC・複数プロファイル）が接続されていると、操作前のブラウザ選択で人間の応答待ちになり無人実行が停止する。無人運用する媒体の Chrome は1台に絞るか、`knowledge/config/browser.md` に優先ブラウザ（デバイス名/特徴）を記録しておき、タスク側はそれを読んで選択する。**優先指定だけでは不十分 — 手順1の全媒体ログインは必ず優先ブラウザ側の Chrome で行い、browser.md には媒体ごとのログイン状態の実測結果（○/✗）も記録する**（2026-07-24 実測: 優先指定した Browser 1 が 4媒体中3媒体でログアウト状態、実作業は別ブラウザ側で行われていた — 優先指定とログインの不一致は無人運用の空振り要因）
 5. **通知経路の確認**: タスクがログイン切れ・2FA・承認待ちで停止したとき気づけるよう、デスクトップ/モバイルの通知を有効化。**初回のローカル定常実行前に、1媒体だけ意図的にログアウトした状態で1回実行し、「ログイン切れ通知が実際に届く」ことを実地テストする**（通知経路が死んでいると停止に気づかない期間だけ投稿が止まる）
 6. **クラウド→ローカル移行（ワークスペース資産の引き継ぎ）**: クラウドセッションの作業場（knowledge/ tasks/ memory/ .claude/commands/ 等）はコンテナ内にのみ存在し、ローカル実行のセッションは**別ファイルシステム**で動く — 何もしないとセットアップ回答・文体正本・タスクYAML・専用コマンドがすべて不可視になる。移行手順: (a) クラウド側で上記ディレクトリ一式を zip し、接続フォルダに書き出す（例: `<接続フォルダ>/_takumi-cmo-workspace-backup.zip`。2026-07-24 に56ファイルで実証済み） (b) ローカル初回セッションで展開して資産を継承 (c) 以後の正本はローカル側とし、二重更新しない
 7. **ディスク衛生（任意）**: 生成物（画像・動画・スクショ）と node_modules が溜まるため、月次で古い生成物の掃除タスクを定常ループに入れることを推奨
+
+## スケジュールの正本（2026-07-26 に一次情報で全面改訂）
+
+**【一次情報・確認済み】** 出典: `code.claude.com/docs/en/scheduled-tasks`・`/routines`・`/desktop-scheduled-tasks`
+
+### 3つの経路と、匠CMO がどれを使うか
+
+| | **Cloud（Routines）** | **Desktop（ローカル）** | **`/loop`（セッション内）** |
+|---|---|---|---|
+| 実行場所 | Anthropic のクラウド | 自分のPC | 自分のPC |
+| PC の起動 | 不要 | **要る**（かつ**起きている**必要） | 要る |
+| セッションを開いたまま | 不要 | 不要 | **要る** |
+| **ローカルファイル** | **見えない（fresh clone）** | **見える** | 見える |
+| 最小間隔 | **1時間** | 1分 | 1分 |
+| 権限の確認 | 出ない（自律実行） | タスクごとに設定 | セッション継承 |
+| 作り方 | web / Desktop / CLI `/schedule` | **Desktop UI、または会話で頼む** | `/loop` |
+
+> **匠CMO の定常マーケ運用は Desktop（ローカル）一択。** 理由は3つあり、どれも単独で決定的:
+>
+> 1. **cloud は `knowledge/` が見えない** — 公式表で "Access to local files: **No (fresh clone)**"。
+>    ブランド区画・戦略・KPIツリー・文体の正本・過去ログが**全部無い状態で走る**。
+>    **マーケの定常運用は記憶が本体**なので、記憶ゼロで動く経路は成立しない
+> 2. **cloud はブラウザ操作が届かない** — クラウドの新規セッションは実PCのログイン済み Chrome に
+>    到達しない（2026-07-24 実測: 発火はしたが実行不達で定常タスク3本が停止）
+> 3. **cloud が使えるスキルは「clone したリポジトリにコミットされたもの」** — 公式:
+>    "The session can run shell commands, use **skills committed to the cloned repository**"。
+>    プラグインとして入れた匠CMO が載る保証が無い
+>
+> cloud routine が向くのは、**記憶もブラウザも要らない**仕事（外部APIの定点観測、GitHub イベント応答）。
+
+### AI がタスクを登録できる（**escalations E2 は解消**）
+
+**【一次情報・確認済み】** Desktop scheduled tasks:
+
+> "You can also **create a task by describing what you want in any session**. For example,
+> "set up a daily code review that runs every morning at 9am" creates a recurring task"
+>
+> "You can also **list, create, edit, and pause tasks by asking Claude in any Desktop session**."
+
+つまり利用者は **「毎朝これやって」と言うだけでよい**。AI が登録まで進める。
+**2026-07-26 まで「ローカル登録はオーナーのUI操作であり AI は登録できない（E2）」と規約化していたが、
+これは現在の仕様では誤り**。手順から「オーナーに登録を依頼して待つ」を削除した。
+
+**ただし2つだけ人間が要る:**
+
+- **削除**は詳細ページの **Delete** ボタンから（"To delete a task, use the **Delete** button on its detail page"）
+- **初回の権限**: 登録直後に **Run now** を1回押し、出てくる権限プロンプトで**「always allow」を選ぶ**。
+  公式: "To avoid stalls, click **Run now** after creating a task, watch for permission prompts, and
+  select 'always allow' for each one. Future runs of that task auto-approve the same tools"。
+  **これを飛ばすと、以後のランが承認待ちで静かに止まる**（止まったこと自体に気づけない）
+
+### 発火プロンプトに `/匠◯◯` を書いてよい（が、条件がある）
+
+**【一次情報・確認済み】** "a scheduled fire only runs skills that Claude is **allowed to invoke on its own**.
+The following reach Claude as **plain text instead of executing**: … Skills marked
+`disable-model-invocation: true`"
+
+- 匠CMO の**9コマンドと42スキルはどれも `disable-model-invocation` を付けていない**ので、
+  発火プロンプトに `/匠計測 今日の作業まとめて` と書けば**実行される**
+- **逆に言えば、付けた瞬間に定常タスクが平文になって何も起きなくなる。** 付けてはいけない
+  （`scripts/lint.py` #32 が付いていないことを検査する）
+- `user-invocable: false`（42スキルに付与済み）は**この制限とは別物**。Claude 側の起動は許可されたままなので
+  スケジュール発火でも効く
+
+### 寝ていた分は「1回だけ」まとめて走る → **プロンプトに時刻ガードを書く**
+
+**【一次情報・確認済み】** "Desktop starts **exactly one catch-up run** for the most recently missed time
+and discards anything older." / "**A task scheduled for 9am might run at 11pm** if your computer was
+asleep all day. **If timing matters, add guardrails to the prompt itself**"
+
+**すべての定常タスクのプロンプトに、時刻の前提を1行入れる。** 例:
+
+```
+毎朝の定点観測。**今が 12:00 を過ぎていたら観測だけ行い、投稿・配信はしない**（時間帯がずれた回は
+下書きまで）。前日ぶんのデータが揃っていなければ「未確定」と明記して数字を埋めない。
+```
+
+**これが無いと、深夜に「おはようございます」の投稿が出る。** 不可逆送出を含むタスクでは特に致命的。
+
+### 時刻の解釈は経路で違う → **登録したら次回発火時刻を読み上げて確認する**
+
+- **【一次情報・確認済み】** セッション内スケジュール: "All times are interpreted in **your local timezone**.
+  A cron expression like `0 9 * * *` means 9am **wherever you're running Claude Code, not UTC**"
+- **【一次情報・確認済み】** Routines: "Times are entered in your local zone and **converted automatically**"
+- **【未確認】** 旧 `create_trigger` 系は 2026-07-24 の実測で **UTC 評価**だった。同一仕様とは限らない
+
+**経路によって解釈が違う以上、暗算に頼らない。** 登録したら**「次回はいつ動くか」を必ず読み上げ、
+利用者に確認を取る**。ズレていればその場で直す（後から気づくと、その間ずっと空振りしている）。
+
+**ジッター**: 発火は数分ずれる（クラウド負荷の分散。オフセットはタスクごとに固定）。
+分刻みの依存を設計に入れない。
+
+### タスクが自分の予定とプロンプトを直せる（**次回以降の最適化**）
+
+**【一次情報・確認済み】** "A scheduled task can also **modify its own schedule or prompt** from within a
+running session using the **`update_scheduled_task`** MCP tool."
+
+**定常タスクは「登録して終わり」ではなく、走るたびに自分を直せる。** 匠CMO ではこれを次に使う:
+
+| 観測 | 直し方 |
+|---|---|
+| 3回続けて「変化なし」だった | **間隔を広げる**（毎日 → 週2）。無駄な発火は利用者の注意を削る |
+| 毎回同じ手直しをしている | その手直しを**プロンプトに畳み込む**（→ `/匠設定` のやり方の記憶） |
+| 時間帯がいつもずれて実行されている | **時刻を実態に合わせる**（PCが起きている時間に寄せる） |
+| 前提が変わった（媒体をやめた等） | **プロンプトから該当媒体を落とす** |
+
+**直したら、何をどう変えたかを1行でユーザーに報告する**（黙って予定を変えない — 予定の変更は
+利用者の期待を裏切りうる不可逆に近い操作）。記録は `knowledge/logs/` と `loops.yaml`。
 
 ## 無人運用前チェック（読み取り専用・ゲート不要）
 

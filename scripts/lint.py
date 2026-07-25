@@ -818,6 +818,62 @@ for _sk in sorted((ROOT / "skills").glob("*/SKILL.md")):
             f"（スキルは**規範・知識**であって利用者が打つ動作ではない。"
             f"付けないと `/` の一覧を埋める。**Claude の自動発火は維持される**ので機能は落ちない）")
 
+
+# --- 31. コマンドの入口の手触り（description / when_to_use / argument-hint）
+#         （2026-07-26 導入。一次情報 code.claude.com/docs/en/skills の Frontmatter reference:
+#          - `argument-hint`: "Hint shown during **autocomplete** to indicate expected arguments.
+#            Example: `[issue-number]` or `[filename] [format]`"
+#            → **オートコンプリート行に出る短いヒント**。実際には40〜66字の説明文を入れており、
+#              用途を外していた（コマンドを選んだ瞬間に長文が入力欄に出る）
+#          - `when_to_use`: "Additional context for when Claude should invoke the skill, such as
+#            **trigger phrases or example requests**. Appended to `description` … and counts
+#            toward the 1,536-character cap."
+#            → 発火語の置き場所は専用フィールドがある
+#          - `description`: "**Put the key use case first**" ） ---
+_HINT_MAX = 24
+_DESC_CAP = 1536
+for _c in commands:
+    _fm = frontmatter(_c)
+    _d = _fm.get("description", "")
+    _w = _fm.get("when_to_use", "")
+    _h = _fm.get("argument-hint", "")
+    if not _h:
+        err(f"commands/{_c.name}: argument-hint が無い（引数に何を書けばよいかが分からない）")
+    else:
+        if not (_h.startswith("[") and _h.endswith("]")):
+            err(f"commands/{_c.name}: argument-hint は `[…]` の形にする"
+                f"（公式例: `[issue-number]` / `[filename] [format]`）")
+        if len(_h) > _HINT_MAX:
+            err(f"commands/{_c.name}: argument-hint が長すぎる（{len(_h)}字 > {_HINT_MAX}）"
+                f"— **オートコンプリート行に出る短いヒント**であって説明文ではない。"
+                f"説明は description に書く")
+    if not _w:
+        err(f"commands/{_c.name}: when_to_use が無い"
+            f"（**発火語（言い方の例）の置き場所は専用フィールド**。description に全部詰めない）")
+    if "Use when" not in _d:
+        err(f"commands/{_c.name}: description に「Use when」が無い"
+            f"（**when_to_use が効かない環境でも主要な言い方で発火できるようにする**ため、"
+            f"description 側にも代表的な言い方を残す＝劣化を緩やかにする）")
+    if len(_d) + len(_w) > _DESC_CAP:
+        err(f"commands/{_c.name}: description + when_to_use が {len(_d)+len(_w)}字で "
+            f"{_DESC_CAP} を超える（超過分は一覧で切り捨てられる）")
+
+
+# --- 32. 定常タスクを黙って殺す設定を入れない（disable-model-invocation 禁止）
+#         （2026-07-26 導入。一次情報 code.claude.com/docs/en/scheduled-tasks:
+#          "a scheduled fire only runs skills that Claude is allowed to invoke on its own.
+#           The following reach Claude as **plain text instead of executing**: …
+#           Skills marked `disable-model-invocation: true`"
+#          匠CMO の定常運用は発火プロンプトに `/匠計測 …` と書いて回す設計なので、これを付けると
+#          **タスクは登録されているのに何も起きない**（エラーも出ず、平文が届くだけ）。
+#          最も気づけない壊れ方なので機械で禁じる） ---
+for _f in list((ROOT / "commands").glob("*.md")) + list((ROOT / "skills").glob("*/SKILL.md")):
+    _v = str(frontmatter(_f).get("disable-model-invocation", "")).strip().lower()
+    if _v in ("true", "yes", "on", "1"):
+        err(f"{_f.relative_to(ROOT)}: `disable-model-invocation` を付けてはいけない"
+            f"（**スケジュール発火で実行されず平文になる**＝定常タスクが登録済みのまま無言で死ぬ。"
+            f"`/` の一覧から隠したいだけなら `user-invocable: false` を使う → docs/unattended-ops.md）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
