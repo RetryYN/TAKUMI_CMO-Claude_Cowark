@@ -15,7 +15,7 @@ Canva の作業は **コネクタ（MCP）を第一経路、ブラウザ操作�
 初回はツール一覧と「できたこと/できなかったこと」を `knowledge/sites/canva/index.md` に記録する（次回の経路判断の正本）。
 
 - 素材の流し込みは asset-collect 部品の `knowledge/assets/` + 出典台帳（クレジット要否）を使う
-- 文言はドメインに応じた references/ スキル（copywriting 等）を適用し、公開向けは ad-compliance-jp を通す
+- 文言はドメインに応じた skills/ スキル（copywriting 等）を適用し、公開向けは ad-compliance-jp を通す
 
 ### 3. ブラウザ経路（補助 — コネクタ未接続 or コネクタ非対応の操作のみ）
 

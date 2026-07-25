@@ -58,7 +58,7 @@ description: 動画広告クリエイティブ — 15/30秒の広告動画の台
 
 ## 日本市場プリセット（デフォルト適用）
 
-編集定数は references/web-design/resources/jp-taste.md（見つからなければ Glob `**/jp-taste.md`）§5 に従う（カット1-3秒・白字黒縁テロップ・中央帯セーフゾーン・ループ構成・軽いオチ）。
+編集定数は skills/web-design/resources/jp-taste.md（見つからなければ Glob `**/jp-taste.md`）§5 に従う（カット1-3秒・白字黒縁テロップ・中央帯セーフゾーン・ループ構成・軽いオチ）。
 
 日本向け出稿では以下を標準とする（米国流との差分）:
 

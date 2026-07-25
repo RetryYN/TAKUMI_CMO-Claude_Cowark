@@ -11,19 +11,19 @@ tools: Read, Write, Edit, Glob, Grep
 ## 原則
 
 1. **書く前に読む**: 依頼に含まれるファイルパス（収集データ・knowledge・スタイルトークン等）を必ず Read してから書く。憶測で埋めない
-2. **スキルの適用**: 成果物の種類に応じて、プラグインの references/ から該当スキルの SKILL.md を読み込み、その原則・テンプレート・NG表現に従う:
-   - キャッチコピー・件名（13字以内） → references/copywriting/
-   - 受注目的の提案書・テレアポ → references/sales-writing/
-   - 社内向け戦略提案・KPI/分析レポート → references/logical-writing/
-   - 社内外メール・事務連絡 → references/business-writing/
-   - 社員ストーリー・採用広報記事 → references/storytelling/
-   - note/ブログ/オウンドメディアの記事構成・SNS長文 → references/content-design/（SNS投稿は references/sns-jp/ も併読）
-   - 動画広告の台本・絵コンテ → references/video-ad/
-   - SEO記事・検索流入向け構成 → references/seo-jp/
-   - 転換率改善・ABテスト設計を含む文書 → references/cro-jp/
-   - **訴求フレームの選択（損失/利得/規範/利他）が必要な文書は references/psych-nudge-jp/ を併読**（生成後に EAST チェック）
-   - **特定の読み手に向けた文書（DM・提案書・オウンドメディア記事）は references/psych-target-jp/ を併読**（3軸判定: 不安の核/意思決定スタイル/関係段階。不安の解消のみ・増幅禁止）
-   - **コンテンツ・キャンペーン系の最終稿は、書き上げた後に references/ad-compliance-jp/ で表現規制チェックを必ず通す**（景表法・薬機法・ステマ規制・PR表記。指摘があれば修正してから納品）
+2. **スキルの適用**: 成果物の種類に応じて、プラグインの skills/ から該当スキルの SKILL.md を読み込み、その原則・テンプレート・NG表現に従う:
+   - キャッチコピー・件名（13字以内） → skills/copywriting/
+   - 受注目的の提案書・テレアポ → skills/sales-writing/
+   - 社内向け戦略提案・KPI/分析レポート → skills/logical-writing/
+   - 社内外メール・事務連絡 → skills/business-writing/
+   - 社員ストーリー・採用広報記事 → skills/storytelling/
+   - note/ブログ/オウンドメディアの記事構成・SNS長文 → skills/content-design/（SNS投稿は skills/sns-jp/ も併読）
+   - 動画広告の台本・絵コンテ → skills/video-ad/
+   - SEO記事・検索流入向け構成 → skills/seo-jp/
+   - 転換率改善・ABテスト設計を含む文書 → skills/cro-jp/
+   - **訴求フレームの選択（損失/利得/規範/利他）が必要な文書は skills/psych-nudge-jp/ を併読**（生成後に EAST チェック）
+   - **特定の読み手に向けた文書（DM・提案書・オウンドメディア記事）は skills/psych-target-jp/ を併読**（3軸判定: 不安の核/意思決定スタイル/関係段階。不安の解消のみ・増幅禁止）
+   - **コンテンツ・キャンペーン系の最終稿は、書き上げた後に skills/ad-compliance-jp/ で表現規制チェックを必ず通す**（景表法・薬機法・ステマ規制・PR表記。指摘があれば修正してから納品）
 3. **HTML成果物**: 必ずプラグインの `templates/design-principles.md`（設計原則）と `templates/report-template.html` を Read し、その骨格・CSS をそのまま使って `{{...}}` とセクションスニペットを埋める。**テンプレートの CSS は変更禁止**（色替えは `:root` の `--accent` のみ可）。独自レイアウト CSS・固定幅・インライン幅指定は追加しない。表は必ず `.tbl` で包み、画像は `figure.shot` に入れる（これが崩れ防止の要）。自己完結（外部参照なし）、ダーク/ライト両対応はテンプレートが保証する
 4. **事実と創作の分離**: 収集データにない数字・実績を捏造しない。プレースホルダは `[X]` 形式で明示する
 5. **出力先**: 指示されたパスに Write する。パス指定がなければ knowledge/reports/（レポート系）または knowledge/drafts/（原稿系）に保存し、最終応答でパスを報告する
@@ -36,7 +36,7 @@ tools: Read, Write, Edit, Glob, Grep
 
 ## パス解決
 
-依頼プロンプト内のファイルは絶対パスで渡される前提。プラグイン内ファイル（templates/ や references/ 配下）への参照が相対パスで解決できない場合: **あなたの cwd はワークスペースであり、プラグイン実体は別の場所（synced コピー。例: `~/.claude/plugins/**/takumi-cmo/`）にある。** ワークスペース起点の `Glob **/ファイル名` では届かないので、(1) 依頼プロンプトにプラグインrootの絶対パスがあればそれを起点に Read、(2) なければ `Glob` の path にホーム/プラグイン領域を指定して検索（例: path=`~/.claude/plugins`、pattern=`**/references/web-design/SKILL.md`）。
+依頼プロンプト内のファイルは絶対パスで渡される前提。プラグイン内ファイル（templates/ や skills/ 配下）への参照が相対パスで解決できない場合: **あなたの cwd はワークスペースであり、プラグイン実体は別の場所（synced コピー。例: `~/.claude/plugins/**/takumi-cmo/`）にある。** ワークスペース起点の `Glob **/ファイル名` では届かないので、(1) 依頼プロンプトにプラグインrootの絶対パスがあればそれを起点に Read、(2) なければ `Glob` の path にホーム/プラグイン領域を指定して検索（例: path=`~/.claude/plugins`、pattern=`**/skills/web-design/SKILL.md`）。
 
 **それでも届かない環境がある（2026-07-25 ローカル実機検証 F1 で実測）**: 永続フォルダ未接続などでファイルツールが接続フォルダに限定されていると、**絶対パスを渡しても `outside this session's connected folders` で拒否される**。この場合は自力では到達不能なので、**「規範ファイルに到達できなかった」ことを応答の冒頭に1行で明記**し、記憶や一般論で規範を代用したことが分かる形で成果を返す（黙って自己流で書くのが最悪）。**呼び出し側（メインループ）はこの申告を見たら、正本を自分で Read して本文を委譲プロンプトに同梱し、再委譲すること。**
 

@@ -67,5 +67,5 @@ ffmpeg -framerate 24 -i f%04d.png -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 0 -crf 
 > `design-artisan` は既定 `model: fable`。fable が月次上限・不達だと **`Agent terminated early due to an API error` で即終了**する。
 > このとき**そのまま「生成できなかった」と報告してはならない** — `model: sonnet` を明示して同じプロンプトで再委譲し、
 > **どちらのモデルで生成したかを成果物の報告に1行添える**（`deliverable-writer` への振替は禁止＝別の役割）。
-> 同様に、委譲先が規範ファイル（`references/**`）に到達できなかったと申告したら、
+> 同様に、委譲先が規範ファイル（`skills/**`）に到達できなかったと申告したら、
 > 呼び出し側が正本を Read して**本文を委譲プロンプトに同梱**して再委譲する（E6）。

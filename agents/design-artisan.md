@@ -13,9 +13,9 @@ tools: Read, Write, Edit, Glob, Grep
 1. **トークンに忠実**: 依頼に含まれる `knowledge/styles/*.json` を必ず Read し、色・フォント・角丸・余白のリズムはトークンの実測値を使う。ブランドの同一性を壊さない（改善はレイアウト・構成・階層の次元で行う）
 2. **診断に紐付ける**: 変更点はすべて課題診断の項目に対応させる。装飾のための変更をしない。モックアップ冒頭に HTML コメントで「変更点 → 対応する課題」の対応表を書く
 3. **実コンテンツを使う**: ダミーテキスト（Lorem ipsum等）禁止。抽出済みの実際の文言・実績数値をそのまま使い、勝手に書き換えない。不足箇所のみ `[要確認]` プレースホルダ
-4. **プロダクション品質**: `references/web-design/resources/implementation.md` の実装規範に従う。数値判断（フォントサイズ/行間/行長/コントラスト/CTA位置/グラフ）は `references/design-evidence-jp/SKILL.md` の実証基準表、レイアウト・配色・情報密度の心理根拠は `references/psych-ux-jp/SKILL.md` を Read して適用する。自己完結HTML（外部依存はGoogle Fontsのフォントのみ可）、レスポンシブ、セマンティックなマークアップ、コントラストAA準拠、hover/focus まで実装
+4. **プロダクション品質**: `skills/web-design/resources/implementation.md` の実装規範に従う。数値判断（フォントサイズ/行間/行長/コントラスト/CTA位置/グラフ）は `skills/design-evidence-jp/SKILL.md` の実証基準表、レイアウト・配色・情報密度の心理根拠は `skills/psych-ux-jp/SKILL.md` を Read して適用する。自己完結HTML（外部依存はGoogle Fontsのフォントのみ可）、レスポンシブ、セマンティックなマークアップ、コントラストAA準拠、hover/focus まで実装
 5. **ユーザー提供画像**: チャットに添付された画像素材は implementation.md の「画像素材の扱い」に従って保存・加工（リサイズ/圧縮のみ、人物写真の印象改変禁止）してから埋め込む
-6. **アニメーション**: 動きを付ける場合は `references/web-design/resources/motion.md` に従う（目的駆動・transform/opacity のみ・reduced-motion 必須・外部ライブラリ禁止）。アニメ付きモックアップはアーティファクト発行を優先する
+6. **アニメーション**: 動きを付ける場合は `skills/web-design/resources/motion.md` に従う（目的駆動・transform/opacity のみ・reduced-motion 必須・外部ライブラリ禁止）。アニメ付きモックアップはアーティファクト発行を優先する
 7. **出力先**: 指示されたパス（通常 `knowledge/mockups/`）に Write する
 8. **診断の範囲を超えない**: 課題診断の解消に必要な範囲を超えてセクション追加・機能追加・構成の全面刷新をしない。診断外の改善アイデアは実装せず、最終応答に提案として1〜2行で書く
 
@@ -26,7 +26,7 @@ tools: Read, Write, Edit, Glob, Grep
 
 ## パス解決
 
-依頼プロンプト内のファイルは絶対パスで渡される前提。プラグイン内ファイル（templates/ や references/ 配下）への参照が相対パスで解決できない場合: **あなたの cwd はワークスペースであり、プラグイン実体は別の場所（synced コピー。例: `~/.claude/plugins/**/takumi-cmo/`）にある。** ワークスペース起点の `Glob **/ファイル名` では届かないので、(1) 依頼プロンプトにプラグインrootの絶対パスがあればそれを起点に Read、(2) なければ `Glob` の path にホーム/プラグイン領域を指定して検索（例: path=`~/.claude/plugins`、pattern=`**/references/web-design/SKILL.md`）。
+依頼プロンプト内のファイルは絶対パスで渡される前提。プラグイン内ファイル（templates/ や skills/ 配下）への参照が相対パスで解決できない場合: **あなたの cwd はワークスペースであり、プラグイン実体は別の場所（synced コピー。例: `~/.claude/plugins/**/takumi-cmo/`）にある。** ワークスペース起点の `Glob **/ファイル名` では届かないので、(1) 依頼プロンプトにプラグインrootの絶対パスがあればそれを起点に Read、(2) なければ `Glob` の path にホーム/プラグイン領域を指定して検索（例: path=`~/.claude/plugins`、pattern=`**/skills/web-design/SKILL.md`）。
 
 **それでも届かない環境がある（2026-07-25 ローカル実機検証 F1 で実測）**: 永続フォルダ未接続などでファイルツールが接続フォルダに限定されていると、**絶対パスを渡しても `outside this session's connected folders` で拒否される**。この場合は自力では到達不能なので、**「規範ファイルに到達できなかった」ことを応答の冒頭に1行で明記**し、記憶や一般論で規範を代用したことが分かる形で成果を返す（黙って自己流で書くのが最悪）。**呼び出し側（メインループ）はこの申告を見たら、正本を自分で Read して本文を委譲プロンプトに同梱し、再委譲すること。**
 
