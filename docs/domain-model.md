@@ -35,6 +35,10 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | 掲載名 | `ProfileName` | 値オブジェクト | ローカル検索プロフィールの名称。**看板に無い語が足されていれば拒否**（違反はプロフィール停止＝面ごと喪失） |
 | 口コミの依頼 | `ReviewSolicitation` | 値オブジェクト | 口コミ依頼1件。**対価つきは表示しても拒否**（法規とプラットフォーム規約は別）。対価の有無が未申告なら判定不能 |
 | 依頼先 | `SolicitationTarget` | 値オブジェクト | 顧客 / 従業員・役員 / 元従業員 / 取引先 / 競合。**顧客以外は利害の対立**。**自動判定はしない**（呼び出し側が宣言する） |
+| タスクループ | `TaskLoop` | エンティティ | タスク1件の回し方。**完了条件なしでは作れない／3周目に入れない／確かめずに完了できない** |
+| ループのフェーズ | `LoopPhase` | 値オブジェクト | 構える / 作る / 咎める / 確かめる。**級と1対1** |
+| エージェントの級 | `AgentTier` | 値オブジェクト | 戦略級 / 戦術級 / 職人級 / 作業者級（正本は [agent-tiers.md](agent-tiers.md)） |
+| 委譲の記録 | `Step` | 値オブジェクト | 1回の委譲（フェーズ・担い手・判定） |
 | ゲート | `Gate` | ドメインサービス（hook） | 不変条件の機械強制（Brand Isolation / ゼロ課金 / 送出監査 等） |
 
 ## 匠の∞ループ（中核のドメインサービス）
@@ -90,6 +94,7 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | `MarketShare` / `LanchesterMode` | 実装済み（**KPIツリーとは非依存**。戦略の判断材料であって動かす指標ではない） | `tests/test_market_share.py` |
 | `BreakEven` / `CashCycle` / `OrganicAcquisitionCost` | 実装済み（**KPIツリーとは意図的に非依存** — 「動かす指標」と「続ける/やめる指標」を混ぜない） | `tests/test_unit_economics.py` |
 | `ProfileName` / `ReviewSolicitation` / `SolicitationTarget` | 実装済み（**KPIツリーとは非依存**。掲載の可否判定であって動かす指標ではない） | `tests/test_local_profile.py` |
+| `TaskLoop` / `LoopPhase` / `AgentTier` / `Step` | 実装済み（**KPIツリーとは非依存**。進め方だけを持ち、何を作るかには関与しない。手順は `docs/parts/task-loop.md`） | `tests/test_task_loop.py` |
 | `Task` | **コード化しない** — ランタイム側の表現（`tasks/*.yaml` + `docs/steps-reference.md` の A〜K）が正本。Python に写すと二重管理になる | — |
 | `Gate` | **コード化しない** — 実体は `hooks/scripts/*.sh`。判定ロジックは `scripts/test-hooks.sh` が保証する | — |
 
