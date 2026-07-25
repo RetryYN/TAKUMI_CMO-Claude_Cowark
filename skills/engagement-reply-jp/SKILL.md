@@ -1,6 +1,7 @@
 ---
 name: engagement-reply-jp
 description: コメント・リプライ・口コミへの応対 — 返すか返さないかの判断と、日本市場での返し方。Use when SNSのコメントやリプライへの返信、レビュー・口コミへの返信、DMや問い合わせへの応答、コミュニティ内での応対、荒らし・誹謗中傷・なりすましへの対処判断、コメント欄のモデレーション設定、返信テンプレートの設計。Not for 炎上が既に起きている場合の全体対応（→/匠危機対応 takumi-crisis）、こちらから出す投稿の作成（→sns-jp / copywriting）、営業メールや依頼文（→business-writing）、送信前の最終監査（→pre-send-verifier）。
+user-invocable: false
 ---
 
 # コメント・リプライへの応対（日本市場）

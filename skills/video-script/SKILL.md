@@ -1,6 +1,7 @@
 ---
 name: video-script
 description: ショート動画の台本設計 — 15/30秒動画の台本・絵コンテ・フック設計をプラットフォーム別（TikTok/Reels/YouTube ショート）の型で作成。Use when ショート動画の台本/絵コンテ/構成案、冒頭フックの代案出し、既存記事やLPからの動画展開、既存動画の改善案。Not for 静止画バナー（→copywriting+web-design）、投稿文・カレンダー設計（→sns-jp / content-design）、動画ファイルそのものの生成（対象外）。
+user-invocable: false
 ---
 
 # ショート動画の台本設計

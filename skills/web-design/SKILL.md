@@ -1,6 +1,7 @@
 ---
 name: web-design
 description: Webデザイン/LP設計 — レイアウト・タイポグラフィ・カラー・CRO の実装原則。Use when LP/ページのモックアップ生成、レイアウト改善案の作成、デザイントークンからのUI構築、CTAやフォームの設計、デザイン品質のレビュー。Not for 文章そのものの執筆（→copywriting/sales-writing 等）、データ可視化レポート（→templates/design-principles.md）。
+user-invocable: false
 ---
 
 > 分担: 実装規範は本スキル。数値基準（px/コントラスト/CTA位置/グラフ）は skills/design-evidence-jp/、心理根拠は skills/psych-ux-jp/、転換率の仮説設計は skills/cro-jp/ を併読。

@@ -1,6 +1,7 @@
 ---
 name: customer-analytics-jp
 description: 顧客データの分析手法 — RFM・デシル・ABC・コホート・ファネル・ジャーニー・JTBDで、誰が・いつ・なぜ動いたかを読む。Use when 「顧客を分析して」「優良顧客は誰か」「どこで離脱しているか」、購買データや行動データの集計、セグメント別の比較、離脱ポイントの特定、カスタマージャーニーの作成、リピートや継続の分析、「なぜ買われたのか」を構造で捉えたいとき。Not for 指標の定義（→kpi-design-jp）、GA4の操作（→ga4-jp）、顧客への聞き取り（→voc-research-jp）、統計的な有意差の判定と調査設計（→quant-research-jp）、誰に売るかの決定（→stp-jp）。
+user-invocable: false
 ---
 
 # 顧客データの分析

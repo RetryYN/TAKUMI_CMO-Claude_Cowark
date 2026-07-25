@@ -1,6 +1,7 @@
 ---
 name: copywriting
 description: コピーライティング — 短く刺さるキャッチコピー/タグライン/見出しの作成。Use when キャッチコピー・タグライン、SNS投稿の短文、記事タイトル、メールの件名、LPの見出し、バナーの文字入れ。Not for 記事本文や構成（→content-design）、長文の提案書（→sales-writing）、物語記事（→storytelling）、法規チェック（→ad-compliance-jp）。
+user-invocable: false
 ---
 
 # コピーライティング

@@ -238,4 +238,4 @@ Anthropic API 以外で運用する場合は `ANTHROPIC_DEFAULT_SONNET_MODEL` �
 4. 本文に「正本を Read する」指示と「到達できなかったら申告する」義務を書く（preload の二重化）
 5. この表に行を足す（**lint が要求する**）
 6. `docs/command-registry.md` の台帳と、呼び出し元の手順書・部品に配線する
-7. golden（`docs/evals.md`）と Tier 2（`procedures/takumi-verify.md` + `templates/verify-task.yaml`）を足す
+7. golden（`docs/evals.md`）と Tier 2（`procedures/takumi-verify.md` — **V番号の正本はここ1つだけ**）を足す

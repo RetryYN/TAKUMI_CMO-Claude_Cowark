@@ -1,6 +1,7 @@
 ---
 name: logical-writing
 description: ロジカルライティング — データと論理で意思決定を支援する構造化文書。Use when 社内意思決定向けの戦略提案書（ピラミッド/MECE）、KPIレポート（月次/週次）、市場分析・競合比較・投資対効果の試算、施策の振り返りと次の打ち手の提案。Not for 見込み客への受注目的の提案書（→sales-writing）、感情に訴える物語記事（→storytelling）、短いコピー（→copywriting）、指標そのものの設計（→kpi-design-jp）。
+user-invocable: false
 ---
 
 # ロジカルライティング

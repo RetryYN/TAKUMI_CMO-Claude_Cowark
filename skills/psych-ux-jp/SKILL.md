@@ -1,6 +1,7 @@
 ---
 name: psych-ux-jp
 description: UI/UXデザイン心理と社会心理の日本実務基準 — LP・バナー・フォーム・レイアウト・配色・タイポの「なぜそう置くか」を心理根拠で決める。Use when LP/バナーのレイアウト・視線設計、配色選定、フォーム設計、レビュー/実績の見せ方、情報密度（賑わい系かシンプル系か）の判断。Not for 訴求フレームの選択（→psych-nudge-jp）、文面の書き分け（→psych-target-jp）。
+user-invocable: false
 ---
 
 # UI/UXデザイン心理スキル（日本実務ベース）

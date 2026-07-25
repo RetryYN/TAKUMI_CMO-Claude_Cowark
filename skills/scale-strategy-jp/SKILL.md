@@ -1,6 +1,7 @@
 ---
 name: scale-strategy-jp
 description: 規模に合わせた戦略 — ランチェスター戦略（弱者/強者の法則・シェア目標値・射程距離・一点集中）を、個人〜中小の実行可能な形に落とす。Use when 「大手に勝てない」「競合が強すぎる」とき、規模の小さい側としての戦い方の設計、どこで1位を取るかの決定、市場をどこまで細分化するかの判断、参入するかどうか、一人や少人数での事業戦略、競合との差が何倍あるかの評価、「No.1」を名乗ってよいかの判断。Not for 戦う場所の条件整理そのもの（→winning-position-jp）、セグメントとターゲットの決定（→stp-jp）、市場構造のフレーム分析（→market-analysis-jp）、儲かるかの計算（→business-model-jp）、工数の配分（→docs/parts/capacity-plan.md）。
+user-invocable: false
 ---
 
 # 規模に合わせた戦略

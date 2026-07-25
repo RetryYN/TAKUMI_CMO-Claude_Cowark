@@ -1,6 +1,7 @@
 ---
 name: kpi-design-jp
 description: 計測指標の設計 — 何を測るか、どう定義するか、どうすれば歪まないか。Use when KPIツリーの新設・見直し、北極星指標の決定、先行指標の選定、新しい指標を追加してよいかの判断、ダッシュボードに載せる項目の選定、施策の成否判定基準の設計、既存指標の棚卸し、目標値の置き方。Not for GA4 の設定操作と分析（→ga4-jp）、GTM の実装（→gtm-jp）、検索露出データの取得（→search-console-jp）。
+user-invocable: false
 ---
 
 # 指標設計スキル

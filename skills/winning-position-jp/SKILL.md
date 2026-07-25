@@ -1,6 +1,7 @@
 ---
 name: winning-position-jp
 description: 勝ち筋の設計 — 広告費を使わずに勝てる場所を選び、非対称な強みを武器にする。Use when 戦略の立案・見直し、ポジショニングの決定、「競合が強くて勝てない」とき、新規参入や新カテゴリへの進出判断、何に集中して何を捨てるかの決定、差別化が言葉だけになっているとき、施策が総花的で薄いと感じたとき。Not for 何を言い続けるかの言語化（→messaging-design-jp）、指標の設計（→kpi-design-jp）、個別施策の仮説（→hypothesis-design-jp）、顧客の一次情報の取得（→voc-research-jp）。
+user-invocable: false
 ---
 
 # 勝ち筋の設計

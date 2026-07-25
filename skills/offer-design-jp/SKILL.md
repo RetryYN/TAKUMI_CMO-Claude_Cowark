@@ -1,6 +1,7 @@
 ---
 name: offer-design-jp
 description: オファーの設計 — 何を・どんな束で・いくらで・どんな条件で差し出すかを決める。同じ集客量のまま成果を変える最大のレバー。Use when 「問い合わせが増えない」「読まれているのに売れない」とき、価格や料金プランの設計・見直し、無料お試し/初回特典/返金保証の設計、入口商品の設計、申込条件やフォームの見直し、セールや期間限定の企画、サブスク・定期購入の設計。Not for どこで戦うかの決定（→winning-position-jp）、何を言い続けるかの言語化（→messaging-design-jp）、文面の執筆（→sales-writing・copywriting）、表示の適法性チェック（→ad-compliance-jp）、フォームや導線の改善（→cro-jp）。
+user-invocable: false
 ---
 
 # オファーの設計

@@ -1,6 +1,7 @@
 ---
 name: search-console-jp
 description: Google Search Console と Bing Webmaster Tools をブラウザ操作で扱うときの安全境界と手順 — AI検索での露出（AI Overviews / AI Mode / Copilot 引用）を一次情報で測るためのスキル。Use when 生成AIパフォーマンスレポートの取得、検索クエリ・掲載順位の収集、インデックス状況の確認、sitemap 送信、Bing/Copilot 側の可視性確認。Not for 流入と転換の分析（→ga4-jp）、記事の書き方（→seo-jp）。**削除ツール（Removals）はAI自律禁止。所有権・ユーザー設定の変更は禁止。**
+user-invocable: false
 ---
 
 # Search Console / Bing WMT 操作スキル（ブラウザ操作・安全境界つき）

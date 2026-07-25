@@ -1,6 +1,7 @@
 ---
 name: business-writing
 description: ビジネスライティング — 社内外のビジネス文書を明確・簡潔・丁寧に作成。Use when 取引先・読者・パートナーへのメール（依頼・日程調整・お礼・お詫び・督促/リマインド・取材依頼）、社内共有文書、既存文章の校正とトーン調整、問い合わせへの返信文。Not for 受注目的の提案書（→sales-writing）、データ中心の分析レポート（→logical-writing）、記事本文（→content-design）、メールマガジンの本文設計（→sales-writing / copywriting）。
+user-invocable: false
 ---
 
 # ビジネスライティング
