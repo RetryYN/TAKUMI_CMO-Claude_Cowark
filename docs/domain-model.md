@@ -32,6 +32,9 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | オーガニック獲得コスト | `OrganicAcquisitionCost` | 値オブジェクト | 時間×単価÷獲得件数。**ゼロ広告費でも時間が原価**。獲得0件は判定不能（0円ではない） |
 | 市場シェア | `MarketShare` | 値オブジェクト | ある**明示された市場**でのシェア。**市場の定義（分母）が空なら生成不可**。7段階の目標値と射程距離を判定 |
 | ランチェスターの法則 | `LanchesterMode` | 値オブジェクト | 第一法則（局地戦・射程3倍）／第二法則（広域戦・射程√3倍） |
+| 掲載名 | `ProfileName` | 値オブジェクト | ローカル検索プロフィールの名称。**看板に無い語が足されていれば拒否**（違反はプロフィール停止＝面ごと喪失） |
+| 口コミの依頼 | `ReviewSolicitation` | 値オブジェクト | 口コミ依頼1件。**対価つきは表示しても拒否**（法規とプラットフォーム規約は別）。対価の有無が未申告なら判定不能 |
+| 依頼先 | `SolicitationTarget` | 値オブジェクト | 顧客 / 従業員・役員 / 元従業員 / 取引先 / 競合。**顧客以外は利害の対立**。**自動判定はしない**（呼び出し側が宣言する） |
 | ゲート | `Gate` | ドメインサービス（hook） | 不変条件の機械強制（Brand Isolation / ゼロ課金 / 送出監査 等） |
 
 ## 匠の∞ループ（中核のドメインサービス）
@@ -86,6 +89,7 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | `PremiumOffer` / `PremiumKind` | 実装済み | `tests/test_premium.py` |
 | `MarketShare` / `LanchesterMode` | 実装済み（**KPIツリーとは非依存**。戦略の判断材料であって動かす指標ではない） | `tests/test_market_share.py` |
 | `BreakEven` / `CashCycle` / `OrganicAcquisitionCost` | 実装済み（**KPIツリーとは意図的に非依存** — 「動かす指標」と「続ける/やめる指標」を混ぜない） | `tests/test_unit_economics.py` |
+| `ProfileName` / `ReviewSolicitation` / `SolicitationTarget` | 実装済み（**KPIツリーとは非依存**。掲載の可否判定であって動かす指標ではない） | `tests/test_local_profile.py` |
 | `Task` | **コード化しない** — ランタイム側の表現（`tasks/*.yaml` + `docs/steps-reference.md` の A〜K）が正本。Python に写すと二重管理になる | — |
 | `Gate` | **コード化しない** — 実体は `hooks/scripts/*.sh`。判定ロジックは `scripts/test-hooks.sh` が保証する | — |
 
