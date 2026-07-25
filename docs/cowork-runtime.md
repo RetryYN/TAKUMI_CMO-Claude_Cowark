@@ -45,11 +45,20 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
   | ファイル送付 | `SendUserFile` / `mcp__remote-devices__*` | `mcp__cowork__present_files` |
   | ブラウザ操作 | `mcp__claude-in-chrome__*`（`computer`/`navigate`/`form_input`/`read_page`/`file_upload` 等） | 同左 |
 
+### 2b. hook 出力の契約（2026-07-26 に一次情報で確認）
+
+**【一次情報・確認済み】** 出典: `code.claude.com/docs/en/hooks`（`docs.claude.com/en/docs/claude-code/hooks` は 301 でここへ移る）。
+
+- `PreToolUse` の `hookSpecificOutput` が取るフィールド: **`permissionDecision`**（`allow` / `deny` / `ask` / `defer`）・**`permissionDecisionReason`**・**`updatedInput`**（ツール引数を実行前に差し替える）・**`additionalContext`**。
+- **`additionalContext` は PreToolUse でも有効**（ツール結果の隣に差し込まれる）。対応イベントは `SessionStart` / `Setup` / `SubagentStart`、`UserPromptSubmit` / `UserPromptExpansion`、`PreToolUse` / `PostToolUse` / `PostToolUseFailure` / `PostToolBatch`、`Stop` / `SubagentStop`。
+- **なぜ確認したか**: 匠CMO の警告系（`navigate-warn` と、各ゲートの `warn` モード）は PreToolUse で `additionalContext` を返す。もしこれが PreToolUse で未対応なら、**警告は黙って捨てられ、何も言わない hook が「動いている」ように見えていた**。仕様上は正しく届く。
+- **未採用の選択肢**: `permissionDecision: "ask"`（人間に許可を求める）と `updatedInput`（引数の差し替え）は現在どのゲートも使っていない。匠CMO のゲートは **deny か warn の二択**で運用している。
+
 ## 3. ゲート機構（memory/.workflow/ フラグ + GATE_MODE）
 
 - ゲートの実体は `memory/.workflow/` のフラグファイル（例: `bulk_send` / `k_done` / `ov_done` / `critic_pending` / `critic_pass` / `money_alert` / `verify_allowlist`）。hook スクリプトがフラグを読んで allow / warn / deny を返す。
 - 各 hook 先頭の `GATE_MODE="${TAKUMI_GATE_MODE:-deny}"` が既定モード（2026-07-24 に warn→deny 昇格済み）。環境変数 `TAKUMI_GATE_MODE` はテスト時の両モード検証用。
-- **hook 11本**（`hooks/scripts/`）: workflow-gate / ov-gate / rm-guard / brand-isolation-guard / critic-gate / url-guard（ゼロ課金ゲート）/ **agent-parallel-gate**（サブエージェント同時起動の上限4体。**既定は warn** — 昇格判断は V79）/ navigate-warn / injection-warn / money-watch / session-start。
+- **hook 11本**（`hooks/scripts/`）: workflow-gate / ov-gate / rm-guard / brand-isolation-guard / critic-gate / url-guard（ゼロ課金ゲート）/ **agent-parallel-gate**（サブエージェント同時起動の上限4体。**既定は warn** — 昇格判断は V79）/ navigate-warn / injection-warn / money-watch / session-start。**11本すべてが `scripts/test-hooks.sh` で実行され CI で検査される**（登録と検査の突合は lint #23。2026-07-26 まで navigate-warn の1本だけが無検査で配布されていた）。
 - **限界（自己規律で補う領域）**: hook はツール引数の文字列しか見えない。`ref_150` 等の参照IDの解決先（type=password か）は判定できない（escalations E1）。フラグは Bash から直接 touch/rm で技術的に迂回可能（意図的迂回ではなく手順飛ばしへの防御）。硬い防御は Money Watch・URL Guard・人間承認が担う。
 
 ## 4. commands / agents / MCP の供給

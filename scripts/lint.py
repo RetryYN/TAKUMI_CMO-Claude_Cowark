@@ -79,11 +79,16 @@ for p in procedures:
         if not used:
             err(f"procedures/{p.name}: どのコマンド・手順からも参照されない孤児")
 
-# --- 4. md 内のプラグイン内パス参照の実在（templates/ skills/ docs/ agents/） ---
+# --- 4. md 内のプラグイン内パス参照の実在
+#        （2026-07-26 拡張: 対象が templates/ skills/ docs/ agents/ だけで、**手順書・hook・
+#         スクリプトへの参照は検査対象外**だった。手順書の改名や hook の追加で
+#         リンクが切れても lint は緑のまま通る穴だったので、実行物側も対象に入れる） ---
 md_files = list(ROOT.glob("commands/*.md")) + list(ROOT.glob("procedures/*.md")) + \
     list(ROOT.glob("agents/*.md")) + list(ROOT.glob("docs/*.md")) + \
     list(ROOT.glob("skills/**/*.md")) + [ROOT / "README.md"]
-pat = re.compile(r"(?<![\w/.])((?:templates|skills|docs|agents)/[\w./-]+\.(?:md|html|yaml|sql|json|txt))")
+pat = re.compile(
+    r"(?<![\w/.])((?:templates|skills|docs|agents|procedures|hooks|scripts|tests|takumi)"
+    r"/[\w./-]+\.(?:md|html|yaml|sql|json|txt|sh|py))")
 for f in md_files:
     for ref in set(pat.findall(read(f))):
         if not (ROOT / ref).is_file():
@@ -618,6 +623,34 @@ else:
             err(f"docs/agent-tiers.md の `{_ag}` が「コマンド × タスクループ」表のどのコマンドにも"
                 "現れない（**どのコマンドからも呼ばれないエージェント**。"
                 "配線するか、表に「このコマンドの③を担う」と書くこと）")
+
+# --- 23. hooks の「登録」と「検査」の突合（双方向）
+#         （2026-07-26 全体CHECK で検出: hooks.json に登録された11本のうち navigate-warn.sh
+#          だけが scripts/test-hooks.sh から一度も実行されておらず、CI が緑でもこの1本は
+#          **動作未検査**だった。「登録されている」と「動作が検査されている」は別物であり、
+#          hook は追加した瞬間からユーザーの全操作に割り込む。無検査で配布してはいけない） ---
+_hook_test = ROOT / "scripts/test-hooks.sh"
+if _hook_test.is_file():
+    # コメント行は「実行した」ことにならない（言及だけで通ってしまうのを防ぐ）
+    _ht_body = "\n".join(l for l in read(_hook_test).splitlines() if not l.lstrip().startswith("#"))
+    _registered: set[str] = set()
+    for _event, _groups in hooks["hooks"].items():
+        for _g in _groups:
+            for _h in _g["hooks"]:
+                _m = re.search(r"\$\{CLAUDE_PLUGIN_ROOT\}/(\S+?)\"", _h["command"])
+                if _m:
+                    _registered.add(Path(_m.group(1)).name)
+    for _s in sorted(_registered):
+        if _s not in _ht_body:
+            err(f"scripts/test-hooks.sh: hook {_s} を一度も実行していない"
+                f"（hooks.json に登録済み＝利用者の操作に割り込むのに動作が無検査。"
+                f"最低でも「発火する条件」「発火しない条件」の2件を書く）")
+    # 逆方向: hooks/scripts/ にあるのに登録も source もされていない置き去りファイル
+    _sourced = " ".join(read(p) for p in (ROOT / "hooks/scripts").glob("*.sh"))
+    for _p in sorted((ROOT / "hooks/scripts").glob("*.sh")):
+        if _p.name not in _registered and _p.name not in _sourced:
+            err(f"hooks/scripts/{_p.name}: hooks.json に登録も他スクリプトからの source もされていない"
+                f"（動かない置き去りファイル。登録するか消すこと）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
