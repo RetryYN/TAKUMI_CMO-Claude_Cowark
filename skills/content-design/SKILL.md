@@ -1,6 +1,6 @@
 ---
 name: content-design
-description: コンテンツ設計（C×P×T） — 記事/SNS長文/オウンドメディアを「内容×構成×加工」の3軸で設計する方法論。Use when note/ブログ記事の企画・構成、記事ネタのフォーマット選定、コンテンツの量産設計（ネタ帳・ストック運用）、既存記事の構成改善。Not for 短文コピー（→copywriting）、SNS短文投稿（→sns-jp）、広告動画（→video-ad）。
+description: コンテンツ設計（C×P×T） — 記事/SNS長文/オウンドメディアを「内容×構成×加工」の3軸で設計する方法論。Use when note/ブログ記事の企画・構成、記事ネタのフォーマット選定、コンテンツの量産設計（ネタ帳・ストック運用）、既存記事の構成改善。Not for 短文コピー（→copywriting）、SNS短文投稿（→sns-jp）、広告動画（→video-script）。
 ---
 
 # コンテンツ設計スキル（C×P×T）

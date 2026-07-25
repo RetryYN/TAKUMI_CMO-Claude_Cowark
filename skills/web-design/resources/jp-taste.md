@@ -1,6 +1,6 @@
 # 日本市場の嗜好性リファレンス
 
-公開調査・国内実務知見の再構成。web-design / video-ad / copywriting / recruit系 / sns-jp の全生成で参照する「日本で何が好まれるか」の層。
+公開調査・国内実務知見の再構成。web-design / video-script / copywriting / recruit系 / sns-jp の全生成で参照する「日本で何が好まれるか」の層。
 
 ## 1. Webデザイン: 「情報の網羅性 = 信頼」
 

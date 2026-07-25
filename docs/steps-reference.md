@@ -13,7 +13,7 @@
 | D | Map | マッピング | 構造をナレッジに記録（下記 D-2） |
 | E | Observe | モニタリング | 変更前状態の記録 + CP証跡定義（下記 E-3） |
 | J | Report | 差分比較 | フェーズ②③④のみ、E直後。前回 after_state と今回 before_state を比較し、外部変更/リセットを検出したらユーザーに報告 |
-| F | Plan | プランニング | 実行計画 + レギュレーション検証（下記 F-4）。**計画に不可逆な一括送出（スカウト/投稿/配信/入稿）が含まれるなら `touch memory/.workflow/bulk_send` を宣言**（以後 psv_done まで変更操作が hook でブロックされる） |
+| F | Plan | プランニング | 実行計画 + レギュレーション検証（下記 F-4）。**計画に不可逆な一括送出（メール配信/投稿/公開/入稿）が含まれるなら `touch memory/.workflow/bulk_send` を宣言**（以後 psv_done まで変更操作が hook でブロックされる） |
 | G | Act | アクション | 実行。生成物があれば H に遷移 |
 | H | Review | レビュー | 生成物・破壊的操作のユーザー承認（無人運用時は docs/unattended-ops.md の承認キューに従う）。**一括送信・投稿・入稿など不可逆送出は、承認提示の前に pre-send-verifier サブエージェントの敵対的監査（VERDICT）を材料として添え、監査とユーザー承認が揃ったら `touch memory/.workflow/psv_done`**（bulk_send 宣言済みタスクは psv_done まで hook が変更操作をブロック）。**design-artisan のビジュアル生成物は必ず design-critic の審査を経てから承認に出す（critic を呼ばず直接ユーザーに引き渡すのは禁止 — Critic Gate hook が送付出口で強制）**。フラグ運用: artisan へ委譲した直後に `touch memory/.workflow/critic_pending && rm -f memory/.workflow/critic_pass`、critic が PASS を返したら `rm memory/.workflow/critic_pending` して PASS の1行要約を `memory/.workflow/critic_pass` に書き込む。REVISE が返ったら、メインループが FIX 内容を design-artisan に再投入し PASS まで反復（最大2周）してから承認に出す。見た目ものの成果物は、承認の選択肢として「Claude Design ハンドオフ（docs/parts/design-handoff.md）」も提示してよい。ハンドオフしたら成果物の最終正本は回収後のファイルとする |
 | I | Verify | チェック | CP証跡照合（I-1.5）+ ログ記録（下記 I-3）+ ナレッジ更新。不可逆送出（件数を問わず）と定常タスクの締めでは **outcome-verifier**（送信後検証・効果測定）に after_state と CP 証跡を渡して独立検証させ、判定要約を `memory/.workflow/ov_done` に書き込む（OV Gate hook: bulk_send 宣言タスクは ov_done なしで k_done 不可） |
@@ -43,7 +43,7 @@ D（マッピング）で差異箇所のナレッジを修正してから再開�
 
 ### フェーズ④の機械検証（アクション・キャッシング — 2026-07-23 外部調査で導入）
 
-shortcut_memo は「操作 + 期待ランドマーク」の対で書く（例: `スカウト画面へ /scout 直遷移 @ 見出し「候補者一覧」+ 送信ボタンあり`）。再生時のルール:
+shortcut_memo は「操作 + 期待ランドマーク」の対で書く（例: `投稿一覧へ /posts 直遷移 @ 見出し「投稿一覧」+ 送信ボタンあり`）。再生時のルール:
 
 1. 各ステップの**実行前**に snapshot でランドマーク（見出し・ボタン名・URLパターン）を照合
 2. **一致** → そのまま実行（探索・再マッピングの判断を省略 = 2回目以降は決定的に速くなる）
