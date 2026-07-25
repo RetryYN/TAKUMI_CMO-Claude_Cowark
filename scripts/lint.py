@@ -1113,6 +1113,41 @@ for _pl in _mkt.get("plugins", []):
     else:
         err(f".claude-plugin/marketplace.json: `{_pl.get('name')}` に source が無い")
 
+# --- 39. 検証手順書に書かれた「実体の件数」が、実際の件数と一致しているか
+#         （2026-07-26 の第10ラン契機で導入。takumi-verify.md 自身が
+#          「この行に固定の数字を書かない — 陳腐化して**網羅したフリ**の温床になる」と
+#          書いているのに、手順表の中では固定の数字を書いていた。実際に3つとも陳腐化していた:
+#            V32 「9体」  → 実際 10体（1体を回さなくても「全エージェント起動 PASS」になる）
+#            V33 「G1〜G9」→ 実際 G1〜G67（**perfect の「evals 全ラン」が 67 件中 9 件だった**）
+#            V27 「G1〜G34」→ 実際 G1〜G67
+#          数字を消すと「全部」の意味が曖昧になって別の逃げ道になるので、
+#          **数字は残して機械で突き合わせる**。片方を直したらもう片方が落ちる） ---
+_verify_md = ROOT / "procedures/takumi-verify.md"
+if _verify_md.is_file():
+    _vtext = read(_verify_md)
+    _g_nums = [int(n) for n in re.findall(r"^\|\s*G(\d+)", read(ROOT / "docs/evals.md"), re.M)]
+    _counts = [
+        (r"`agents/\*\.md` の\*\*全数（現在 (\d+)体）\*\*",
+         len(list((ROOT / "agents").glob("*.md"))), "agents/*.md の実体数"),
+        (r"G1〜G(\d+)",
+         max(_g_nums) if _g_nums else 0, "docs/evals.md の golden 最大番号"),
+        (r"docs/parts/ の全部品（(\d+)本",
+         len(list((ROOT / "docs/parts").glob("*.md"))) - 1, "docs/parts の部品数（index.md を除く）"),
+        (r"skills/ 全(\d+)本",
+         len(list((ROOT / "skills").glob("*/SKILL.md"))), "skills/*/SKILL.md の実体数"),
+        (r"\*\*procedures/ 全(\d+)本\*\*",
+         len(list((ROOT / "procedures").glob("*.md"))), "procedures/*.md の実体数"),
+    ]
+    for _pat, _actual, _what in _counts:
+        _hits = {int(m) for m in re.findall(_pat, _vtext)}
+        if not _hits:
+            err(f"procedures/takumi-verify.md: 件数の記述 `{_pat}` が見つからない"
+                f"（{_what} と突き合わせる箇所。書式を変えたら lint #39 も直す）")
+        for _n in sorted(_hits - {_actual}):
+            err(f"procedures/takumi-verify.md: 件数が実体と合っていない — "
+                f"手順書は {_n} と書いているが {_what} は {_actual}。"
+                f"**少ない数を書くと「全部やった」が嘘になる**（網羅したフリ）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "

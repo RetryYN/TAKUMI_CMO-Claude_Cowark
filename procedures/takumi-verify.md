@@ -188,9 +188,9 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 | V29 | psv送出ゲートE2E | ダミータスクで bulk_send を宣言 → psv_done なしで click 試行 → pre-send-verifier 監査後に psv_done → 再試行 | deny→監査→通過の順で動く（迂回不能） |
 | V30 🔁 | 動的コマンド生成 | (a) /匠設定 をダミー媒体（example.com 管理画面想定）でドライラン（マッピングは1ページのみ・登録後に削除） (b) takumi-setup の媒体選択経由で SNS 専用コマンド（例: /X運用）の生成をドライラン（生成物確認後に削除。setup.yaml は**書き換え前に cp でバックアップを取り、バックアップから cp で復元** — 記憶で書き直すとユーザーデータを失う） | (a) .claude/commands/<媒体>.md が規約どおり生成され、**registry.yaml に `parent:` が記録され**（既存パック非該当なら parent: other = 非表示親）、削除フローで消える (b) SNS 専用コマンドが親判定表（takumi-add-work §4: SNS=<媒体名>運用 / 既存パック非該当=その他ワーク）どおり生成される（**有料広告媒体の動的パックは廃止＝ゼロ広告費**） |
 | V31 | セットアップ再質問なし | setup.yaml 回答済みの項目（生成AIアカウント等）を含む依頼を実行 | accounts.md/setup.yaml を読み、同じ質問を繰り返さない |
-| V32 | 全エージェント起動 | **9体**それぞれに最小タスク（3行以内の入力）を委譲（cmo-strategist / risk-forecaster / privacy-auditor 含む） | 全員が定義どおりの形式（VERDICT / VERIFIED / FORECAST / 批評形式 / 軍師の戦略骨子等）で応答。使用モデルを記録。**risk-forecaster は既定 fable — 起動できなければ `model: opus` を明示して再委譲する**（判断役なので sonnet に降格しない）。再委譲せず「起動不可」で終えたら FAIL |
-| V33 | evals 全ラン | docs/evals.md の G1〜G9 を全件実行 | 全件 PASS（FAIL は本体修正 → TESTING.md 記録 → 再ラン） |
-| V34 | 全ファイル到達 | docs/parts/ の全部品 + skills/ 全42本 + **procedures/ 全39本**（SNS媒体別7本含む）を Read | 全ファイル到達・frontmatter/規約準拠（欠損ゼロ） |
+| V32 | 全エージェント起動 | `agents/*.md` の**全数（現在 10体）**それぞれに最小タスク（3行以内の入力）を委譲（cmo-strategist / risk-forecaster / privacy-auditor 含む） | 全員が定義どおりの形式（VERDICT / VERIFIED / FORECAST / 批評形式 / 軍師の戦略骨子等）で応答。使用モデルを記録。**risk-forecaster は既定 fable — 起動できなければ `model: opus` を明示して再委譲する**（判断役なので sonnet に降格しない）。再委譲せず「起動不可」で終えたら FAIL |
+| V33 | evals 全ラン | docs/evals.md の **G1〜G67 を全件実行**（`perfect` の「全ラン」はここが本体。件数を減らして回したら、それは全ランではない） | 全件 PASS（FAIL は本体修正 → TESTING.md 記録 → 再ラン） |
+| V34 | 全ファイル到達 | docs/parts/ の全部品（27本。`index.md` は地図であって部品ではない）+ skills/ 全42本 + **procedures/ 全39本**（SNS媒体別7本含む）を Read | 全ファイル到達・frontmatter/規約準拠（欠損ゼロ） |
 | V36 | design-handoff 発火 | ダミーの完成ビジュアルに対し「これ自分で手直ししたい」（ツール名を言わずに） | docs/parts/design-handoff.md に到達し経路選択（list_projects は1回だけ・実送付なし、プロジェクト作成はドライラン）が始まる。「直し終わった」で回収フローに入る |
 | V37 | 運用系ルーティング | (a) ブラウザ操作を含むタスクを /匠設定 で登録（ドライラン可） (b) 「無人運用前チェックして」と依頼 | (a) create_trigger を選ばず**ローカル登録（このコンピュータで実行）を案内**する (b) unattended-ops.md の前チェック手順に到達しログイン○✗一覧の形で報告する |
 | V38 | 記録系内部手順の発火 | (a) 「何ができるの？」 (b) ダミー成果物に修正指示（「ここ直して、トーンが硬い」） (c) /匠計測 で「作業ログ」を選択 (d) 「ログを整理して」（ドライラン可） | (a) takumi-demo のガイドツアーが始まる (b) takumi-feedback 経由で knowledge/feedback/lessons.md に学習記録が追記される (c) takumi-reporting の作業ログが出る (d) takumi-memory の圧縮手順に到達する |
@@ -201,7 +201,7 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
-| V27 | golden タスク | docs/evals.md の G1〜G34 を実行（`evals` モードならこの項目だけを単独で回せる。平時は**変更したスキル/エージェントに対応する行だけ**でよい） | 各タスクの PASS 基準（機械判定）を満たす。FAIL は evals.md の運用に従い本体を修正して記録 |
+| V27 | golden タスク | docs/evals.md の G1〜G67 を実行（`evals` モードならこの項目だけを単独で回せる。平時は**変更したスキル/エージェントに対応する行だけ**でよい） | 各タスクの PASS 基準（機械判定）を満たす。FAIL は evals.md の運用に従い本体を修正して記録 |
 | V35 | 新2ゲート発火実測 | (a) `touch memory/.workflow/bulk_send` 後に `touch memory/.workflow/k_done` を Bash 実行 (b) `touch memory/.workflow/critic_pending` 後にダミーPNGをユーザーに送付試行。終了後フラグを掃除 | (a)【OV Gate】(b)【Critic Gate】の **deny** が観測される（両ゲートとも 2026-07-24 に deny 昇格済み）。**deny が出なければゲート不発として FAIL** — 実際のツール名を報告に記載（V25 は機械テストであり実機 matcher の代替にならない）。deny 後は正規手順（ov_done 書込 / critic_pass）で通過することまで確認 |
 
 ## 報告書（必ず2形式）
