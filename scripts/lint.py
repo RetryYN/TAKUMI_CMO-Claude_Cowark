@@ -421,6 +421,23 @@ if (_ws / "knowledge").is_dir():
         if not _ws_errors:
             print(f"lint: ワークスペース検証 OK（{_ws}）")
 
+# --- 20. Tier 2 実機検証の未実施を可視化する（WARN・CI は落とさない）
+#         実機検証は人間にしかできない（リリースチェックリスト項目5）。落とすと開発が止まるので
+#         WARN に留めるが、「黙って積み上がる」状態は止める。
+#         2026-07-25 の全体CHECK 時点で v2.0.0 のまま7リリース分が未検証だった。 ---
+_testing = ROOT / "TESTING.md"
+if _testing.is_file():
+    _m = re.search(r"<!--\s*tier2-verified:\s*([0-9.]+)\s*-->", read(_testing))
+    if not _m:
+        err("TESTING.md: <!-- tier2-verified: <version> --> マーカーが無い"
+            "（最後に実機検証したバージョンを機械可読で持つ）")
+    elif _m.group(1) != plugin["version"]:
+        warns.append(
+            f"Tier 2 実機検証が未実施: 最終ラン={_m.group(1)} / 現行={plugin['version']}"
+            f" — cloud Cowork で templates/verify-task.yaml を回し、結果を TESTING.md に記録して"
+            f" マーカーを更新すること（リリースチェックリスト項目5・人間が実行）"
+        )
+
 # --- 19. 主要ディレクトリが空でないこと
 #         （2026-07-25 references→skills 移設時に検出: ディレクトリ名を変えると
 #          集合を舐める検査（#6/#13/#17）が空集合になり、素通りで lint OK が出てしまった。
