@@ -322,6 +322,39 @@ if _dm.is_file():
             err(f"docs/domain-model.md: takumi/domain の `{cid}` が正本に載っていない"
                 f"（ユビキタス言語と1対1にすること）")
 
+# --- 16. ワークスペース検証（利用者の knowledge/brands/** をドメインモデルで検証）---
+#     プラグインリポジトリ単体では knowledge/ が無いので何も起きない。
+#     Cowork のワークスペースで回すと、台帳・区画・KPIツリー・キャンペーンの不変条件を実データに適用する。
+#     対象は既定でカレントディレクトリ。`--workspace <path>` で明示指定できる。
+_ws_arg = None
+if "--workspace" in sys.argv:
+    _i = sys.argv.index("--workspace")
+    if _i + 1 < len(sys.argv):
+        _ws_arg = Path(sys.argv[_i + 1])
+    else:
+        err("--workspace にパスが指定されていません")
+_ws = _ws_arg if _ws_arg is not None else Path.cwd()
+if (_ws / "knowledge").is_dir():
+    try:
+        import yaml  # type: ignore
+    except ImportError:
+        warns.append(
+            f"ワークスペース検証をスキップ（PyYAML が無い）: {_ws}"
+            f" — `pip install pyyaml` で有効になる"
+        )
+    else:
+        sys.path.insert(0, str(ROOT))
+        from takumi.workspace import validate_workspace
+
+        def _load_yaml(p: Path):
+            return yaml.safe_load(p.read_text(encoding="utf-8"))
+
+        _ws_errors = validate_workspace(_ws, _load_yaml)
+        for e in _ws_errors:
+            err(f"[ワークスペース] {e}")
+        if not _ws_errors:
+            print(f"lint: ワークスペース検証 OK（{_ws}）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'references').glob('*/SKILL.md')))} "

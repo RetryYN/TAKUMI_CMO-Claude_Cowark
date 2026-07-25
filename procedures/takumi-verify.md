@@ -13,7 +13,7 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 
 | 層 | 担保するもの | 実行場所 | 本手順書での該当節 |
 |---|---|---|---|
-| **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメイン不変条件・hook スクリプト単体の判定ロジック | ローカル / CI（GitHub Actions が push・PR ごとに自動実行） | **D節**（V24/V25/V26/V42） |
+| **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメイン不変条件・hook スクリプト単体の判定ロジック | ローカル / CI（GitHub Actions が push・PR ごとに自動実行） | **D節**（V24/V25/V26/V42/V49） |
 | **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の実発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork 実機**（cloud を基本とする。ローカルは環境により hooks が配線されたりされなかったりする → escalations E4） | **A/B/E/F節** |
 
 - **Tier 1 が緑でも Tier 2 の代替にはならない**（hook が配線されているかは静的検査では分からない）。
@@ -93,7 +93,8 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 |---|---|---|---|
 | V24 | lint | `python3 scripts/lint.py`（プラグインルートで。python3 不在なら python） | `lint: OK`（参照整合・frontmatter・台帳・バージョン一致） |
 | V25 | hooks回帰 | `bash scripts/test-hooks.sh`（bash 前提。Git Bash が起動できない環境＝`CreateFileMapping error 5` 等では SKIP とし、理由を報告に明記。WSL か Linux コンテナでの代替実行可） | `test-hooks: ALL PASS`（防御系） |
-| V42 | ドメイン層ユニットテスト | `python3 -m unittest discover -s tests -t .`（プラグインルートで） | `OK`（19件以上）。**ゼロ広告費の不変条件**（`KpiNode` が CAC/LTV/ROAS/CPA/広告費 等の有料指標を ValueError で拒否）と**ブランド区画の境界判定**（`BrandPartition.contains()` が兄弟プレフィックスを誤包含しない）が緑であること — hook が沈黙してもこの2つはドメイン層で守られる（escalations E5） |
+| V42 | ドメイン層ユニットテスト | `python3 -m unittest discover -s tests -t .`（プラグインルートで） | `OK`（74件以上）。**ゼロ広告費の不変条件**（`KpiNode` が CAC/LTV/ROAS/CPA/広告費 等の有料指標を ValueError で拒否）と**ブランド区画の境界判定**（`BrandPartition.contains()` が兄弟プレフィックスを誤包含しない）が緑であること — hook が沈黙してもこの2つはドメイン層で守られる（escalations E5） |
+| V49 | ワークスペース検証 | ワークスペース（`knowledge/` のある場所）で `python3 <プラグインルート>/scripts/lint.py --workspace .` を実行 | `lint: ワークスペース検証 OK` が出る。ブランド台帳と区画の双方向一致・`.active-brand` と台帳の一致・KPIツリーが有料指標を持たないこと・キャンペーンの目標KPIがツリーに実在することが実データで検証される。違反があれば `[ワークスペース]` つきで列挙される（PyYAML 不在時は WARN でスキップ＝FAIL ではない） |
 | V26 | 画像/動画テンプレ | ダミー画像で `templates/banner-compose.py`（--headline 指定）・`templates/chromakey.py`（緑背景→透過PNG）・`templates/guide-anim.py`（スクショ+steps.json→フレーム生成、ffmpeg あれば mp4/GIF まで）を実行。**入出力は位置引数（`-o` オプションは無い）** — banner-compose / chromakey は `src dst` の2引数（例: `python3 chromakey.py in.png out.png`）、**guide-anim は `<スクショ.png> <steps.json> <出力ベース名>` の3引数**（steps.json は `[{"rect":[x,y,w,h],"label":"…"}]` 形式） | 3本ともエラーなく出力生成（chromakey は四隅 alpha=0・被写体 alpha=255） |
 
 実行不可の環境（bash/python なし）では SKIP(理由) とし、報告書に「CI（GitHub Actions）が push ごとに同項目を実行済み」と1行書くだけでよい。**GitHub をブラウザで見に行かない**（原則「ブラウザ検証は example.com のみ」はここにも適用。プラグインの更新・リポジトリ確認はオーナーの設定画面操作であり、検証タスクの仕事ではない）。
