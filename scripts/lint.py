@@ -1078,11 +1078,14 @@ for _f in sorted(ROOT.rglob("*")):
 #            「URL ベースの marketplace は **marketplace.json 自体しかダウンロードしない**。
 #             サーバ上のプラグインファイルは落とさないので、相対パスは解決できない。
 #             URL 配布では GitHub・npm・git URL のソースを使うこと」
-#          手元で再現済み — URL で追加 → install すると
-#          `ENOTDIR: not a directory, scandir .../marketplaces/retryyn-takumi-cmo`
-#          （marketplace.json が**ファイルとして**そこに置かれ、ディレクトリではないため）。
-#          git clone 経由の追加では動くので、**追加の仕方によって壊れる**＝いちばん再現しにくい形。
-#          明示 github ソースはどの経路でも動くので、相対パスを機械的に禁じる） ---
+#          **ただし実測の結果、明示 github に変えても直URL 追加の install は直らなかった**
+#          （`ENOTDIR … scandir .../marketplaces/<name>` は marketplace のキャッシュ位置を
+#           走査して落ちており、プラグインの source を見る前段。CLI 側の URL 経路の制約）。
+#          それでも相対パスを禁じるのは、**Cowork の marketplace 同期がサーバ側で走り
+#          各プラグインの `source.repo` を検証する**ため（上流 issue #61271 の実ログ）。
+#          `"./"` には repo が無く、この検証を通れない可能性がある。
+#          正しい配布経路（GitHub から marketplace を追加）は add→install→update まで実測済み。
+#          詳細は docs/cowork-runtime.md §1b ---
 _mkt = json.loads(read(ROOT / ".claude-plugin/marketplace.json"))
 for _pl in _mkt.get("plugins", []):
     _src = _pl.get("source")
