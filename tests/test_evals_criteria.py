@@ -22,6 +22,8 @@ ROOT = Path(__file__).resolve().parent.parent
 CRITERIA = {
     "G35 voc-research-jp": ("skills/voc-research-jp/SKILL.md",
                             ["未来と意見ではなく、過去と行動", "生存者バイアス"]),
+    "G36 messaging-design-jp": ("skills/messaging-design-jp/SKILL.md",
+                                ["最大3つ", "証拠のない柱", "形容詞でできている"]),
     "G10 seo-jp": ("skills/seo-jp/SKILL.md", ["検索ボリュームだけでテーマを選ばない", "一次情報"]),
     "G11 content-design": ("skills/content-design/SKILL.md", ["加工", "構成"]),
     "G12 storytelling": ("skills/storytelling/SKILL.md", ["葛藤", "転機", "一人称", "書き始めない"]),
