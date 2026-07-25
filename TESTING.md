@@ -593,7 +593,7 @@ Claude Code）を最初に明言し、Tier 1 と Tier 2 を分けて報告して
 
 ### 事前実行済み（dev環境ラン 2026-07-25 / WSL Linux・Cowork 外）
 
-**これは Tier 2 ではない。** Cowork ランタイム（hook 配線・MCPツール・エージェント供給）が無い環境で、
+**これは Tier 2 ではない。** ただしこの過程で **V6 は Tier 1 に降ろした**（Cowork ランタイムを必要としないため）。 Cowork ランタイム（hook 配線・MCPツール・エージェント供給）が無い環境で、
 **機械的に実行できる分だけ**を先に潰した記録。マーカーは更新しない。
 人間が Cowork で回すときは全項目を改めて実行すること。
 
@@ -603,6 +603,7 @@ Claude Code）を最初に明言し、Tier 1 と Tier 2 を分けて報告して
 | V42 単体テスト | **PASS** | 74件 OK |
 | V25 hooks 回帰 | **PASS** | `test-hooks: ALL PASS` |
 | V26 画像/動画テンプレ | **PASS** | 3本とも位置引数で完走。`chromakey` は四隅 alpha=0・被写体 alpha=255 を実測確認。`banner-compose` は 1280x720 を出力。`guide-anim` は 48フレーム生成 |
+| **V6 計測DBスキーマ** | **PASS** | `db-schema.sql` をメモリDBへ適用し **9テーブル**を確認。再適用の冪等性・履歴が上書きされないこと（追記型）まで検証。**Tier 1 に降ろした**ため以後 CI が担保する |
 | V49 ワークスペース検証 | **PASS** | 実 YAML の正常系で `ワークスペース検証 OK`。異常系5パターン（未登録ブランドをアクティブ指定／台帳に無い区画／`.active-brand` 不一致／KPIツリーに有料指標／不正な slug の区画）すべてで `[ワークスペース]` エラーを検出 |
 | V40 ゼロ課金ゲートの**判定ロジック** | **PASS（配線は未検証）** | `url-guard.sh` に直接入力: `ads.google.com` → `deny` / `business.facebook.com/adsmanager` → `deny` / `example.com` → 通過 |
 | V41 Brand Isolation の**判定ロジック** | **PASS（配線は未検証）** | `active_brand=acme` で `knowledge/brands/beta/` への書込 → `deny`、`acme` 区画 → 通過 |

@@ -226,7 +226,7 @@ for f in ROOT.glob("templates/*"):
 
 # --- 13. skills の本数を書いた記述が実体と一致するか（2026-07-24 実機検証 F5） ---
 _ref_count = len(list((ROOT / "skills").glob("*/SKILL.md")))
-_ref_pat = re.compile(r"skills/（(\d+)本）")
+_ref_pat = re.compile(r"skills/(?:（|\s*全)(\d+)本")  # 「skills/（20本）」「skills/ 全20本」の両方
 for f in list(ROOT.glob("procedures/*.md")) + list(ROOT.glob("docs/**/*.md")) + [ROOT / "README.md"]:
     if not f.is_file():
         continue
