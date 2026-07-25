@@ -322,6 +322,30 @@ if _dm.is_file():
             err(f"docs/domain-model.md: takumi/domain の `{cid}` が正本に載っていない"
                 f"（ユビキタス言語と1対1にすること）")
 
+# --- 17. evals.md の golden タスクが全スキル・全エージェントを覆っているか
+#         （2026-07-25 全体CHECK で検出: references 20本中16本・agents 9体中6体が未収載のまま
+#          「新しい失敗事例が出たら追加する」という運用規約だけが書かれていた） ---
+_evals = ROOT / "docs/evals.md"
+if _evals.is_file():
+    _evals_text = read(_evals)
+    # 行形式: | G<n> | <対象>: <依頼内容> | <PASS基準> |
+    # 対象を持たない行（ルーティング系など）は覆う側に数えないだけで、違反ではない。
+    _covered = {
+        m.group(1)
+        for m in re.finditer(r"^\|\s*G\d+\s*\|\s*([a-z0-9-]+):", _evals_text, re.M)
+    }
+    _skill_names = {s.parent.name for s in (ROOT / "references").glob("*/SKILL.md")}
+    _agent_names = {a.stem for a in (ROOT / "agents").glob("*.md")}
+    for name in sorted(_skill_names - _covered):
+        err(f"docs/evals.md: スキル {name} の golden タスクがない"
+            f"（新設したら評価タスクも1つ書く。腕落ちを測る手段が無くなる）")
+    for name in sorted(_agent_names - _covered):
+        err(f"docs/evals.md: エージェント {name} の golden タスクがない"
+            f"（新設したら評価タスクも1つ書く。腕落ちを測る手段が無くなる）")
+    # 逆方向: 実在しない対象を指す golden タスク
+    for name in sorted(_covered - _skill_names - _agent_names):
+        err(f"docs/evals.md: golden タスクが実在しない対象 {name} を指している")
+
 # --- 16. ワークスペース検証（利用者の knowledge/brands/** をドメインモデルで検証）---
 #     プラグインリポジトリ単体では knowledge/ が無いので何も起きない。
 #     Cowork のワークスペースで回すと、台帳・区画・KPIツリー・キャンペーンの不変条件を実データに適用する。
