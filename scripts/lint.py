@@ -736,9 +736,15 @@ if _si.is_file() and _sj.is_file():
 #          「版と env が揃えば緑になる」＝FAIL を積んだまま配布可に見える穴が実際に見えた） ---
 _testing = ROOT / "TESTING.md"
 if _testing.is_file():
-    _m = re.search(
-        r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s+fail=(\d+)\s*-->", read(_testing)
-    )
+    _marker_re = r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s+fail=(\d+)\s*-->"
+    _all = re.findall(_marker_re, read(_testing))
+    # 正本は1つだけ。複数あると re.search が**最初の1つ**しか読まず、
+    # 古いランのマーカーが新しいランを黙って上書きする（過去ラン節にマーカーを残すと起きる）
+    if len(_all) > 1:
+        err(f"TESTING.md: tier2-verified マーカーが {len(_all)} 個ある（{_all}）— "
+            f"**最新ランの節に1つだけ**置く。lint は最初の1つしか読まないので、"
+            f"古いマーカーが残っていると実測より緩い判定になる")
+    _m = re.search(_marker_re, read(_testing))
     if not _m:
         err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> --> "
             "マーカーが無い（最後に実機検証したバージョン・**実行環境**・**FAIL件数**を機械可読で持つ。"
