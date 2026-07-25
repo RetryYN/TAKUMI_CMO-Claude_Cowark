@@ -13,6 +13,7 @@ argument-hint: [なし]
 |---|---|---|
 | **KPIツリー進捗** | `strategy/kpi-tree.yaml` + `analytics/` | 北極星と主要ドライバーの現在値・前回比・目標到達率（∞の上り＝計測を戦略へ返す。動かないノードは /戦略 の再立案フラグ）。**ガードレール指標は目標到達率ではなく「閾値を割っていないか」で表示する**（→ `skills/kpi-design-jp`）。載せる指標を増やすときは1つ落とす |
 | **メッセージング一貫性** | `strategy/messaging.md` + `strategy/messaging-audit-*.md` | 直近の点検のドリフト率（どの柱にも紐づかない発信の比率）を**閾値表示**（3割超で警告）と、柱ごとの被覆。未点検なら「未点検（四半期に1度）」と1行（→ `docs/parts/messaging-audit.md`） |
+| **稼働の埋まり具合** | `strategy/capacity.md` | 計画合計 ÷（実働×0.7）を**閾値表示**（100%超で警告＝入りきらない）。見積と実績の差も1行（→ `docs/parts/capacity-plan.md`） |
 | **キャンペーン状況** | `strategy/campaigns/` | 進行中キャンペーンの目標KPI・参加媒体・進捗（複数媒体の統括ビュー） |
 | 進行中タスク | memory/.workflow/ + memory/session-log.md 末尾 | タスク名・フェーズ・引き継ぎ事項 |
 | 登録タスク・ループ | tasks/*.yaml + knowledge/config/loops.yaml | ドメイン別タブ構成・場所とタスク一覧・次回実行（/カスタマイズ のタスク登録 = takumi-task が生成） |
