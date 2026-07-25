@@ -124,9 +124,51 @@ fable が月次上限・不達で `Agent terminated early due to an API error` �
 3. **preload が実際に効いているかは Tier 2 の V78 で実測する**
    （preload したスキルにしか書いていない内容を答えられるかで判定する）
 
+## モデル退役への追従（エイリアスだけを書く）
+
+**`model:` にはエイリアス（`opus` / `sonnet` / `haiku` / `fable`）だけを書き、フルモデルIDを書かない。**
+
+> **エイリアスはプロバイダごとの推奨バージョンを指し、時間とともに更新される。**
+> 特定バージョンに固定したい場合はフルモデル名（例: `claude-opus-5`）を使う
+> （[model-config](https://code.claude.com/docs/en/model-config)・一次情報）
+
+つまり**エイリアスで書いておけば、モデルが退役しても自動で新しい世代に移る**。
+逆に `claude-opus-5` のように書くと、**そのモデルが退役した日に該当エージェントが止まる**
+（プラグインは配布物なので、こちらでは気づけない）。`scripts/lint.py` #21 が直書きを落とす。
+
+### 自動で追従しないもの（2つ）
+
+**① 上の effort 対応表**
+
+新しい世代が別の段構成を持つ可能性がある（実際 Opus 4.6 / Sonnet 4.6 に `xhigh` は無い）。
+**この表は 2026-07-26 時点の写しであり、モデル世代が変わったら一次情報で取り直す。**
+本文中の判断（例: 「Haiku には effort を書かない」）も、そのときに再確認する。
+
+**② プロバイダによるエイリアスの解決先**
+
+| プロバイダ | `opus` | `sonnet` |
+|---|---|---|
+| Anthropic API（Cowork の既定） | Opus 5 | Sonnet 5 |
+| Claude Platform on AWS | Opus 5 | Sonnet 4.6 |
+| Amazon Bedrock / Google Cloud Agent Platform | Opus 5 | **Sonnet 4.5** |
+| Microsoft Foundry | **Opus 4.6** | **Sonnet 4.5** |
+
+**ここに級が静かに劣化する経路がある。**
+
+- **Sonnet 4.5 は effort 対応表に載っていない＝effort 非対応。**
+  Bedrock / GCP / Foundry では `sonnet` がここへ解決するため、
+  **職人級（`sonnet`/`high`）と作業者級（`sonnet`/`medium`）の effort が効かなくなる**
+- **Opus 4.6 に `xhigh` は無い**（`xhigh` を指定すると `high` に落ちる。
+  本プラグインは `xhigh` を使っていないので現状は影響しない）
+
+**エラーにならず、黙って段が消える。** 成果物の質が理由不明に落ちたら、まずここを疑う。
+Anthropic API 以外で運用する場合は `ANTHROPIC_DEFAULT_SONNET_MODEL` 等で解決先を上げる
+（環境変数はプラグイン側からは制御できない＝**利用者の環境の話**）。
+
 ## 不変条件（`scripts/lint.py` が機械で止める）
 
-1. **すべてのエージェントに `model` がある**（`inherit` 任せにしない — 級が意味を失う）
+1. **すべてのエージェントに `model` がある**（`inherit` 任せにしない — 級が意味を失う）。
+   **値はエイリアス（`opus`/`sonnet`/`haiku`/`fable`）のみ** — フルモデルIDの直書きは退役で止まる
 2. **`haiku` 以外のエージェントに `effort` がある**（設定漏れを「既定でいい」と区別する）
 3. **`haiku` のエージェントに `effort` を書かない**（効かない設定を置かない）
 4. **`effort` の値は `low` `medium` `high` `xhigh` `max` のいずれか**
