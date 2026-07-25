@@ -592,6 +592,33 @@ elif _agent_files:
                         "**preload は名前を間違えても警告がデバッグログに出るだけで静かに落ちる** "
                         "— 規範ゼロで走ることになる")
 
+# --- 22. コマンド × タスクループ の対応表（docs/command-registry.md）
+#         （2026-07-26 導入。コマンド→手順書→部品→エージェントの到達を機械で数えたら
+#          /エンゲージメント・/カスタマイズ・/ブランド の3本がエージェントに一度も
+#          届いていなかった。文章を読んでいるだけでは気づけない種類の穴なので、
+#          表を正本にして機械で維持する） ---
+_reg_text = read(ROOT / "docs" / "command-registry.md")
+_loop_sec = re.search(r"## コマンド × タスクループ.*?(?=\n## )", _reg_text, re.S)
+if not _loop_sec:
+    err("docs/command-registry.md: 「コマンド × タスクループ」の対応表が無い"
+        "（コマンドがループのどのフェーズを回すかの正本）")
+else:
+    _sec = _loop_sec.group(0)
+    _agent_names = {p.stem for p in (ROOT / "agents").glob("*.md")}
+    for _c in sorted(p.stem for p in (ROOT / "commands").glob("*.md")):
+        if not re.search(rf"^\|\s*/{re.escape(_c)}\s*\|", _sec, re.M):
+            err(f"docs/command-registry.md: コマンド /{_c} が「コマンド × タスクループ」表に無い"
+                "（**どのフェーズを誰が回すか**を書く。回さないなら「—」と省略の理由を書く）")
+    # すべてのエージェントが、どれかのコマンドから到達できること。
+    # （スキルの「孤島」検査と同じ形。エージェントを足したのにどのコマンドにも
+    #  配線しない＝利用者から一生呼ばれないエージェント、を止める。
+    #  名前のタイポも同時に落ちる — 綴りを間違えれば実名が表に無いことになるため）
+    for _ag in sorted(_agent_names):
+        if _ag not in _sec:
+            err(f"docs/agent-tiers.md の `{_ag}` が「コマンド × タスクループ」表のどのコマンドにも"
+                "現れない（**どのコマンドからも呼ばれないエージェント**。"
+                "配線するか、表に「このコマンドの③を担う」と書くこと）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "

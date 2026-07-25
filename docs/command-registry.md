@@ -81,6 +81,46 @@
 
 **計: 登録コマンド 20 / 内部手順 17 / 手順書 37（procedures/）**
 
+## コマンド × タスクループ（誰がどのフェーズを回すか）
+
+**コマンドは入口、ループは中身。** 各コマンドがタスクループ（[parts/task-loop.md](parts/task-loop.md)）の
+どのフェーズを、どの級（[agent-tiers.md](agent-tiers.md)）で回すかの対応。
+
+> **2026-07-26 の実測でこの表を作った理由**: コマンド→手順書→部品→エージェントの到達を機械で数えたら、
+> **`/エンゲージメント`・`/カスタマイズ`・`/ブランド` の3本がエージェントに一度も届いていなかった**。
+> 手順書の文章を読んでいるだけでは気づけない。**表にすると穴が見える。**
+>
+> **③咎めるを「省略」と「人間が担う」は違う。** 前者は抜け、後者は設計。だから空欄を作らず、
+> 人間がゲートなら**そう書く**。
+
+| コマンド | ① 構える（戦略級） | ② 作る（職人級） | ③ 咎める（戦術級） | ④ 確かめる（作業者級） |
+|---|---|---|---|---|
+| /戦略 | **cmo-strategist** + 壁打ち2体（strategy-advisor / growth-challenger・並列） | deliverable-writer（ドシエ） | — （**社外に出ないので省略**。出すなら ad-compliance-jp） | outcome-verifier（∞の上り） |
+| /キャンペーン | 目標KPIの確定（/戦略 の産物を引き継ぐ） | 各媒体パックへ委譲 | pre-send-verifier（送出を含む回） | outcome-verifier |
+| /リサーチ | 調査設計（foundation-analysis） | deep-research の並列調査（**1ラウンド4体まで**） | — （**出典の確認が③の代わり**。一次情報ラベルを付ける） | 出典突合（人間が最終確認） |
+| /顧客の声 | cmo-strategist（何を聞くか） | 設問・分析 | — （**聞き取りは公開物ではない**） | 母数・偏りの明記 |
+| /オウンドメディア | 記事設計（seo-jp / content-ops-jp） | deliverable-writer | **pre-send-verifier**（公開は不可逆） | outcome-verifier |
+| /SNS運用 | 投稿設計（channel-planning-jp） | 各媒体手順 | **pre-send-verifier** | outcome-verifier |
+| /コンテンツ | 課題診断 | **design-artisan** | **design-critic**（PASS まで渡さない） | — （公開時は媒体パック側） |
+| /Webサイト | 診断（site-audit） | design-artisan（page-improve） | design-critic | — （実反映は /タスク開始 のゲート下） |
+| /メール | 配信設計 | deliverable-writer | **pre-send-verifier** + **人間承認** | outcome-verifier |
+| /広報 | 相手と切り口の設計 | deliverable-writer | pre-send-verifier / privacy-auditor | outcome-verifier |
+| /リテンション | 節目の特定 | 接点の制作 | pre-send-verifier / privacy-auditor | outcome-verifier |
+| /計測 | **pre-setup-council**（risk-forecaster + strategy-advisor 並列。個人データが射程なら privacy-auditor） | 設定作業 | privacy-auditor（PII） | 実測をKPIツリーへ |
+| /エンゲージメント | 応対方針の承認（**人間**） | 返信案の作成 | **人間**（投稿は人間・例外は単独で即エスカレーション） | 対応漏れ件数を /レポート へ |
+| /危機対応 | risk-forecaster | 対外文の下書き | **人間**（対外発信の実行は必ず人間） | 事後の記録 |
+| /ブランド | — （**台帳操作。不変条件は `takumi/domain/brand.py` が守る**） | 区画スケルトン作成 | Brand Isolation Guard（**hook がゲート**） | lint `--workspace` |
+| /カスタマイズ | **strategy-advisor**（定常タスクの新規設計）／計測に関わるなら **pre-setup-council** | タスクYAML・スキルの生成 | 破壊的ステップは Step H で**人間承認** | 初回実行で動くことの確認 |
+| /セットアップ | — （**回答を集めるだけ**） | setup.yaml の生成 | pre-send-verifier（送出を含む設定のみ） | — |
+| /ワーク追加 | — （**登録作業**） | コマンド生成 | — | 初期マッピングの確認 |
+| /レポート | — （**集計のみ**） | deliverable-writer（HTMLレポート） | — （**社内向け**） | outcome-verifier（数字の裏取り） |
+| /検証 | — （**手順が固定**） | 各項目の実行 | — （判定基準が③の代わり） | PASS/FAIL/SKIP の証跡 |
+
+**「—」は省略であり、省略には理由が要る**（`docs/parts/task-loop.md` の「ループを短くしてよい場合」）。
+理由が書けない「—」があったら、それは穴。
+
+**この表と `agents/` の実体は `scripts/lint.py` #22 が突合する**（存在しないエージェント名を書けない）。
+
 ## 内部手順台帳（メニュー非表示 — 自然文・ルール発火で動く。手順書は procedures/ に残す）
 
 | 手順書 | 旧コマンド名 | 発火のさせ方 |
@@ -220,7 +260,8 @@ SNS 共通運用フローは `docs/sns-ops.md`、メディア技術地図は `do
 - [ ] 新しいSNS標準媒体 → `procedures/takumi-sns-<name>.md` 追加とセットで **4点配線**: ①takumi-sns の振り分け表 ②takumi-sns §0 の媒体名リスト ③takumi-setup 質問1の選択肢 ④この台帳の内部手順一覧（2026-07-24 Threads 追加時に④が漏れた教訓）
 - [ ] 新しい能力 → `docs/parts/<name>.md`（部品）+ parts/index.md に行追加。**コマンドは増やさない**
 - [ ] 新しい執筆リファレンス（skills/）→ session-rules(3) と **該当サブエージェント（deliverable-writer / design-artisan / design-critic / pre-send-verifier）の参照表にも配線**（エージェントは自分でルールを読まないため、定義ファイルに書かないと届かない）。**毎回必ず要る規範なら `skills:` に preload も足す**（→ [agent-tiers.md](agent-tiers.md)。ただし **preload は名前を間違えても静かに落ちる**ので、本文の「正本を Read する」指示は消さない）
-- [ ] 新しいサブエージェント → **級を先に決めて** [agent-tiers.md](agent-tiers.md) の配役表に行を足す（`model`・`effort`・preload。**lint が表と実体を突合する**）
+- [ ] 新しいサブエージェント → **級を先に決めて** [agent-tiers.md](agent-tiers.md) の配役表に行を足す（`model`・`effort`・preload。**lint が表と実体を突合する**）+ **「コマンド × タスクループ」表のどれかのコマンドに配線する**（**lint がどのコマンドからも呼ばれないエージェントを落とす**）
+- [ ] 新しいコマンド → **「コマンド × タスクループ」表に行を足す**（①〜④の担い手。回さないなら「—」と**省略の理由**。**空欄の正体は「抜け」「人間が担う」「機械が担う」の3通りで、後ろ2つは省略ではないので明記する**）
 - [ ] この台帳に1行追加（カテゴリー + Pack）
 - [ ] 定常実行するものはループ台帳にも追加
 - [ ] README のコマンド数を更新
