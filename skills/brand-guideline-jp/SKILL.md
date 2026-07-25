@@ -231,7 +231,7 @@ description: ブランドの構築とレギュレーション — 人格・見�
 **【正本が別にあるもの（このスキルでは重複させない）】**
 
 - **可読性・コントラスト・タイポの実証数値**: `skills/design-evidence-jp`
-- **景表法・薬機法・ステマ規制などの表現規制**: `skills/ad-compliance-jp`
+- **景表法・ステマ規制などの表現規制**: `skills/ad-compliance-jp`（**薬機法・医療広告は本プロダクトの対象外** — 検知して停止し人間・専門家へ返す）
 - **情報密度・視線導線の判断**: `skills/psych-ux-jp`
 - **何を言い続けるか（主張）**: `skills/messaging-design-jp`
 
