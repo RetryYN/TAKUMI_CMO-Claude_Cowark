@@ -1,6 +1,6 @@
 ---
 description: タスクPack設定 — プラグイン機能のON/OFF管理。Use when ユーザーが「◯◯の機能を切って/入れて」「SNS機能は使わない」「機能設定」「パック一覧」等、機能の有効/無効の変更・確認を求めたとき。
-argument-hint: [list | on <pack> | off <pack>]（省略時は list）
+argument-hint: "[list | on <pack> | off <pack>]（省略時は list）"
 ---
 
 タスクPackの設定を操作してください。サブコマンド: $ARGUMENTS

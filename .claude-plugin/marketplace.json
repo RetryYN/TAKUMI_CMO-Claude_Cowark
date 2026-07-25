@@ -1,14 +1,36 @@
 {
+  "$schema": "https://json.schemastore.org/claude-code-plugin-marketplace.json",
   "name": "retryyn-takumi-cmo",
+  "description": "匠CMO の配布元。ゼロ広告費のコンテンツドリブンで複数ブランドを回すマーケティングエンジンを1本だけ配る単一プラグインの marketplace",
   "owner": {
-    "name": "RetryYN"
+    "name": "RetryYN",
+    "url": "https://github.com/RetryYN"
   },
   "plugins": [
     {
       "name": "takumi-cmo",
+      "displayName": "匠CMO",
       "source": "./",
-      "version": "5.3.0",
-      "description": "匠CMO — ゼロ広告費のコンテンツドリブンで複数ブランドを無双させるマーケティングエンジン（匠の∞ループ）"
+      "version": "5.4.0",
+      "description": "匠CMO — ゼロ広告費のコンテンツドリブンで複数ブランドを無双させるマーケティングエンジン（匠の∞ループ）",
+      "author": {
+        "name": "RetryYN",
+        "url": "https://github.com/RetryYN"
+      },
+      "homepage": "https://github.com/RetryYN/TAKUMI_CMO-Claude_Cowark#readme",
+      "repository": "https://github.com/RetryYN/TAKUMI_CMO-Claude_Cowark",
+      "license": "MIT",
+      "category": "marketing",
+      "keywords": [
+        "marketing",
+        "cmo",
+        "japanese",
+        "seo",
+        "sns",
+        "content-marketing",
+        "multi-brand",
+        "zero-ad-spend"
+      ]
     }
   ]
 }

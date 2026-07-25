@@ -10,8 +10,24 @@ from pathlib import Path
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 ROOT = Path(__file__).resolve().parent.parent
+
+# --list: チェックの一覧を番号・行番号つきで出す。
+# 番号で他所を指す設計なので、**番号から実体に飛べる手段**が要る（引数なしなら通常の検査）。
+if "--list" in sys.argv:
+    _src = (ROOT / "scripts/lint.py").read_text(encoding="utf-8")
+    for _i, _line in enumerate(_src.splitlines(), 1):
+        _m = re.match(r"^# --- (\d+[a-z]?|結果)\.?\s*(.*?)\s*(?:---)?$", _line)
+        if _m and _m.group(1) != "結果":
+            print(f"  #{_m.group(1):<4} lint.py:{_i:<5} {_m.group(2)[:78]}")
+    sys.exit(0)
+
 errors: list[str] = []
 warns: list[str] = []
+
+# 追記された順に残す履歴ログ。**当時の名称のまま**が正しいので、
+# 「現行の名前と一致しているか」を見る検査からは一律で外す
+# （旧コマンド名・旧プラグイン名・廃止ファイルへの言及は、ここでは違反ではなく記録）。
+_HISTORY_FILES = {"TESTING-HISTORY.md"}
 
 
 def err(msg: str) -> None:
@@ -20,6 +36,21 @@ def err(msg: str) -> None:
 
 def read(p: Path) -> str:
     return p.read_text(encoding="utf-8")
+
+
+def skill_names() -> set[str]:
+    """実在するスキル名の集合（ディレクトリ名 = スキル名）。"""
+    return {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")}
+
+
+def preloaded_skills(p: Path) -> set[str]:
+    """エージェントの `skills:` preload に載っている名前。
+
+    frontmatter() は行単位の素朴なパーサでリスト値を持てないので、
+    preload だけは専用に取り出す（#21 と #34 が同じ正規表現を持っていたのを1本化）。
+    """
+    m = re.search(r"^skills:\s*$\n((?:\s+-\s+\S+\n)+)", read(p), re.M)
+    return set(re.findall(r"-\s+(\S+)", m.group(1))) if m else set()
 
 
 def frontmatter(p: Path) -> dict:
@@ -370,6 +401,39 @@ if _dm.is_file():
             err(f"docs/domain-model.md: takumi/domain の `{cid}` が正本に載っていない"
                 f"（ユビキタス言語と1対1にすること）")
 
+# --- 16. ワークスペース検証（利用者の knowledge/brands/** をドメインモデルで検証）---
+#     プラグインリポジトリ単体では knowledge/ が無いので何も起きない。
+#     Cowork のワークスペースで回すと、台帳・区画・KPIツリー・キャンペーンの不変条件を実データに適用する。
+#     対象は既定でカレントディレクトリ。`--workspace <path>` で明示指定できる。
+_ws_arg = None
+if "--workspace" in sys.argv:
+    _i = sys.argv.index("--workspace")
+    if _i + 1 < len(sys.argv):
+        _ws_arg = Path(sys.argv[_i + 1])
+    else:
+        err("--workspace にパスが指定されていません")
+_ws = _ws_arg if _ws_arg is not None else Path.cwd()
+if (_ws / "knowledge").is_dir():
+    try:
+        import yaml  # type: ignore
+    except ImportError:
+        warns.append(
+            f"ワークスペース検証をスキップ（PyYAML が無い）: {_ws}"
+            f" — `pip install pyyaml` で有効になる"
+        )
+    else:
+        sys.path.insert(0, str(ROOT))
+        from takumi.workspace import validate_workspace
+
+        def _load_yaml(p: Path):
+            return yaml.safe_load(p.read_text(encoding="utf-8"))
+
+        _ws_errors = validate_workspace(_ws, _load_yaml)
+        for e in _ws_errors:
+            err(f"[ワークスペース] {e}")
+        if not _ws_errors:
+            print(f"lint: ワークスペース検証 OK（{_ws}）")
+
 # --- 17. evals.md の golden タスクが全スキル・全エージェントを覆っているか
 #         （2026-07-25 全体CHECK で検出: skills 20本中16本・agents 9体中6体が未収載のまま
 #          「新しい失敗事例が出たら追加する」という運用規約だけが書かれていた） ---
@@ -382,7 +446,7 @@ if _evals.is_file():
         m.group(1)
         for m in re.finditer(r"^\|\s*G\d+\s*\|\s*([a-z0-9-]+):", _evals_text, re.M)
     }
-    _skill_names = {s.parent.name for s in (ROOT / "skills").glob("*/SKILL.md")}
+    _skill_names = skill_names()
     _agent_names = {a.stem for a in (ROOT / "agents").glob("*.md")}
     for name in sorted(_skill_names - _covered):
         err(f"docs/evals.md: スキル {name} の golden タスクがない"
@@ -427,74 +491,6 @@ if _vfile.is_file():
             if not _r[4].strip() or not _r[3].strip():
                 err(f"procedures/takumi-verify.md: {_r[0]} に手順または判定基準が書かれていない"
                     f"（**判定できない検証項目を作らない**。PASS/FAIL の分かれ目を必ず書く）")
-
-# --- 16. ワークスペース検証（利用者の knowledge/brands/** をドメインモデルで検証）---
-#     プラグインリポジトリ単体では knowledge/ が無いので何も起きない。
-#     Cowork のワークスペースで回すと、台帳・区画・KPIツリー・キャンペーンの不変条件を実データに適用する。
-#     対象は既定でカレントディレクトリ。`--workspace <path>` で明示指定できる。
-_ws_arg = None
-if "--workspace" in sys.argv:
-    _i = sys.argv.index("--workspace")
-    if _i + 1 < len(sys.argv):
-        _ws_arg = Path(sys.argv[_i + 1])
-    else:
-        err("--workspace にパスが指定されていません")
-_ws = _ws_arg if _ws_arg is not None else Path.cwd()
-if (_ws / "knowledge").is_dir():
-    try:
-        import yaml  # type: ignore
-    except ImportError:
-        warns.append(
-            f"ワークスペース検証をスキップ（PyYAML が無い）: {_ws}"
-            f" — `pip install pyyaml` で有効になる"
-        )
-    else:
-        sys.path.insert(0, str(ROOT))
-        from takumi.workspace import validate_workspace
-
-        def _load_yaml(p: Path):
-            return yaml.safe_load(p.read_text(encoding="utf-8"))
-
-        _ws_errors = validate_workspace(_ws, _load_yaml)
-        for e in _ws_errors:
-            err(f"[ワークスペース] {e}")
-        if not _ws_errors:
-            print(f"lint: ワークスペース検証 OK（{_ws}）")
-
-# --- 26. Tier 2 実機検証の未実施を可視化する（WARN・CI は落とさない）
-#         実機検証は人間にしかできない（リリースチェックリスト項目5）。落とすと開発が止まるので
-#         WARN に留めるが、「黙って積み上がる」状態は止める。
-#         2026-07-25 の全体CHECK 時点で v2.0.0 のまま7リリース分が未検証だった。
-#         （2026-07-26 に #20 から #26 へ改番。#20 が「スキルの接続」と重複しており、
-#          **番号で他所を指す仕組みなのに番号自体が一意でなかった**。#27 が一意性を検査する。
-#          改番して安全だったのは、この番号がどの正本からも引かれていないことを実測したため） ---
-#         （2026-07-26 追記: マーカーに `env=` を足した。ローカルランでも配線は測れるが、
-#          **配布判断は cloud ランでしか代替できない** — ローカルは hook 配線が環境依存（E4）で、
-#          かつ永続フォルダ未接続だと knowledge/ 系が丸ごと測れない。
-#          バージョンだけのマーカーでは「ローカルで通ったから配布してよい」と読める余地が残る） ---
-_testing = ROOT / "TESTING.md"
-if _testing.is_file():
-    _m = re.search(r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s*-->", read(_testing))
-    if not _m:
-        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> --> マーカーが無い"
-            "（最後に実機検証したバージョンと**実行環境**を機械可読で持つ。"
-            "環境が無いと『ローカルで通った』を配布可と読み違える）")
-    else:
-        _ran, _env = _m.group(1), _m.group(2)
-        if _env not in ("cloud", "local"):
-            err(f"TESTING.md: tier2-verified の env={_env} は不正（cloud か local）")
-        if _ran != plugin["version"]:
-            warns.append(
-                f"Tier 2 実機検証が未実施: 最終ラン={_ran}（env={_env}） / 現行={plugin['version']}"
-                f" — cloud Cowork で `/匠検証 full` と言い、結果を TESTING.md に記録して"
-                f" マーカーを更新すること（リリースチェックリスト項目5・人間が実行）"
-            )
-        elif _env != "cloud":
-            warns.append(
-                f"Tier 2 の最終ランが env={_env}（v{_ran}）— **配布判断には cloud ランが要る**。"
-                f" ローカルは hook 配線が環境依存（escalations E4）で、永続フォルダ未接続なら"
-                f" knowledge/ 系（ブランド区画・ダッシュボード）を測れない"
-            )
 
 # --- 19. 主要ディレクトリが空でないこと
 #         （2026-07-25 references→skills 移設時に検出: ディレクトリ名を変えると
@@ -565,7 +561,7 @@ if not _tiers.is_file():
     err("docs/agent-tiers.md が無い（エージェントの級の正本）")
 elif _agent_files:
     _tier_text = read(_tiers)
-    _skill_names = {p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md")}
+    _skill_names = skill_names()
     for _p in _agent_files:
         _a = _p.stem
         _fm = frontmatter(_p)
@@ -603,17 +599,14 @@ elif _agent_files:
                     "サポートされない（セキュリティ上の制約）。書いても効かない")
 
         # skills: preload の実在確認（**間違えても静かにスキップされる**ため機械で拾う）
-        _sk = re.search(r"^skills:\s*$\n((?:\s+-\s+\S+\n)+)", _raw, re.M)
-        if _sk:
-            for _name in re.findall(r"-\s+(\S+)", _sk.group(1)):
-                if _name not in _skill_names:
-                    err(f"agents/{_a}.md: `skills:` の `{_name}` が実在しない。"
-                        "**preload は名前を間違えても警告がデバッグログに出るだけで静かに落ちる** "
-                        "— 規範ゼロで走ることになる")
+        for _name in sorted(preloaded_skills(_p) - _skill_names):
+            err(f"agents/{_a}.md: `skills:` の `{_name}` が実在しない。"
+                "**preload は名前を間違えても警告がデバッグログに出るだけで静かに落ちる** "
+                "— 規範ゼロで走ることになる")
 
 # --- 22. コマンド × タスクループ の対応表（docs/command-registry.md）
 #         （2026-07-26 導入。コマンド→手順書→部品→エージェントの到達を機械で数えたら
-#          /エンゲージメント・/カスタマイズ・/ブランド の3本がエージェントに一度も
+#          旧 /エンゲージメント・旧 /カスタマイズ・旧 /ブランド の3本がエージェントに一度も
 #          届いていなかった。文章を読んでいるだけでは気づけない種類の穴なので、
 #          表を正本にして機械で維持する） ---
 _reg_text = read(ROOT / "docs" / "command-registry.md")
@@ -726,6 +719,41 @@ if _si.is_file() and _sj.is_file():
                 err(f"{_f.relative_to(ROOT)}: SNS利用率の調査年度（令和7年度）が書かれていない"
                     f"（**値と年度はセットで更新する**。総務省の同調査は毎年6月頃に更新される）")
 
+# --- 26. Tier 2 実機検証の未実施を可視化する（WARN・CI は落とさない）
+#         実機検証は人間にしかできない（リリースチェックリスト項目5）。落とすと開発が止まるので
+#         WARN に留めるが、「黙って積み上がる」状態は止める。
+#         2026-07-25 の全体CHECK 時点で v2.0.0 のまま7リリース分が未検証だった。
+#         （2026-07-26 に #20 から #26 へ改番。#20 が「スキルの接続」と重複しており、
+#          **番号で他所を指す仕組みなのに番号自体が一意でなかった**。#27 が一意性を検査する。
+#          改番して安全だったのは、この番号がどの正本からも引かれていないことを実測したため） ---
+#         （2026-07-26 追記: マーカーに `env=` を足した。ローカルランでも配線は測れるが、
+#          **配布判断は cloud ランでしか代替できない** — ローカルは hook 配線が環境依存（E4）で、
+#          かつ永続フォルダ未接続だと knowledge/ 系が丸ごと測れない。
+#          バージョンだけのマーカーでは「ローカルで通ったから配布してよい」と読める余地が残る） ---
+_testing = ROOT / "TESTING.md"
+if _testing.is_file():
+    _m = re.search(r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s*-->", read(_testing))
+    if not _m:
+        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> --> マーカーが無い"
+            "（最後に実機検証したバージョンと**実行環境**を機械可読で持つ。"
+            "環境が無いと『ローカルで通った』を配布可と読み違える）")
+    else:
+        _ran, _env = _m.group(1), _m.group(2)
+        if _env not in ("cloud", "local"):
+            err(f"TESTING.md: tier2-verified の env={_env} は不正（cloud か local）")
+        if _ran != plugin["version"]:
+            warns.append(
+                f"Tier 2 実機検証が未実施: 最終ラン={_ran}（env={_env}） / 現行={plugin['version']}"
+                f" — cloud Cowork で `/匠検証 full` と言い、結果を TESTING.md に記録して"
+                f" マーカーを更新すること（リリースチェックリスト項目5・人間が実行）"
+            )
+        elif _env != "cloud":
+            warns.append(
+                f"Tier 2 の最終ランが env={_env}（v{_ran}）— **配布判断には cloud ランが要る**。"
+                f" ローカルは hook 配線が環境依存（escalations E4）で、永続フォルダ未接続なら"
+                f" knowledge/ 系（ブランド区画・ダッシュボード）を測れない"
+            )
+
 # --- 27. 番号で他所を指す引用が、実在する番号を指しているか
 #         （2026-07-26 全体CHECK で導入。本プロダクトは正本を**番号で**指す箇所が多い —
 #          `session-rules (11)`・`Step H`・`lint #23`。**番号は改番・削除で静かにずれる**が、
@@ -740,6 +768,19 @@ for _n, _c in _coll.Counter(_lint_nums).items():
         err(f"scripts/lint.py: チェック番号 #{_n} が{_c}回使われている"
             f"（**番号で他所を指す仕組みなので、番号自体が一意でないと引用先が定まらない**）")
 _lint_set = set(_lint_nums)
+
+# 番号が昇順に並んでいること（2026-07-26 追加）。
+# 番号で他所を指す以上、**ファイルの中でその番号を探せる**必要がある。
+# 実際 #16 と #26 が本来の位置から外れており、#26 は #19 より前に置かれていた。
+# 番号順に並べておけば、引用された番号から二分探索的に辿れる。
+_key = lambda _s: (int(re.match(r"\d+", _s).group()), _s)
+if _lint_nums != sorted(_lint_nums, key=_key):
+    _first = next(i for i in range(1, len(_lint_nums))
+                  if _key(_lint_nums[i]) < _key(_lint_nums[i - 1]))
+    err(f"scripts/lint.py: チェック番号が昇順に並んでいない"
+        f"（#{_lint_nums[_first - 1]} の次が #{_lint_nums[_first]}）。"
+        f"**番号で指す仕組みなので、その番号をファイル内で探せる並びにする**。"
+        f"一覧は `python3 scripts/lint.py --list`")
 
 _rules_txt = ROOT / "hooks/scripts/session-rules.txt"
 _rule_ids = set(re.findall(r"^\((\d+[a-z]?)\)", read(_rules_txt), re.M)) if _rules_txt.is_file() else set()
@@ -930,11 +971,8 @@ else:
 #          振り分けの案内（→ `skills/x`・併読）は対象外 — 全部載せると文脈を食い潰す） ---
 _MUST_READ = ("必ず", "に従い", "に従う", "Read し", "Read する", "読み込み", "審査前に")
 for _a in sorted((ROOT / "agents").glob("*.md")):
-    _raw = read(_a)
-    # frontmatter() は行単位の素朴なパーサでリスト値を持てないので #21 と同じ regex で取る
-    _blk = re.search(r"^skills:\s*$\n((?:\s+-\s+\S+\n)+)", _raw, re.M)
-    _pre = set(re.findall(r"-\s+(\S+)", _blk.group(1))) if _blk else set()
-    for _ln in _raw.splitlines():
+    _pre = preloaded_skills(_a)
+    for _ln in read(_a).splitlines():
         if not any(_m in _ln for _m in _MUST_READ):
             continue
         for _s in re.findall(r"skills/([a-z0-9-]+)", _ln):
@@ -942,6 +980,97 @@ for _a in sorted((ROOT / "agents").glob("*.md")):
                 err(f"agents/{_a.name}: 本文が `skills/{_s}` の**必読**を指示しているのに "
                     f"`skills:` preload に無い（Read はエージェントによって拒否される — E-2 実測。"
                     f"判定の根拠にするなら preload に載せる。案内だけなら『必ず』『に従い』を外す）")
+
+# --- 35. frontmatter が **本物の YAML として** 妥当か
+#         （2026-07-26 導入。上の frontmatter() は行単位の素朴なパーサで、YAML として壊れていても
+#          「それらしい dict」を返してしまう。そのせいで agents/design-artisan.md の description に
+#          `model: sonnet` と地の文で書かれていた事故を**8日間見逃した** —
+#          公式バリデータの言葉では「At runtime this agent loads with **empty metadata**
+#          (all frontmatter fields silently dropped)」。model も effort も skills preload も
+#          tools 制限も、**全部が無言で捨てられていた**。
+#          同じ形の事故が procedures の argument-hint（`[a | b]（…）` が flow sequence の
+#          途中で終わる）にも3件あった。CI では公式バリデータも回すが、
+#          **手元で python3 scripts/lint.py だけ叩いたときにも落ちる**必要があるのでここでも見る） ---
+try:
+    import yaml as _yaml
+except ImportError:
+    _yaml = None
+    warns.append("PyYAML が無いので frontmatter の YAML 妥当性を検査できない"
+                 "（`pip install pyyaml`。CI では入れてある）")
+if _yaml is not None:
+    for _f in (sorted((ROOT / "commands").glob("*.md"))
+               + sorted((ROOT / "agents").glob("*.md"))
+               + sorted((ROOT / "skills").glob("*/SKILL.md"))
+               + sorted((ROOT / "procedures").glob("*.md"))):
+        _m = re.match(r"^---\n(.*?)\n---\n", read(_f), re.S)
+        if not _m:
+            continue
+        try:
+            _parsed = _yaml.safe_load(_m.group(1))
+        except Exception as _e:
+            err(f"{_f.relative_to(ROOT)}: frontmatter が YAML として壊れている"
+                f"（{str(_e).splitlines()[0]}）。**実行時は frontmatter 全体が無言で捨てられる** — "
+                f"値に `: ` を含めるなら全体を \" \" で囲む")
+            continue
+        if not isinstance(_parsed, dict):
+            err(f"{_f.relative_to(ROOT)}: frontmatter が辞書にならない"
+                f"（{type(_parsed).__name__}）。キー: 値 の形で書く")
+
+# --- 36. `/名前` と書けるのは登録コマンド9本だけ
+#         （2026-07-26 導入。v5.0.0 で 20本→9本に束ねたとき、コマンド**ファイル**は lint #29 が
+#          守り、台帳には移行表も作ったが、**地の文に残った旧名は誰も掃かなかった**。
+#          実害は 2026-07-26 の実機ランで出た — 匠ゲートの deny 文言が
+#          「旧 /タスク開始 でタスクを開始し」と、**存在しないコマンドを利用者に指示していた**。
+#          スラッシュ表記は「打てば動く」という約束なので、打てないものに使わない。
+#          内部手順は手順名（takumi-start）で書く。
+#          除外: TESTING.md（履歴ログ。当時の名称のまま残す方針）／台帳の移行表／「旧 /◯◯」表記 ---
+_cmd_names = {p.stem for p in (ROOT / "commands").glob("*.md")}
+_slash = re.compile(r"(?:(?<=^)|(?<=[\s（(「『]))/([ぁ-んァ-ヴー一-龠]{2,10})", re.M)
+for _f in sorted(ROOT.rglob("*")):
+    if (not _f.is_file() or ".git" in _f.parts
+            or _f.suffix not in (".md", ".sh", ".txt", ".py", ".json")):
+        continue
+    _rel = _f.relative_to(ROOT).as_posix()
+    if _rel in _HISTORY_FILES:
+        continue
+    _t = read(_f)
+    if _rel == "docs/command-registry.md":  # 旧名→新名の移行表は旧名が出て当然
+        _t = re.sub(r"### 旧コマンド名からの対応.*?(?=\n## )", "", _t, flags=re.S)
+    _t = re.sub(r"旧 /[ぁ-んァ-ヴー一-龠]{2,10}", "", _t)  # 「旧 /素材探し」は履歴の明示
+    for _mm in _slash.finditer(_t):
+        if _mm.group(1) not in _cmd_names:
+            err(f"{_rel}: `/{_mm.group(1)}` は登録コマンドに無い"
+                f"（スラッシュ表記は「打てば動く」約束。登録9本以外は手順名で書く — "
+                f"内部手順はスラッシュを付けず takumi-start のように書く。"
+                f"旧名を残すなら「旧 」を前に付ける）")
+
+# --- 37. 「◯◯.md の『節名』が正本」と名指しした節が実在するか
+#         （2026-07-26 全体CHECK で導入。lint #27 は**番号**で指す引用を守っていたが、
+#          **節名**で指す引用は誰も見ていなかった。実際 `rm-guard` / `ov-gate` /
+#          `brand-isolation-guard` / `agent-parallel-gate` の4本が
+#          「TESTING.md『GATE_MODE 昇格』節が正本」と書いていたのに、**その節は存在しなかった**。
+#          ゲートを deny に上げてよい条件という**いちばん慎重に扱うべき手順が、
+#          正本を持たないまま4箇所から参照されていた**。
+#          内容の引用（「最大2周」など）は対象外 — 「節」「が正本」と明示されたものだけを見る ---
+_sec_cite = re.compile(r"([A-Za-z0-9_./-]+\.md)\s*(?:の)?「([^」]{2,40})」\s*(?:節|が正本|の節)")
+for _f in sorted(ROOT.rglob("*")):
+    if (not _f.is_file() or ".git" in _f.parts
+            or _f.suffix not in (".md", ".sh", ".py", ".txt")):
+        continue
+    _rel = _f.relative_to(ROOT).as_posix()
+    if _rel in _HISTORY_FILES:
+        continue
+    for _mm in _sec_cite.finditer(read(_f)):
+        _tgt, _sec = _mm.group(1), _mm.group(2)
+        _p = next((c for c in (ROOT / _tgt, _f.parent / _tgt, ROOT / "docs" / _tgt)
+                   if c.is_file()), None)
+        if _p is None:
+            err(f"{_rel}: 「{_sec}」の正本として {_tgt} を指しているが、そのファイルが無い")
+            continue
+        if not any(_sec in _h for _h in re.findall(r"^#{1,6}\s+(.*)$", read(_p), re.M)):
+            err(f"{_rel}: {_tgt} に「{_sec}」という節が無い"
+                f"（節名で正本を指すなら、その名前の見出しを実在させる。"
+                f"節を改名したら参照元も直す）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "

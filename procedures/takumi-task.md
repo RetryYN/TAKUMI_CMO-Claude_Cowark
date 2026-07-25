@@ -1,6 +1,6 @@
 ---
-description: 定常タスクの自動追加 — ヒアリングからタスクYAML・スキル割当・ループ登録・ダッシュボード連動までを一括構築する。Use when ユーザーが「〜を定常タスクにして」「毎朝◯◯するようにして」「タスクを追加して」「この作業を毎回やって」等、繰り返し実行する業務の登録を求めたとき。単発の変更作業は /タスク開始 へ。
-argument-hint: [register <タスク名> | list | remove <タスク名>]（省略時は register）
+description: 定常タスクの自動追加 — ヒアリングからタスクYAML・スキル割当・ループ登録・ダッシュボード連動までを一括構築する。Use when ユーザーが「〜を定常タスクにして」「毎朝◯◯するようにして」「タスクを追加して」「この作業を毎回やって」等、繰り返し実行する業務の登録を求めたとき。単発の変更作業は takumi-start へ。
+argument-hint: "[register <タスク名> | list | remove <タスク名>]（省略時は register）"
 ---
 
 定常タスク管理を実行してください。サブコマンド: $ARGUMENTS
@@ -23,7 +23,7 @@ argument-hint: [register <タスク名> | list | remove <タスク名>]（省略
 - 送信/公開/投稿/保存を含むステップは **destructive を明示**（Step H で人の承認を必ず通る設計にする）
 - `generate_text` にはスキル台帳（docs/command-registry.md）からドメインに合うスキルを割当
   （投稿=content-design+sns-jp、コピー=copywriting 等）
-- 同種の文面生成を高頻度で行うタスクなら、あわせて /スキル化 でのワークスペーススキル化を提案する
+- 同種の文面生成を高頻度で行うタスクなら、あわせて takumi-skillify でのワークスペーススキル化を提案する
 
 ### 3. ナレッジの足場
 
@@ -89,7 +89,7 @@ YAML 案を確定する前に、strategy-advisor サブエージェントに (a)
 
 ### 7. 以後の実行（このコマンドの仕事ではない）
 
-- 実行は従来どおり **/タスク開始** が担う: 「<タスク名>やって」→ takumi-start が `tasks/<タスク名>.yaml` を読み、steps を実行計画の正として A〜K を回す（destructive ステップは H で承認）
+- 実行は従来どおり **takumi-start** が担う: 「<タスク名>やって」→ takumi-start が `tasks/<タスク名>.yaml` を読み、steps を実行計画の正として A〜K を回す（destructive ステップは H で承認）
 - ダッシュボードは `tasks/*.yaml` + `loops.yaml` を読んでタスク一覧・タブ・次回実行を自動反映する
 
 ## list

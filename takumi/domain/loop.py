@@ -80,7 +80,7 @@ class DownstreamLoop:
         current: dict[str, float],
         threshold: float = 0.05,
     ) -> list[str]:
-        """伸びが閾値未満のノード＝ /戦略 の再立案フラグ。
+        """伸びが閾値未満のノード＝ /匠戦略 の再立案フラグ。
 
         threshold は前回比の増加率（0.05 = 5%）。前回値が 0 のノードは、
         今回値が 0 のときだけ停滞とみなす（0 → 正の値は伸びとして扱う）。

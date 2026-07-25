@@ -208,4 +208,9 @@ Claude Code はエンジニアの開発環境だ。ターミナルがあり、�
 | 開発規約（TDD・DDD・二層検証・リリース手順） | [docs/開発ワークフロー.md](docs/開発ワークフロー.md) |
 | ドメインモデル（Brand 集約・KPIツリー） | [docs/domain-model.md](docs/domain-model.md) |
 | 本体側でしか直せない課題 | [docs/escalations.md](docs/escalations.md) |
-| 検証の記録 | [TESTING.md](TESTING.md) |
+| いま何が検証済みで何が未実施か | [TESTING.md](TESTING.md) |
+| 第1〜8ランの過去ログ | [TESTING-HISTORY.md](TESTING-HISTORY.md) |
+
+## ライセンス
+
+[MIT](LICENSE)。自由に使用・改変・再配布してよい（著作権表示を残すこと）。

@@ -1,6 +1,6 @@
 ---
 description: プラグイン自己検証 — 検証項目を自動実行し、PASS/FAIL/SKIP の検証報告書を生成する（開発者へのフィードバック用）。Use when ユーザーが「検証して」「セルフテストして」「動作確認して」「プラグインのテストを回して」と求めたとき、またはプラグイン更新後の動作確認時。
-argument-hint: [quick（普段の簡易点検） | full（全項目） | evals（golden タスクだけを回す） | perfect（全項目+evals+E2E+網羅率マトリクス）]（省略時は quick）
+argument-hint: "[quick（普段の簡易点検） | full（全項目） | evals（golden タスクだけを回す） | perfect（全項目+evals+E2E+網羅率マトリクス）]（省略時は quick）"
 ---
 
 プラグインの自己検証を実行してください。モード: $ARGUMENTS
@@ -39,7 +39,7 @@ argument-hint: [quick（普段の簡易点検） | full（全項目） | evals�
 3. **Step E** で開始時刻と環境（cloud か・hook が配線されているか）を記録する
 4. **Step G** で下表を上から実行する。**1項目ごとに PASS / FAIL / SKIP(理由) を確定してから次へ進む**
 5. **Step I** で結果を集計し、`knowledge/verification/<date>-verify.md` に記録
-6. **Step K** で報告し、**FAIL 0 なら TESTING.md の `<!-- tier2-verified: x.y.z -->` を現行バージョンに更新する**
+6. **Step K** で報告し、**FAIL 0 なら TESTING.md の `<!-- tier2-verified: <version> env=<cloud|local> -->` を 現行バージョンと**実行環境**に更新する**（`env` を偽らない — ローカルランを cloud と書くと「配布してよい」と読まれる。lint #26 が env≠cloud のとき別文言で WARN する）
 
 > **後片付けは「この検証で自分が作成したファイル」だけ**。作成時に記録したパスを1件ずつ個別に `rm` する
 > （フォルダ一括削除・グロブ削除・`rm -r` は禁止。`outputs/` や `knowledge/` の既存物には触れない）。
@@ -134,7 +134,8 @@ TAKUMI-CMO の検証は**二層**に分かれる。この手順書は両方を�
 
 | # | 項目 | 手順 | PASS基準 |
 |---|---|---|---|
-| V24 | lint | `python3 scripts/lint.py`（プラグインルートで。python3 不在なら python） | `lint: OK`（参照整合・frontmatter・台帳・バージョン一致） |
+| V24 | lint | `python3 scripts/lint.py`（プラグインルートで。python3 不在なら python） | `lint: OK`（参照整合・frontmatter・台帳・バージョン一致）。チェックの一覧は `--list` |
+| V86 🔁 | 公式バリデータ | `claude plugin validate .claude-plugin/plugin.json --strict` と `… marketplace.json --strict` の2本を実行（`claude` CLI が無ければ SKIP・理由を明記） | 両方 `Validation passed`。**必ず manifest のパスを直接渡す** — `claude plugin validate .`（ディレクトリ指定）は marketplace.json しか見ず**コンポーネントを歩かない**ので、agents の frontmatter が壊れていても緑になる（2026-07-26 実測）。**スキーマの正本は公式側にあり、自前 lint では代替できない**（同日、`description` に `model: sonnet` と書いたせいで design-artisan の frontmatter が YAML として壊れ、**実行時に model・effort・skills preload・tools が全部無言で捨てられていた**のを、公式バリデータが1回で検出した） |
 | V25 | hooks回帰 | `bash scripts/test-hooks.sh`（bash 前提。Git Bash が起動できない環境＝`CreateFileMapping error 5` 等では SKIP とし、理由を報告に明記。WSL か Linux コンテナでの代替実行可） | `test-hooks: ALL PASS`（防御系） |
 | V42 | ドメイン層ユニットテスト | `python3 -m unittest discover -s tests -t .`（プラグインルートで） | `OK`（74件以上）。**ゼロ広告費の不変条件**（`KpiNode` が CAC/LTV/ROAS/CPA/広告費 等の有料指標を ValueError で拒否）と**ブランド区画の境界判定**（`BrandPartition.contains()` が兄弟プレフィックスを誤包含しない）が緑であること — hook が沈黙してもこの2つはドメイン層で守られる（escalations E5） |
 | V49 🔁 | ワークスペース検証 | ワークスペース（`knowledge/` のある場所）で `python3 <プラグインルート>/scripts/lint.py --workspace .` を実行 | `lint: ワークスペース検証 OK` が出る。ブランド台帳と区画の双方向一致・`.active-brand` と台帳の一致・KPIツリーが有料指標を持たないこと・キャンペーンの目標KPIがツリーに実在することが実データで検証される。違反があれば `[ワークスペース]` つきで列挙される（PyYAML 不在時は WARN でスキップ＝FAIL ではない） |
