@@ -12,7 +12,21 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 - Cowork 設定 →プラグイン→ marketplace としてリポジトリURL（`RetryYN/TAKUMI_CMO-Claude_Cowark`）を追加 → プラグインを有効化。
 - **更新検知は `.claude-plugin/plugin.json` / `marketplace.json` の `version` フィールド**。bump しないと利用者に更新が反映されない（`scripts/bump-version.sh` で両ファイル同時更新）。
 - **`name` は必ず kebab-case（小文字・数字・ハイフンのみ）**。非 kebab-case の名前は **claude.ai marketplace 同期が拒否**する（Cowork 配布では致命的）。現状 plugin=`takumi-cmo` / marketplace=`retryyn-takumi-cmo` は適合。
-- ルート直下に `.claude-plugin/`・`commands/`・`procedures/`・`hooks/`・`agents/`・`references/`・`templates/`・`docs/`・`scripts/` を置く（本リポジトリはこの構造）。**`.claude-plugin/` に入るのはマニフェストだけ**、他は各トップレベルディレクトリ。プラグイン実体は cache へコピーされるため `../` 外部参照は不可（相対不達 → Glob フォールバック。§4）。
+- **`.claude-plugin/` に入るのはマニフェストだけ**、他は各トップレベルディレクトリに置く。プラグイン実体は cache へコピーされるため `../` 外部参照は不可（相対不達 → Glob フォールバック。§4）。
+- ルート直下の構成（**リポジトリ全体がそのまま配布物**なので、dev-side のファイルも利用者の cache にコピーされる。害はないが「配布されない」と誤解しないこと）:
+
+| ディレクトリ | 役割 | Cowork が自動探索するか |
+|---|---|---|
+| `.claude-plugin/` | マニフェスト（plugin.json / marketplace.json） | する |
+| `commands/` | スラッシュコマンド（日本語名） | **する** |
+| `agents/` | サブエージェント定義 | **する** |
+| `hooks/` | hooks.json + スクリプト | **する**（cloud。§2） |
+| `procedures/` | コマンドが Read する手順書の実体 | しない（commands から明示 Read） |
+| `references/` | 執筆・計測リファレンス（SKILL.md 形式） | **しない**（→ §4b） |
+| `templates/` `docs/` | 雛形・正本ドキュメント | しない（明示 Read） |
+| `scripts/` | lint / bump / hooks テスト | しない（dev-side） |
+| `takumi/` `tests/` | ドメインモデル（Python）と単体テスト | しない（dev-side。Tier 1 と `--workspace` 検証で使う。[domain-model.md](domain-model.md)） |
+| `.github/` | CI（lint / unittest / shellcheck / hooks） | しない（dev-side） |
 - 配布前のローカル検証に CLI `claude plugin validate .` が使える（marketplace/plugin.json スキーマ・frontmatter・hooks.json の JSON 妥当性）。ただし CLI 検証が通っても Cowork で hook が発火する保証にはならない（§2）。
 
 ## 2. hooks の配線挙動（最重要）
