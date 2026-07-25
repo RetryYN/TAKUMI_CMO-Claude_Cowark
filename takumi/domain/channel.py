@@ -17,13 +17,18 @@ from .paid_guard import EN_PAID_CHANNELS, JA_PAID_CHANNELS, find_paid_token
 
 
 class ChannelKind(Enum):
-    """媒体の種別（すべてオーガニック）。"""
+    """媒体の種別（すべてオーガニック）。
+
+    マーケティングの三分類 Owned / Earned / Paid のうち、**Paid は構造的に持たない**
+    （ゼロ広告費）。SNS〜メールは Owned（自社の場）、EARNED は他者の場・他者の口。
+    """
 
     SNS = "SNS"
     CONTENT = "コンテンツ"
     WEBSITE = "Webサイト"
     OWNED_MEDIA = "オウンドメディア"
     EMAIL = "メール"
+    EARNED = "広報・連携"   # 他者の場を借りる（広報・パートナー・コミュニティ）
 
 
 @dataclass(frozen=True)
