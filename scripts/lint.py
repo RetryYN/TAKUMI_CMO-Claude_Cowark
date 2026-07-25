@@ -1072,6 +1072,32 @@ for _f in sorted(ROOT.rglob("*")):
                 f"（節名で正本を指すなら、その名前の見出しを実在させる。"
                 f"節を改名したら参照元も直す）")
 
+# --- 38. marketplace の plugin source が「URL で追加しても壊れない」形か
+#         （2026-07-26 導入。実利用者の Cowork で「マーケットプレイスの更新に失敗しました」が出た。
+#          原因は `"source": "./"`（相対パス）。一次情報:
+#            「URL ベースの marketplace は **marketplace.json 自体しかダウンロードしない**。
+#             サーバ上のプラグインファイルは落とさないので、相対パスは解決できない。
+#             URL 配布では GitHub・npm・git URL のソースを使うこと」
+#          手元で再現済み — URL で追加 → install すると
+#          `ENOTDIR: not a directory, scandir .../marketplaces/retryyn-takumi-cmo`
+#          （marketplace.json が**ファイルとして**そこに置かれ、ディレクトリではないため）。
+#          git clone 経由の追加では動くので、**追加の仕方によって壊れる**＝いちばん再現しにくい形。
+#          明示 github ソースはどの経路でも動くので、相対パスを機械的に禁じる） ---
+_mkt = json.loads(read(ROOT / ".claude-plugin/marketplace.json"))
+for _pl in _mkt.get("plugins", []):
+    _src = _pl.get("source")
+    if isinstance(_src, str):
+        err(f".claude-plugin/marketplace.json: `{_pl.get('name')}` の source が相対パス "
+            f"`{_src}`。**URL で marketplace を追加した利用者は install できない**"
+            f"（marketplace.json しか落ちてこないので相対パスが解決しない）。"
+            f'`{{"source": "github", "repo": "owner/repo"}}` の形にする')
+    elif isinstance(_src, dict):
+        if _src.get("source") == "github" and not re.fullmatch(r"[\w.-]+/[\w.-]+", _src.get("repo", "")):
+            err(f".claude-plugin/marketplace.json: `{_pl.get('name')}` の repo が "
+                f"`owner/repo` 形式でない（{_src.get('repo')!r}）")
+    else:
+        err(f".claude-plugin/marketplace.json: `{_pl.get('name')}` に source が無い")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
