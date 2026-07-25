@@ -21,6 +21,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from .enum_guard import require_enum
+
 # 景品類に当たらないもの（消費者庁が規制対象外として挙げる例）。
 # **自動分類はしない** — 種別は呼び出し側が明示する（`PremiumKind`）。
 # 自動判定は過剰検知（適法な施策を止める）と過小検知（違法な施策を通す）の両方を生み、
@@ -75,6 +77,8 @@ class PremiumOffer:
     total_premium_yen: int | None = None
 
     def __post_init__(self) -> None:
+        # 種別が enum でなければ、以下の上限分岐がすべて偽になって素通りする（2026-07-26 F-1）
+        require_enum(self.kind, PremiumKind, "kind（提供方法）")
         if self.transaction_value_yen <= 0:
             raise ValueError(
                 f"取引の価額は正の数でなければならない: {self.transaction_value_yen}"
@@ -93,7 +97,12 @@ class PremiumOffer:
             return _totsuke_max(self.transaction_value_yen)
         if self.kind is PremiumKind.GENERAL_LOTTERY:
             return _general_lottery_max(self.transaction_value_yen)
-        return 300_000  # 共同懸賞は取引価額にかかわらず30万円
+        if self.kind is PremiumKind.JOINT_LOTTERY:
+            return 300_000  # 共同懸賞は取引価額にかかわらず30万円
+        # ここに落ちるのは PremiumKind に種別を足して上限を書き忘れたとき。
+        # **最後の分岐を「その他」の受け皿にしない** — 30万円（最も緩い上限）が
+        # 新種別の既定になって黙って通ってしまう。判定不能として止める。
+        raise ValueError(f"上限が定義されていない提供方法: {self.kind!r}")
 
     def max_total_premium_yen(self) -> int | None:
         """景品類の総額の上限。総付景品には総額規制が無いため None。

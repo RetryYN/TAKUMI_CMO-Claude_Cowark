@@ -39,7 +39,7 @@ argument-hint: "[quick（普段の簡易点検） | full（全項目） | evals�
 3. **Step E** で開始時刻と環境（cloud か・hook が配線されているか）を記録する
 4. **Step G** で下表を上から実行する。**1項目ごとに PASS / FAIL / SKIP(理由) を確定してから次へ進む**
 5. **Step I** で結果を集計し、`knowledge/verification/<date>-verify.md` に記録
-6. **Step K** で報告し、**FAIL 0 なら TESTING.md の `<!-- tier2-verified: <version> env=<cloud|local> -->` を 現行バージョンと**実行環境**に更新する**（`env` を偽らない — ローカルランを cloud と書くと「配布してよい」と読まれる。lint #26 が env≠cloud のとき別文言で WARN する）
+6. **Step K** で報告し、TESTING.md の `<!-- tier2-verified: <version> env=<cloud|local> fail=<件数> -->` を **現行バージョン・実行環境・実測の FAIL 件数**に更新する（`env` を偽らない — ローカルランを cloud と書くと「配布してよい」と読まれる。**`fail` も偽らない** — FAIL があったランを 0 と書けば配布ゲートが黙って開く。lint #26 が env≠cloud と fail>0 のそれぞれで WARN する）
 
 > **後片付けは「この検証で自分が作成したファイル」だけ**。作成時に記録したパスを1件ずつ個別に `rm` する
 > （フォルダ一括削除・グロブ削除・`rm -r` は禁止。`outputs/` や `knowledge/` の既存物には触れない）。

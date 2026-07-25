@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from .enum_guard import require_enum
 from .paid_guard import EN_PAID_METRICS, JA_PAID_METRICS, find_paid_token
 
 
@@ -32,6 +33,7 @@ class KpiNode:
     children: list["KpiNode"] = field(default_factory=list)
 
     def __post_init__(self) -> None:
+        require_enum(self.kind, KpiKind, "kind（指標の種別）")
         hit = find_paid_token(self.name, JA_PAID_METRICS, EN_PAID_METRICS)
         if hit:
             raise ValueError(

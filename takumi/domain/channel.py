@@ -13,6 +13,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 
+from .enum_guard import require_enum
 from .paid_guard import EN_PAID_CHANNELS, JA_PAID_CHANNELS, find_paid_token
 
 
@@ -39,6 +40,7 @@ class Channel:
     kind: ChannelKind
 
     def __post_init__(self) -> None:
+        require_enum(self.kind, ChannelKind, "kind（媒体の種別）")
         if not isinstance(self.name, str) or not self.name.strip(" 　"):
             raise ValueError(f"媒体名が空です: {self.name!r}")
         hit = find_paid_token(self.name, JA_PAID_CHANNELS, EN_PAID_CHANNELS)

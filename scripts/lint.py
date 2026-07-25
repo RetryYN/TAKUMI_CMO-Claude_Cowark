@@ -730,17 +730,29 @@ if _si.is_file() and _sj.is_file():
 #          **配布判断は cloud ランでしか代替できない** — ローカルは hook 配線が環境依存（E4）で、
 #          かつ永続フォルダ未接続だと knowledge/ 系が丸ごと測れない。
 #          バージョンだけのマーカーでは「ローカルで通ったから配布してよい」と読める余地が残る） ---
+#         （2026-07-26 追記2: マーカーに `fail=` を足した。配布判断の規定は
+#          「Tier 1 緑 ＋ 直近の Tier 2 が **FAIL 0**」だが、FAIL 件数はどこにも機械可読で無く、
+#          **文章でしか書かれていなかった**。第10ラン（v5.5.0）が FAIL 1 を出したことで、
+#          「版と env が揃えば緑になる」＝FAIL を積んだまま配布可に見える穴が実際に見えた） ---
 _testing = ROOT / "TESTING.md"
 if _testing.is_file():
-    _m = re.search(r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s*-->", read(_testing))
+    _m = re.search(
+        r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s+fail=(\d+)\s*-->", read(_testing)
+    )
     if not _m:
-        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> --> マーカーが無い"
-            "（最後に実機検証したバージョンと**実行環境**を機械可読で持つ。"
-            "環境が無いと『ローカルで通った』を配布可と読み違える）")
+        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> --> "
+            "マーカーが無い（最後に実機検証したバージョン・**実行環境**・**FAIL件数**を機械可読で持つ。"
+            "環境が無いと『ローカルで通った』を配布可と読み違え、"
+            "FAIL件数が無いと『版が揃っている』だけで緑に見える）")
     else:
-        _ran, _env = _m.group(1), _m.group(2)
+        _ran, _env, _fail = _m.group(1), _m.group(2), int(_m.group(3))
         if _env not in ("cloud", "local"):
             err(f"TESTING.md: tier2-verified の env={_env} は不正（cloud か local）")
+        if _fail > 0:
+            warns.append(
+                f"Tier 2 の最終ラン（v{_ran}）に FAIL が {_fail} 件ある — **配布判断は FAIL 0 が条件**。"
+                f" 直したら再ランして fail=0 に更新すること（直した“つもり”では下げない）"
+            )
         if _ran != plugin["version"]:
             warns.append(
                 f"Tier 2 実機検証が未実施: 最終ラン={_ran}（env={_env}） / 現行={plugin['version']}"

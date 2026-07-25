@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
   "name": "takumi-cmo",
   "displayName": "匠CMO",
-  "version": "5.5.0",
+  "version": "5.5.1",
   "description": "匠CMO — ゼロ広告費のコンテンツドリブンで複数ブランドを無双させるマルチブランド対応マーケティングエンジン。匠の∞ループ（上流の戦略と下流の実行を計画と計測で結び、戦略も実行も匠の技で磨く）で1ブランドに統合的な施策戦略を打つ",
   "author": {
     "name": "RetryYN",

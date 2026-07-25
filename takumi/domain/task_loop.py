@@ -29,6 +29,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 
+from .enum_guard import require_enum
+
 # 差し戻して作り直してよい回数。**これを超えたら設計が悪い**ので人間に返す。
 # （docs/parts/page-improve.md の「最大2周」を全タスクの規則へ引き上げたもの）
 MAX_ROUNDS = 2
@@ -74,6 +76,9 @@ class Step:
     phase: LoopPhase
     agent: str
     verdict: str | None = None
+
+    def __post_init__(self) -> None:
+        require_enum(self.phase, LoopPhase, "phase（ループの局面）")
 
     @property
     def sent_back(self) -> bool:
