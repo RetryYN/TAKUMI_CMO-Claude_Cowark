@@ -154,6 +154,15 @@ SWOT の4象限は**分類**にすぎない。**掛け合わせて初めて施�
 - **市場が自然に成長する前提を置く**（日本は人口減が前提）
 - **分析を止めない**（決めるために分析している）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **A. 環境と人を知る**
+
+- **前段**（先に決まっているべきこと）: **ここが調べものの入口**（`docs/parts/foundation-analysis.md` ①）。前提は要らないが、**何を決めるための分析かを先に書く**
+- **後段**（ここで決めたら次に開く）: `skills/stp-jp`（誰に売るか）→ `skills/winning-position-jp`（どこで戦うか）／`skills/scale-strategy-jp`（規模に合う戦い方）／`skills/business-model-jp`（そもそも儲かるか）
+- **併用**（同時に開く）: `skills/social-insight-jp`（環境を人の行動まで降ろす）／`skills/growth-teardown-jp`（競合を実物で解剖する）／`skills/quant-research-jp`（数字を取りにいくなら）
+- **正本が別**: 違和感を仮説にする型は `skills/hypothesis-design-jp`
+
 ## 出典
 
 **【一次情報・入手先（数値を引くときはここから）】**

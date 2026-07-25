@@ -43,6 +43,15 @@ description: 行動経済学・ナッジの日本実証に基づく訴求フレ�
 - **S**ocial: 規範の数字は実数か。否定的な層・若年層に向けていないか
 - **T**imely: タイミングは合っているか（契約更新期・期初期末など、検討の入口か出口か）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **E. 効かせる**
+
+- **前段**（先に決まっているべきこと）: `skills/stp-jp`（誰に）／`skills/social-insight-jp`（その人の制約。**時間が無い相手に訴求は効かない**）
+- **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/sales-writing`／`skills/cro-jp`（フレームの勝ち負けを測る）
+- **併用**（同時に開く）: `skills/psych-target-jp`（読み手別）／`skills/offer-design-jp`（フレーム以前にオファー）／`skills/psych-ux-jp`
+- **正本が別**: 煽り・恐怖訴求・偽の希少性の禁止は session-rules (3) と `skills/ad-compliance-jp`
+
 ## 出典（主要）
 
 環境省ナッジ・ユニットBEST（env.go.jp）/ 厚労省「受診率向上施策ハンドブック」/ 大竹文雄・佐々木周作 RIETI 21-J-023 / Cancerscan 八王子事例 / 消費者庁ダークパターン実態調査（2025）/ PNAS 2022 メタ分析再検証

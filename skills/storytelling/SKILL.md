@@ -133,3 +133,12 @@ After:  15分で決まり、残りは「どう良くするか」の話になっ�
 - [ ] 数字は実測値で、期間と条件を併記した
 - [ ] 葛藤・転機・一人称の言葉が揃っている（欠けたまま美文で埋めていない）
 - [ ] 体験談の形式を取るなら `skills/ad-compliance-jp` を通した
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/messaging-design-jp`（柱）／`skills/voc-research-jp`（本人の言葉）／`skills/brand-guideline-jp`
+- **後段**（ここで決めたら次に開く）: `skills/ad-compliance-jp`（体験談は打消し表示の対象）／`skills/sns-jp`／`skills/content-design`
+- **併用**（同時に開く）: `skills/psych-target-jp`（誰の物語として読ませるか）／`skills/copywriting`
+- **正本が別**: 掲載の許諾と個人情報は `privacy-auditor`（サブエージェント）

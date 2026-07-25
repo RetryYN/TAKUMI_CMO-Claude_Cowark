@@ -81,3 +81,12 @@ description: ショート動画の台本設計 — 15/30秒動画の台本・絵
 - [ ] CTA が具体的な行動+LP と同一文言か
 - [ ] 尺・比率・テロップ量が出稿先の型に合っているか
 - [ ] フック代案が3本あるか（ABテスト前提）
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/breakout-content-jp`（どの段で落ちているか）／`skills/messaging-design-jp`
+- **後段**（ここで決めたら次に開く）: `skills/ad-compliance-jp`（公開前）／`skills/sns-jp`（出す面）
+- **併用**（同時に開く）: `skills/storytelling`（構成）／`skills/copywriting`（フック）／`skills/design-evidence-jp`（字幕の可読性）
+- **正本が別**: 制作手順は `docs/parts/video-content-script.md` / `docs/media-pipeline.md`

@@ -68,3 +68,12 @@ description: 日本市場SNS運用 — LINE/X/Instagram/TikTok/YouTube の日本
 - [ ] 時事・センシティブ文脈に触れていないか（触れるなら人間承認を明示要求）
 - [ ] PR・タイアップなら「#PR」表記があるか → 詳細は ad-compliance-jp スキル
 - [ ] LINE なら配信頻度が週1以内か
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/channel-planning-jp`（1媒体1役割）／`skills/messaging-design-jp`
+- **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/video-script`／`skills/ad-compliance-jp`（公開前）／`skills/engagement-reply-jp`（反応が来たら）
+- **併用**（同時に開く）: `skills/breakout-content-jp`／`skills/demand-timing-jp`／`skills/psych-nudge-jp`／`skills/social-insight-jp`（誰がその面にいるか）
+- **正本が別**: 媒体別の運用は `docs/sns-ops.md` と各媒体手順（`procedures/takumi-sns-*.md`）

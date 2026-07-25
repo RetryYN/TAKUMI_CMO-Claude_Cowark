@@ -70,6 +70,14 @@ description: 実証データつきデザイン数値基準 — タイポグラ�
 - 経験則マーカーのある項目は cro-jp の手順でAB/前後比較を組む
 - 統一骨格・CSS変数は templates/design-principles.md と docs/conventions.md が正本（本スキルは数値の根拠側）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **E. 効かせる**
+
+- **前段**（先に決まっているべきこと）: `skills/brand-guideline-jp`（ブランド側の決めごと。**数値はここで決めない**）
+- **後段**（ここで決めたら次に開く）: `skills/web-design`／`skills/cro-jp`（数値を変えて測る）／`skills/logical-writing`（グラフの選択）
+- **併用**（同時に開く）: `skills/psych-ux-jp`（なぜ効くか）／`skills/video-script`（字幕・可読性）
+
 ## 出典（主要）
 
 デジタル庁デザインシステムDADS / JIS X 8341-3・JIS S 0032・JIS X 4051 / W3C JLREQ・WCAG / CUDO推奨配色セットver.4 / モリサワUDフォント実証（×慶應中野研・×自治体n=294）/ 眼球運動による行長実験 / WACUL BtoB LP30件調査(2019) / NN/g アイトラッキング(2006/2018) / Cleveland & McGill(1984) / 総務省統計局グラフ作成ガイド

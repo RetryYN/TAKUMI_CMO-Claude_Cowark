@@ -192,6 +192,14 @@ description: 需要の山に乗る — 日本の年間カレンダーと検索�
 - **閑散期に発信を止める**（山のときに配信面での評価が落ちている）
 - **季節要因を排除せずに施策の成果と書く**（前年同月・競合比で確かめる）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **C. 計画する**
+
+- **前段**（先に決まっているべきこと）: `skills/channel-planning-jp`（どの面で出すか）／`skills/market-analysis-jp`（業界の周期）
+- **後段**（ここで決めたら次に開く）: `skills/content-ops-jp`（**新規制作の前に既存更新で取れないか**）／`skills/seo-jp`（3〜6か月前）／`skills/sns-jp`（直前〜当日）／`skills/breakout-content-jp`
+- **併用**（同時に開く）: `skills/search-console-jp`（自社の山を実測する）／`skills/kpi-design-jp`（季節要因を成果に数えない）／`skills/social-insight-jp`（生活の周期）
+
 ## 出典
 
 **【一次情報・確認済み】**

@@ -127,3 +127,11 @@ description: ロジカルライティング — データと論理で意思決�
 
 HTML成果物にするときは `docs/conventions.md` に従い、`templates/report-template.html` の骨格を使う
 （独自CSSの我流レポートは禁止）。グラフの選択とデザインの具体値は `skills/design-evidence-jp`。
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/hypothesis-design-jp`（問い）／`skills/quant-research-jp`（データ）／`skills/kpi-design-jp`（指標の定義）
+- **後段**（ここで決めたら次に開く）: `skills/design-evidence-jp`（グラフの選択）／`skills/ga4-jp`（数字の出どころを明示する）
+- **併用**（同時に開く）: `skills/customer-analytics-jp`／`skills/business-writing`（社内に渡すとき）

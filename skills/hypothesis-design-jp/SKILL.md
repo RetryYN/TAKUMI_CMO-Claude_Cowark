@@ -139,6 +139,15 @@ description: 仮説の立て方と検証設計 — なぜそうなっている�
 - **相関を因果と読む**（「変えた週に増えた」だけなら**要因未特定**と書く → `skills/logical-writing`）
 - **判定不能を「効果あり」と書く**（間違った学習が組織に残り、以後の判断を歪める）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **C. 計画する**
+
+- **前段**（先に決まっているべきこと）: `skills/market-analysis-jp`／`skills/growth-teardown-jp`／`skills/voc-research-jp`（違和感の出どころ）
+- **後段**（ここで決めたら次に開く）: `skills/kpi-design-jp`（判定に使う指標）／`skills/cro-jp`（ABで確かめる）／`skills/quant-research-jp`（調べて確かめる）
+- **併用**（同時に開く）: 施策を出すスキルすべて（`skills/offer-design-jp`／`skills/breakout-content-jp`／`skills/channel-planning-jp`／`skills/seo-jp`）
+- **正本が別**: 結果の書き方は `skills/logical-writing`（相関と因果を混同しない）
+
 ## 出典・確からしさ
 
 - **観察→違和感→問い→仮説の順序、反証可能性、1回1変数**は、仮説検証の一般的な作法であり、

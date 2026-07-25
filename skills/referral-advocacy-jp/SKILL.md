@@ -197,6 +197,15 @@ PremiumOffer(PremiumKind.TOTSUKE, transaction_value_yen=5000, premium_value_yen=
 - **推奨を1回で消費する**（事例・記事にして積み上げる）
 - **掲載結果を相手に返さない**（次が無くなる）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/voc-research-jp`（**語る理由があるか先に確かめる**）／`skills/offer-design-jp`
+- **後段**（ここで決めたら次に開く）: `skills/business-writing`（依頼文）／`skills/engagement-reply-jp`（来た声に返す）／`skills/local-seo-jp`（地図の口コミ）
+- **併用**（同時に開く）: `skills/psych-target-jp`（頼み方）／`skills/ad-compliance-jp`（対価の表示）／`skills/customer-analytics-jp`（語る層）
+- **正本が別**: 特典の上限は `takumi/domain/premium.py`。**プラットフォームの規約は法規と別に効く**（`skills/local-seo-jp` §3）
+
 ## 出典
 
 **【一次情報・確認済み】**

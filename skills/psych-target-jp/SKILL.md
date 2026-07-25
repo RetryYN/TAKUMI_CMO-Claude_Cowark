@@ -53,6 +53,15 @@ description: 読み手の心理プロファイルに合わせた文面の書き�
 - 読み手を「診断」する物言い（「あなたは◯◯タイプなので」）をしない — プロファイルは書き手側の内部判断に留める
 - 送信前は pre-send-verifier の監査対象（この基準への適合も監査観点になる）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **E. 効かせる**
+
+- **前段**（先に決まっているべきこと）: `skills/social-insight-jp`（社会統計→条件の交点→制約）／`skills/stp-jp`
+- **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/sales-writing`／`skills/storytelling`／`skills/engagement-reply-jp`（応対の書き分け）
+- **併用**（同時に開く）: `skills/psych-nudge-jp`（訴求フレーム）／`skills/voc-research-jp`（**語彙は本人から取る**）
+- **正本が別**: 手順は `docs/parts/context-to-persona.md`。**成果物に「あなたは◯◯タイプ」と書かない**
+
 ## 出典（主要）
 
 エン・ジャパン スカウト意識調査(2024, n=3,800) / マイナビ 2025年卒就職意識調査 / 電通 Z世代就活生調査2025 / パーソル総合研究所（転職学1.2万人・ITエンジニア調査）/ 日本認知・行動療法学会 共通基盤マニュアル / J-STAGE 語用論・日本語教育研究（人称・ヘッジ）/ 消費者庁 景表法・ダークパターン実態調査(2025)

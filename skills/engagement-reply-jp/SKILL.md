@@ -231,6 +231,15 @@ UI は頻繁に変わるため、記憶で操作しない。
 - **深夜に感情のまま返す**（監視も判断も薄い時間帯）
 - **返さなかったことを記録しない**（次に同じ相手・同じ論点が来ても分からない）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/brand-guideline-jp`（トーン）／`skills/messaging-design-jp`（返信も表示）
+- **後段**（ここで決めたら次に開く）: `skills/voc-research-jp`（繰り返す不満は材料）／`skills/content-design`（繰り返す質問は記事に）／`skills/kpi-design-jp`
+- **併用**（同時に開く）: `skills/psych-target-jp`（相手より読む第三者）／`skills/local-seo-jp`（地図の口コミは追加の規約）／`skills/ad-compliance-jp`
+- **正本が別**: 危機に発展したら `/危機対応`（`procedures/takumi-crisis.md`）。**投稿は人間**
+
 ## 出典
 
 **【一次情報・確認済み】**

@@ -225,6 +225,15 @@ SmartHR が弁護士事務所に混ざれているのは、キーワードの詰
 - **記事の前半だけ読んで判断する**（§4(4)。差は後半にある）
 - **分解して満足する**（仮説と検証に落ちなければ、ただの読書）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **A. 環境と人を知る**
+
+- **前段**（先に決まっているべきこと）: `skills/market-analysis-jp`（誰を見るか）／`skills/stp-jp`（自社の立ち位置）
+- **後段**（ここで決めたら次に開く）: `skills/winning-position-jp`（**非対称かを必ず埋める**）／`skills/breakout-content-jp`／`skills/seo-jp`／`skills/content-ops-jp`
+- **併用**（同時に開く）: `skills/search-console-jp`（自社側の実測と突き合わせる）／`skills/hypothesis-design-jp`（観測→仮説）
+- **正本が別**: 実行手順は `docs/parts/growth-teardown.md`
+
 ## 出典
 
 **【一次情報・確認済み — 記事本文の直接観測（2026-07-25）】**

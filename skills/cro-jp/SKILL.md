@@ -41,3 +41,12 @@ description: CRO/ABテスト — LP・フォーム・配信文面の転換率改
 - ダークパターン禁止 — 偽のカウントダウン・在庫僅少の偽装・解約導線隠しは提案しない（信頼毀損 + 景表法リスク。ad-compliance-jp 参照）
 - 改善案のモックアップ化は page-improve 部品（design-artisan → design-critic）、実ページへの反映はタスク開始手順のゲート下で
 - 数値の解釈で相関と因果を混同しない（「変えた週に増えた」だけなら要因未特定と明記）
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **G. 測る**
+
+- **前段**（先に決まっているべきこと）: `skills/hypothesis-design-jp`（反証条件）／`skills/kpi-design-jp`（判定指標）／`skills/offer-design-jp`（**オファーが先。文言のABはその後**）
+- **後段**（ここで決めたら次に開く）: `skills/copywriting`／`skills/web-design`（勝った案を正本へ）／`skills/customer-analytics-jp`（どの層に効いたか）
+- **併用**（同時に開く）: `skills/psych-ux-jp`／`skills/psych-nudge-jp`／`skills/design-evidence-jp`／`skills/quant-research-jp`（**差が確認できなかった≠効果なし**）
+- **正本が別**: ダークパターン（解約導線を隠す等）は禁止 → `skills/ad-compliance-jp`

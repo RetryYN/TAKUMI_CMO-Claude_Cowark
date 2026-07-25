@@ -181,3 +181,11 @@ description: コピーライティング — 短く刺さるキャッチコピ�
 | YouTube サムネ | 〜9文字 | 一目で内容が分かる | 縮小表示でも読めるサイズ（→ design-evidence-jp） |
 
 **媒体をまたぐときは、骨子は同じままコピーを作り分ける。** 同一文面の一斉投稿はしない（→ `skills/sns-jp`）。
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **D. 作る**
+
+- **前段**（先に決まっているべきこと）: `skills/messaging-design-jp`（柱）／`skills/voc-research-jp`（顧客の語彙）／`skills/brand-guideline-jp`（一人称・禁止表現）
+- **後段**（ここで決めたら次に開く）: `skills/ad-compliance-jp`（**公開前は必ず通す**）／`skills/cro-jp`（勝ち負けを測る）
+- **併用**（同時に開く）: `skills/psych-nudge-jp`（訴求フレーム）／`skills/psych-target-jp`（読み手別）／`skills/seo-jp`（検索面）／`skills/design-evidence-jp`（字数と可読性）

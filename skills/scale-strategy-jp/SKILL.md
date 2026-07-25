@@ -220,6 +220,15 @@ ms.is_within_striking_distance(leader_share=0.40, mode=LanchesterMode.FIRST_LAW)
 - **兵力＝金だと思う**（ゼロ広告費では**時間が兵力**。だから集中しか手が無い）
 - **シェア目標値を「科学的根拠」として引用する**（→ §0・出典欄）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **B. 勝ち筋を決める**
+
+- **前段**（先に決まっているべきこと）: `skills/market-analysis-jp`（**分母＝市場の定義**）／`skills/stp-jp`
+- **後段**（ここで決めたら次に開く）: `skills/winning-position-jp`（細分化した先で何を武器にするか）／`skills/channel-planning-jp`（兵力の配分）／`skills/local-seo-jp`（商圏がある事業の局所優勢）
+- **併用**（同時に開く）: `skills/micro-business-jp`（一人〜少人数の型）／`skills/business-model-jp`（投下時間が原価）／`skills/growth-teardown-jp`
+- **正本が別**: 実行手順は `docs/parts/scale-strategy.md`。分母の強制は `takumi/domain/market_share.py`
+
 ## 出典
 
 **【一次情報・確認済み】**

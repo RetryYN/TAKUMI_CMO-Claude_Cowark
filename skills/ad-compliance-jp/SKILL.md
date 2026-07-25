@@ -171,6 +171,15 @@ description: 日本の表示規制チェック — 景品表示法・ステマ�
 このチェックは網羅的な法務レビューの代替ではない。最終判断は人間（必要に応じて専門家）が行うこと。
 **通ったことは適法の保証ではない。**
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **F. 出す前の関門**
+
+- **前段**（先に決まっているべきこと）: 生成系すべての最終稿（`skills/copywriting`／`skills/sales-writing`／`skills/storytelling`／`skills/video-script`／`skills/sns-jp`／`skills/seo-jp`／`skills/business-writing`）
+- **後段**（ここで決めたら次に開く）: 公開・配信の手順（`/オウンドメディア`・`/SNS運用`・`/メール`）。**出す先の規約も別に確かめる**（`skills/local-seo-jp` §3）
+- **併用**（同時に開く）: `skills/offer-design-jp`（価格・返品・定期購入）／`skills/referral-advocacy-jp`（対価）／`skills/brand-guideline-jp`（禁止事項）／`skills/engagement-reply-jp`
+- **正本が別**: 景品の上限は `takumi/domain/premium.py`、No.1 の分母は `takumi/domain/market_share.py`、個人データは `privacy-auditor`
+
 ## 出典
 
 **【一次情報・確認済み】**

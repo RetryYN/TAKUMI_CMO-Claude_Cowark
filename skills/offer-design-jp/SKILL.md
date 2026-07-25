@@ -202,6 +202,15 @@ description: オファーの設計 — 何を・どんな束で・いくらで�
 - **打ち消し表示に条件を逃がす**（本文で言えないなら、その条件は無理がある）
 - **転換率だけで成否を判定する**（後段の劣化を見ていない）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **B. 勝ち筋を決める**
+
+- **前段**（先に決まっているべきこと）: `skills/business-model-jp`（原価と損益分岐点）／`skills/voc-research-jp`（**断られている理由を推測しない**）
+- **後段**（ここで決めたら次に開く）: `skills/sales-writing`（差し出し方を書く）／`skills/cro-jp`（申込導線）／`skills/channel-planning-jp`／`skills/referral-advocacy-jp`
+- **併用**（同時に開く）: `skills/psych-nudge-jp`（訴求フレーム）／`skills/quant-research-jp`（価格調査）／`skills/micro-business-jp`（単価）
+- **正本が別**: 価格・返品・定期購入の表示は `skills/ad-compliance-jp` §5。特典の上限は `takumi/domain/premium.py`
+
 ## 出典
 
 **【一次情報・確認済み】**

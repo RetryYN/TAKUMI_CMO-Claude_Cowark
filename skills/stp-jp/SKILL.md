@@ -157,6 +157,15 @@ description: STP（セグメンテーション・ターゲティング・ポジ�
 - **ポジショニングを自己申告で完結させる**（顧客の説明の仕方が実際のポジション）
 - **半年ごとに作り直す**（反復で効くものを、反復の前に変えている）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **A. 環境と人を知る**
+
+- **前段**（先に決まっているべきこと）: `skills/market-analysis-jp`（環境）／`skills/social-insight-jp`（人物像）／`skills/voc-research-jp`（実際の顧客）
+- **後段**（ここで決めたら次に開く）: `skills/winning-position-jp`（勝ち筋）／`skills/messaging-design-jp`（何を言い続けるか）／`skills/channel-planning-jp`（到達可能性）
+- **併用**（同時に開く）: `skills/customer-analytics-jp`（実データで切り直す）／`skills/psych-target-jp`（同じ層でも心理は割れる）
+- **正本が別**: 規模に合う絞り方は `skills/scale-strategy-jp`
+
 ## 出典
 
 **【一次情報・入手先】**

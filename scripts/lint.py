@@ -487,6 +487,43 @@ for _name, _pattern, _min in (
         err(f"{_name}: {_n}件しか見つからない（最低 {_min} 件のはず）。"
             f"ディレクトリ名の変更・移動で検査が空振りしている可能性がある")
 
+# --- 20. スキルの接続（孤島と行き止まりを作らない）
+#         （2026-07-26 の実測で検出: 参照を数えたら「どのスキルからも指されないスキル」が2本、
+#          「他スキルへ一切つながらないスキル」が3本あった。原因は新設時に兄弟スキル側へ
+#          張り返していないこと。文章の規約では必ず再発するので機械で止める。
+#          正本は docs/skill-map.md） ---
+_skill_map = ROOT / "docs" / "skill-map.md"
+_skill_dirs = sorted(p.parent.name for p in (ROOT / "skills").glob("*/SKILL.md"))
+if not _skill_map.is_file():
+    err("docs/skill-map.md が無い（スキル接続の正本）")
+elif _skill_dirs:
+    _map_text = read(_skill_map)
+    _body: dict[str, str] = {}
+    for _name in _skill_dirs:
+        _t = read(ROOT / "skills" / _name / "SKILL.md")
+        _parts = _t.split("---", 2)
+        _body[_name] = _parts[2] if len(_parts) > 2 else _t
+
+    _out = {n: {o for o in _skill_dirs if o != n and o in _body[n]} for n in _skill_dirs}
+    _in = {n: {a for a in _skill_dirs if n in _out[a]} for n in _skill_dirs}
+
+    for _name in _skill_dirs:
+        if "## 接続" not in _body[_name]:
+            err(f"skills/{_name}/SKILL.md: `## 接続` セクションが無い"
+                "（前段／後段／併用を書く。正本は docs/skill-map.md）")
+        if len(_out[_name]) < 2:
+            err(f"skills/{_name}/SKILL.md: 他スキルへのリンクが {len(_out[_name])} 本しかない"
+                "（**行き止まり**。開いた人が次に進めない。2本以上つなぐこと）")
+        if not _in[_name]:
+            err(f"skills/{_name}: どのスキルからも参照されていない（**孤島**）。"
+                "手順書から到達できても、スキルを開いた人はここへ辿り着けない。"
+                "前段になるスキルの `## 接続` の後段に、このスキルを足すこと")
+        if f"`{_name}`" not in _map_text:
+            err(f"docs/skill-map.md: skills/{_name} が接続図に載っていない")
+        for _ref in set(re.findall(r"skills/([a-z0-9-]+)", _body[_name])):
+            if _ref not in _skill_dirs:
+                err(f"skills/{_name}/SKILL.md: 存在しないスキル `skills/{_ref}` を参照している")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "

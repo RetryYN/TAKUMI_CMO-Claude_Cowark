@@ -412,3 +412,12 @@ dataLayer.push({'gtm.blocklist': ['customScripts']});
 
 - GTM セキュリティ（カスタムHTML 経由の e-skimmer / Magecart）— ThreatNG Security, Crystallize
 - GTM と CSP の共存 — Incremys, Beyond Measure
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **G. 測る**
+
+- **前段**（先に決まっているべきこと）: `skills/kpi-design-jp`（何のイベントか）／`skills/ga4-jp`（受け側の設計）
+- **後段**（ここで決めたら次に開く）: `skills/ga4-jp`（届いているかを確かめる）／`skills/customer-analytics-jp`
+- **併用**（同時に開く）: `skills/cro-jp`（ABの計測）／`skills/web-design`（設置面）
+- **正本が別**: 合議は `docs/parts/pre-setup-council.md`。**カスタムHTML／カスタムJS は AI が作成・保存しない**

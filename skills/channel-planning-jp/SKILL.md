@@ -172,6 +172,15 @@ Google は**掲載順位を買えないと明記**しているので、**広告�
 - **やめる基準を決めずに始める**（なんとなく続く媒体になる）
 - **やめるときにアカウントを削除する**（不可逆。まず更新を止める）
 
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **C. 計画する**
+
+- **前段**（先に決まっているべきこと）: `skills/stp-jp`（到達可能性）／`skills/winning-position-jp`／`skills/scale-strategy-jp`（兵力の配分）
+- **後段**（ここで決めたら次に開く）: `docs/parts/content-calendar.md`（カレンダー）／`skills/seo-jp`／`skills/sns-jp`／`skills/local-seo-jp`／`skills/kpi-design-jp`（媒体別に落とす）
+- **併用**（同時に開く）: `skills/demand-timing-jp`（いつ）／`skills/content-ops-jp`（**足す前に持っているものを見る**）／`skills/growth-teardown-jp`
+- **正本が別**: 工数の上限は `docs/parts/capacity-plan.md`
+
 ## 出典
 
 **【一次情報・確認済み（本プロダクト内の他スキルが保持）】**

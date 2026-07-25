@@ -321,3 +321,12 @@ OEC の運用では、これを防ぐために**ガードレール指標**を別
 - HEART の各カテゴリの詳細定義 — 論文本文（PDF）未取得。アブストラクトと枠組みの存在のみ一次確認済み
 - 虚栄の指標（vanity metrics）の考え方 — Lean Analytics 等の書籍由来。
   §7 の4つの問いは、この枠組みを自前で運用可能な形に落としたもの
+
+## 接続
+
+> 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **C. 計画する**
+
+- **前段**（先に決まっているべきこと）: `skills/winning-position-jp`（何で勝つのか）／`skills/business-model-jp`（**続けるか・やめるかの指標はツリーに置かない**）
+- **後段**（ここで決めたら次に開く）: `skills/ga4-jp`／`skills/gtm-jp`／`skills/search-console-jp`（測れるようにする）／`skills/channel-planning-jp`（媒体別に落とす）
+- **併用**（同時に開く）: `skills/hypothesis-design-jp`（判定基準）／`skills/customer-analytics-jp`（読む）／`skills/logical-writing`（返す）
+- **正本が別**: 有料指標の拒否は `takumi/domain/kpi_tree.py`。指標の新設は `docs/parts/pre-setup-council.md` の合議
