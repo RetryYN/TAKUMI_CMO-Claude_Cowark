@@ -20,7 +20,7 @@ hooks はローカル Cowork では未配線（→ escalations E4）のため、
 | 層 | 何を担保するか | 実行場所 | コマンド／手段 | 誰が回すか |
 |---|---|---|---|---|
 | **Tier 1（機械検証）** | 参照整合・台帳整合・命名規約・ドメインモデル不変条件・hook スクリプト単体の判定ロジック | ローカル / GitHub Actions | `python3 scripts/lint.py` ／ `python3 -m unittest discover -s tests -t .` ／ `bash scripts/test-hooks.sh` ／ `shellcheck` | CI（push・PR で自動） |
-| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork 実機**（cloud 基本／ローカルは配線が環境依存 → E4。ゲート項目は発火を実測して判定） | `templates/verify-task.yaml` を `tasks/plugin-verify.yaml` にコピー →「plugin-verify やって」（代替: 末尾の貼り付けプロンプト） | 人間（リリース前ゲート） |
+| **Tier 2（実機検証）** | hook の実配線・ツール名 matcher の発火・ルーティング解釈・サブエージェント委譲・ブランド区画の実挙動 | **Cowork 実機**（cloud 基本／ローカルは配線が環境依存 → E4。ゲート項目は発火を実測して判定） | `/匠検証 full` を `tasks/plugin-verify.yaml` にコピー →「plugin-verify やって」（代替: 末尾の貼り付けプロンプト） | 人間（リリース前ゲート） |
 
 **Tier 1 が緑でも Tier 2 は代替できない**（hook の配線有無は静的検査では分からない）。逆に Tier 2 は
 毎コミット回せないため、回帰の常時検出は Tier 1 が担う。配布判断は「Tier 1 緑 ＋ 直近の Tier 2 が FAIL 0」で行う。
@@ -565,24 +565,22 @@ E4 は「解決済み」にはせず、環境依存で振れる課題として�
 - V26 の引数記述: `guide-anim.py` は `<スクショ.png> <steps.json> <出力ベース名>` の**3引数**（banner-compose / chromakey は `src dst` の2引数）→ 修正
 - **V40 が2ラン連続 SKIP** した構造的原因（`verify_allowlist` の deny が先勝ち）に対処 — **allowlist を張る前に測る**手順へ変更し、`verify-task.yaml` のステップ順も入れ替えた
 
-### 検証の渡し方（Cowork 最新版）
+### 検証の渡し方（v5.1.0 以降 — 言うだけ）
 
-**推奨: 実タスク形式** — `templates/verify-task.yaml` をワークスペースの `tasks/plugin-verify.yaml` にコピーし
-「plugin-verify やって」で起動する。takumi-start → A〜K の本物の経路で走るため、ゲート・フェーズ判定・
-ログ記録が検証の通り道で実地に効く（チャット貼り付けより実運用に近い）。内容は下のプロンプトと同一。
-
-### 検証プロンプト（タスク形式が使えないときの代替）
-
-**正本は `templates/verify-task.yaml` の1つだけ。** 以前ここに全文の複製を置いていたが、v2.0.0 の内容
-（`agents=7 skills=16`・項目(15)まで）のまま更新が止まり、実体と乖離した。**正本の複製は維持できない**ため削除した。
-
-タスク形式が使えない環境では、`templates/verify-task.yaml` を開いて `steps:` の `description` と
-`checks:` をそのままチャットに貼る。冒頭に次の1行を添えること:
+**ファイルの配置もコピーも要らない。** cloud Cowork で次を言う。
 
 ```
-TAKUMI-CMO の実機検証をします。/検証 full を実行して。実行環境（Cowork cloud / Cowork ローカル /
-Claude Code）を最初に明言し、Tier 1 と Tier 2 を分けて報告して。
+/匠検証 full
 ```
+
+これだけで `procedures/takumi-verify.md` が実行計画として読まれ、takumi-start → A〜K の本物の経路で走る
+（ゲート・フェーズ判定・ログ記録が検証の通り道で実地に効く）。環境の明言と Tier 1 / Tier 2 の分離報告は
+手順書側に書いてあるので、こちらから指示する必要はない。
+
+> **なぜ変えたか**: v5.0.0 までは `templates/verify-task.yaml` を業務フォルダの `tasks/` にコピーする
+> 運用だった。だが**プラグインは指示だけで動くべき**であり、利用者にファイル配置を求めるのは設計の不足。
+> 同ファイルは廃止し、**V番号の正本を `procedures/takumi-verify.md` の1つに統一**した
+> （正本の複製は維持できない — 以前ここに置いた全文の複製が v2.0.0 の内容のまま乖離した前例がある）。
 
 ---
 
@@ -638,5 +636,5 @@ Cowork が実際に hook を発火させるか（escalations E4 / E5）は測っ
 だが、供給されるかは環境依存で、実機で測るまで効果は不明。逸れる副作用（コマンドを飛ばしてスキルに直行）が
 出ていないかも同時に見る。
 
-**渡し方**: `templates/verify-task.yaml` を業務フォルダの `tasks/plugin-verify.yaml` にコピーして
-「plugin-verify やって」。結果（PASS/FAIL/SKIP 件数・FAIL 詳細・実行環境）を本ファイルに実機ランとして追記する。
+**渡し方**: cloud Cowork で **`/匠検証 full`** と言うだけ（v5.1.0 以降。ファイルの配置は不要）。
+結果（PASS/FAIL/SKIP 件数・FAIL 詳細・実行環境）を本ファイルに実機ランとして追記する。

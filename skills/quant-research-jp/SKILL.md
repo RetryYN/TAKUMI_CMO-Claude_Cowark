@@ -1,6 +1,7 @@
 ---
 name: quant-research-jp
 description: 定量調査の設計と読み方 — サンプル数・偏り・設問バイアス・有意差・価格調査を、誤読しない形で扱う。Use when アンケートや市場調査の設計、調査結果の読み解き、「何人に聞けばいいか」「この差は誤差か」、A/Bテストや比較の判定、価格を調べたいとき、公的統計から市場規模を出したいとき、他社の調査データを引用するか判断するとき。Not for 顧客への定性的な聞き取り（→voc-research-jp）、自社データの集計（→customer-analytics-jp）、ABテストの実装と転換率改善（→cro-jp）、指標の定義（→kpi-design-jp）。
+user-invocable: false
 ---
 
 # 定量調査の設計と読み方

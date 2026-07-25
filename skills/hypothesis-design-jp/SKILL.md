@@ -1,6 +1,7 @@
 ---
 name: hypothesis-design-jp
 description: 仮説の立て方と検証設計 — なぜそうなっているのかを推論し、賭けを設計する。Use when 施策を考えるとき、数字が動いた/動かない理由を考えるとき、「何をすればいいか分からない」とき、リサーチ結果から次の打ち手を決めるとき、ABテストや検証の設計、施策が外れた後の学びの取り出し、「とりあえずやってみる」を止めたいとき。Not for 指標の定義（→kpi-design-jp）、顧客への聞き取り（→voc-research-jp）、どこで戦うかの決定（→winning-position-jp）、統計的な有意差判定（→cro-jp）。
+user-invocable: false
 ---
 
 # 仮説設計

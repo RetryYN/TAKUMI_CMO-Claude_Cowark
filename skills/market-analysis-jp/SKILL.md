@@ -1,6 +1,7 @@
 ---
 name: market-analysis-jp
 description: 市場・競合・自社の環境分析 — PEST/5フォース/3C/SWOT/VRIO/バリューチェーンを、結論の出る形で使う。Use when 市場調査や競合分析、参入・撤退の判断、事業環境の整理、「この市場はどうなっているのか」「競合をちゃんと分析して」と言われたとき、戦略立案の前提づくり、年次の見直し、新規事業や新カテゴリの検討。Not for どこで戦うかの決定そのもの（→winning-position-jp）、誰に売るかの決定（→stp-jp）、儲かるかの計算（→business-model-jp）、顧客の一次情報の取得（→voc-research-jp）、伸びている先の分析（→growth-teardown-jp）。
+user-invocable: false
 ---
 
 # 環境分析（市場・競合・自社）

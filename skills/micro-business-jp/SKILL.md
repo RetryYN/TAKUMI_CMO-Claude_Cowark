@@ -1,6 +1,7 @@
 ---
 name: micro-business-jp
 description: マイクロビジネスとトップニッチの戦略 — 一人〜数人で、狭い領域の1位を取り、時間を売る構造から抜ける設計。Use when 一人・少人数での事業設計、「フリーランスとして何で勝負するか」、ニッチの選び方と広げ方、属人性やパーソナルブランドの扱い、単価が上がらないとき、忙しいのに儲からないとき、商品の階段（入口→本体→継続）の設計、休めない構造の解消、フリーランスとして受注する側の権利の確認。Not for どこまで狭めるかの判定（→scale-strategy-jp）、土俵の性質の選択（→winning-position-jp）、オファーと価格の設計（→offer-design-jp）、儲かるかの計算（→business-model-jp）、工数の配分（→docs/parts/capacity-plan.md）。
+user-invocable: false
 ---
 
 # マイクロビジネスとトップニッチ

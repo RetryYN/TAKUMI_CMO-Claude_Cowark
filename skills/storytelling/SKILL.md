@@ -1,6 +1,7 @@
 ---
 name: storytelling
 description: ストーリーテリング — 共感と行動を生む物語コンテンツ。Use when 顧客インタビュー記事・導入事例の物語化、創業ストーリー/ミッション紹介、ブランドのナラティブ、オウンドメディアの長文記事、失敗と学びを扱う記事。Not for データ報告（→logical-writing）、受注目的の提案書（→sales-writing）、短いコピー（→copywriting）、記事の構成設計そのもの（→content-design）。
+user-invocable: false
 ---
 
 # ストーリーテリング

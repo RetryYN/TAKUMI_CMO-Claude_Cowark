@@ -1,6 +1,7 @@
 ---
 name: brand-guideline-jp
 description: ブランドの構築とレギュレーション — 人格・見た目・言い方を決めて文書にし、守られる仕組みまで作る。Use when ブランドガイドラインやレギュレーションの策定・改訂、トーン&マナーの言語化、表記ルール（用語統一・NG表現）の整備、ロゴや配色の使用規定、「発信ごとに雰囲気が違う」とき、複数人やAIで作るときの品質の揃え方、ブランド名やタグラインを決めるとき、ガイドラインが守られていないとき。Not for 何を言い続けるかの主張設計（→messaging-design-jp）、デザインの実証数値基準（→design-evidence-jp）、法規表現のチェック（→ad-compliance-jp）、読み手別の書き分け（→psych-target-jp）、実装（→web-design）。
+user-invocable: false
 ---
 
 # ブランドの構築とレギュレーション

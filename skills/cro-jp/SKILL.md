@@ -1,6 +1,7 @@
 ---
 name: cro-jp
 description: CRO/ABテスト — LP・フォーム・配信文面の転換率改善の仮説設計と検証。Use when 「LPの問い合わせ率を上げたい」「どっちの案がいいか検証したい」「フォームの離脱を減らしたい」、ページ改善（page-improve）やメールテンプレ改善で効果検証まで求められたとき。Not for デザインの見た目調査（→style-research部品）、効果数値の集計そのもの（→outcome-verifier）。
+user-invocable: false
 ---
 
 # CRO/ABテスト スキル

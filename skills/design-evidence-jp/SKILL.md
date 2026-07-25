@@ -1,6 +1,7 @@
 ---
 name: design-evidence-jp
 description: 実証データつきデザイン数値基準 — タイポグラフィ・配色・LPレイアウト・インフォグラフィックの「何px・何色・どの順」を実験/公的基準の数値で決める。Use when LP/Webページ/バナー/レポート/インフォグラフィックのデザイン実装で具体値（フォントサイズ・行間・行長・コントラスト・CTA位置・グラフ選択）を決めるとき、デザインレビューの合否判定。Not for 心理的な「なぜ効くか」（→psych-ux-jp）、HTML成果物の統一骨格（→docs/conventions.md・design-principles.md）。
+user-invocable: false
 ---
 
 # 実証デザイン数値基準（日本の実験・公的基準ベース）

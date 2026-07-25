@@ -1,6 +1,7 @@
 ---
 name: business-model-jp
 description: ビジネスモデルとキャッシュフローの分析 — 誰から・何で・いつ現金が入るのかを構造で見る。損益分岐点・CCC・オーガニックな獲得コストを計算で確かめる。Use when 「この事業は儲かるのか」「値付けを決めたい」「どこにコストがかかっているか」、収益構造やコスト構造の整理、損益分岐点の計算、資金繰りや運転資金の確認、サブスク/単発/在庫ありモデルの検討、施策に時間を投じるかの判断、マーケ施策の採算確認。Not for オファーや価格の設計そのもの（→offer-design-jp）、KPIツリーの設計（→kpi-design-jp）、市場構造の分析（→market-analysis-jp）、顧客データの集計（→customer-analytics-jp）。
+user-invocable: false
 ---
 
 # ビジネスモデルとキャッシュフロー

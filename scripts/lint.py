@@ -175,7 +175,7 @@ OLD_IDENTS = [
 #  (b) 「旧名が出たら FAIL」を検証項目として明記する検証の正本（旧名を名指しできないと項目が書けない）
 IDENT_EXEMPT = {
     "docs/command-registry.md", "docs/parts/index.md",          # (a)
-    "procedures/takumi-verify.md", "templates/verify-task.yaml",  # (b) V43
+    "procedures/takumi-verify.md",  # (b) V43
 }
 ident_targets = (
     list(ROOT.glob("hooks/scripts/*")) + list(ROOT.glob("scripts/*"))
@@ -224,8 +224,7 @@ for f in (list(ROOT.glob("agents/*.md")) + list(ROOT.glob("procedures/*.md"))
 # --- 12. 廃止カテゴリーがテンプレの見本データに残っていないか
 #         （2026-07-24 実機検証 F3: ダッシュボード雛形に求人媒体・広告分析タブが残存） ---
 for f in ROOT.glob("templates/*"):
-    # verify-task.yaml は「聞いてきたら FAIL」を書くために廃止語を名指しする（V44）
-    if not f.is_file() or f.name == "verify-task.yaml":
+    if not f.is_file():
         continue
     try:
         body = read(f)
@@ -395,47 +394,39 @@ if _evals.is_file():
     for name in sorted(_covered - _skill_names - _agent_names):
         err(f"docs/evals.md: golden タスクが実在しない対象 {name} を指している")
 
-# --- 18. 検証項目（V番号）と実タスク定義（verify-task.yaml）の突合
-#         （2026-07-25 全体CHECK で検出: 片側だけに項目を足す事故を機械が止められなかった。
-#          実際 V47/V48 の追加時に両ファイルで行順が入れ違う事故が起きている） ---
+# --- 18. 検証項目（V番号）の内部整合
+#         （2026-07-26 改訂。以前は `templates/verify-task.yaml` に同じ項目を転記し、
+#          両ファイルの集合一致を検査していた。だが**利用者に yaml を業務フォルダへ
+#          コピーさせる運用そのものが設計の不足**（プラグインは指示だけで動くべき）なので
+#          yaml を廃止し、`procedures/takumi-verify.md` を唯一の正本にした。
+#          転記が無くなったので突合も要らず、代わりに**1ファイル内で壊れうること**を見る:
+#          番号の重複・抜け番・判定基準の欠落） ---
 _vfile = ROOT / "procedures/takumi-verify.md"
-_vtask = ROOT / "templates/verify-task.yaml"
-if _vfile.is_file() and _vtask.is_file():
-    _vtext, _ytext = read(_vfile), read(_vtask)
-    # 定義行: | V<n> [🔁] | <項目名> | … 。報告書の書式見本（2列目が "..."）は定義ではない
-    _defs: list[str] = []
-    _marked: set[str] = set()
-    for m in re.finditer(r"^\| (V\d+)( 🔁)? \| ([^|]*)\|", _vtext, re.M):
-        if m.group(3).strip() == "...":
-            continue
-        _defs.append(m.group(1))
-        if m.group(2):
-            _marked.add(m.group(1))
-    for v, n in _coll.Counter(_defs).items():
-        if n > 1:
-            err(f"procedures/takumi-verify.md: 検証項目 {v} が{n}回定義されている（V番号は一意）")
-
-    _defined = set(_defs)
-    _referenced = set(re.findall(r"\bV\d+\b", _ytext))
-    for v in sorted(_referenced - _defined):
-        err(f"templates/verify-task.yaml: 実在しない検証項目 {v} を参照している")
-    for v in sorted(_marked - _referenced):
-        err(f"templates/verify-task.yaml: 重点回帰（🔁）の {v} が実タスク定義に無い"
-            f"（takumi-verify.md で 🔁 を付けたら yaml にも項目を足す）")
-    for v in sorted(_referenced - _marked):
-        err(f"procedures/takumi-verify.md: {v} が yaml にあるのに 🔁 が付いていない"
-            f"（重点回帰セットは両ファイルで一致させる）")
-
-    # 実タスクの項目番号 (n) が 1..N の連番・重複なし（行の入れ違い・抜け番の検出）
-    _nums = [int(x) for x in re.findall(r'"\((\d+)\)', _ytext)]
-    if _nums:
-        _dupes = [n for n, c in _coll.Counter(_nums).items() if c > 1]
-        if _dupes:
-            err(f"templates/verify-task.yaml: 項目番号が重複 {sorted(_dupes)}")
+if _vfile.is_file():
+    _vtext = read(_vfile)
+    # 定義行: | V<n> [🔁] | <項目名> | <手順> | <期待> 。報告書の書式見本（2列目が "..."）は定義ではない
+    _rows = re.findall(r"^\| (V\d+)( 🔁)? \| ([^|]*)\|([^|]*)\|([^|]*)\|", _vtext, re.M)
+    _defs = [r for r in _rows if r[2].strip() != "..."]
+    if not _defs:
+        err("procedures/takumi-verify.md: 検証項目（| V<n> | …）が1件も無い"
+            "（表の書式を変えたら lint #18 も直すこと。0件で素通りするのが最も危険）")
+    else:
+        _nums = [int(r[0][1:]) for r in _defs]
+        for _v, _n in _coll.Counter(_nums).items():
+            if _n > 1:
+                err(f"procedures/takumi-verify.md: 検証項目 V{_v} が{_n}回定義されている（V番号は一意）")
         _missing = sorted(set(range(1, max(_nums) + 1)) - set(_nums))
         if _missing:
-            err(f"templates/verify-task.yaml: 項目番号に抜けがある {_missing}"
-                f"（1..{max(_nums)} の連番で書く）")
+            err(f"procedures/takumi-verify.md: 検証項目の番号に抜けがある "
+                f"{['V%d' % m for m in _missing]}（1..{max(_nums)} の連番で書く。"
+                f"抜け番があると「その項目は落ちたのか、元から無いのか」が分からない）")
+        if not any(r[1] for r in _defs):
+            err("procedures/takumi-verify.md: 重点回帰セット（🔁）が1件も無い"
+                "（quick モードで回す集合が空になる）")
+        for _r in _defs:
+            if not _r[4].strip() or not _r[3].strip():
+                err(f"procedures/takumi-verify.md: {_r[0]} に手順または判定基準が書かれていない"
+                    f"（**判定できない検証項目を作らない**。PASS/FAIL の分かれ目を必ず書く）")
 
 # --- 16. ワークスペース検証（利用者の knowledge/brands/** をドメインモデルで検証）---
 #     プラグインリポジトリ単体では knowledge/ が無いので何も起きない。
@@ -486,7 +477,7 @@ if _testing.is_file():
     elif _m.group(1) != plugin["version"]:
         warns.append(
             f"Tier 2 実機検証が未実施: 最終ラン={_m.group(1)} / 現行={plugin['version']}"
-            f" — cloud Cowork で templates/verify-task.yaml を回し、結果を TESTING.md に記録して"
+            f" — cloud Cowork で `/匠検証 full` と言い、結果を TESTING.md に記録して"
             f" マーカーを更新すること（リリースチェックリスト項目5・人間が実行）"
         )
 
@@ -811,6 +802,21 @@ for _c in commands:
     if _ASCII_WORD.search(_rest):
         err(f"commands/{_c.name}: コマンド名に英数字が入っている"
             f"（漢語にする。例: SNS運用→発信 / Webサイト→発信）")
+
+
+# --- 30. スキルは `/` メニューに出さない（user-invocable: false）
+#         （2026-07-26 ユーザー報告で検出: コマンドを9本に束ねても、**42本のスキルが
+#          スラッシュ一覧に並んで**いた。スキルは規範・知識であって利用者が打つ動作ではない。
+#          一次情報（code.claude.com/docs/en/skills「Control who invokes a skill」）:
+#          `user-invocable: false` は "Only Claude can invoke the skill. Use this for
+#          background knowledge that isn't actionable as a command." であり、
+#          **description は context に残るので自動発火は維持される**（一覧から消えるだけ） ---
+for _sk in sorted((ROOT / "skills").glob("*/SKILL.md")):
+    _fm = frontmatter(_sk)
+    if str(_fm.get("user-invocable", "")).strip().lower() != "false":
+        err(f"skills/{_sk.parent.name}/SKILL.md: frontmatter に `user-invocable: false` が無い"
+            f"（スキルは**規範・知識**であって利用者が打つ動作ではない。"
+            f"付けないと `/` の一覧を埋める。**Claude の自動発火は維持される**ので機能は落ちない）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "

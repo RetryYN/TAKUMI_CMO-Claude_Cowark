@@ -1,6 +1,7 @@
 ---
 name: channel-planning-jp
 description: 媒体別の計画設計とKPI — 各媒体に役割を割り当て、頻度と配分を決め、媒体ごとに何を測るかを定義する。Use when 複数媒体の運用計画づくり、「どの媒体に力を入れるか」、投稿頻度や配分の決定、媒体ごとのKPIの設計、コンテンツカレンダーを作る前の設計、媒体を増やす/やめる判断、「全部やっているのに成果が出ない」とき、媒体別のレポート項目を決めるとき。Not for KPIツリー全体の設計（→kpi-design-jp）、カレンダーの作成そのもの（→docs/parts/content-calendar.md）、媒体別の投稿慣習（→sns-jp）、複数媒体の実行統括（→/匠戦略）、工数の上限管理（→docs/parts/capacity-plan.md）。
+user-invocable: false
 ---
 
 # 媒体別の計画設計とKPI

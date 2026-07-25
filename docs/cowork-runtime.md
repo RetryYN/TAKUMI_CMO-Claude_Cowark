@@ -81,6 +81,32 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 - **移設の代償**: 自動発火するため、業務の入口がコマンドを飛ばしてスキルに逸れうる。session-rules (3) で「業務の入口は必ずコマンド／手順書。変更操作の前に該当手順書へ合流する」を規定し、**V50 で実測する**。
 - 移設しても**手順書からの明示 Read は従来どおり有効**（conventions §1 のパス解決規則）。二重の到達経路になる。
 
+**移設の代償その2 — `/` の一覧が埋まる（2026-07-26 にユーザー報告で発覚・一次情報で対処）**
+
+コマンドを9本に束ねても、**42本のスキルがスラッシュコマンドの一覧に並んでいた**。
+公式は custom commands と skills を統合しており（"A file at `.claude/commands/deploy.md` and a skill at
+`.claude/skills/deploy/SKILL.md` both create `/deploy` and work the same way"）、**スキルは既定で
+利用者が `/名前` で叩ける**ためである。
+
+**【一次情報・確認済み】** `code.claude.com/docs/en/skills` §Control who invokes a skill:
+
+| frontmatter | 利用者が起動 | Claude が起動 | context への載り方 |
+|---|---|---|---|
+| （既定） | できる | できる | description は常時。本文は起動時 |
+| `disable-model-invocation: true` | できる | **できない** | description も載らない |
+| **`user-invocable: false`** | **できない** | できる | **description は常時。本文は起動時** |
+
+> `user-invocable: false`: "Only Claude can invoke the skill. **Use this for background knowledge that
+> isn't actionable as a command.** … Claude should know this when relevant, but `/legacy-system-context`
+> isn't a meaningful action for users to take."
+
+**匠CMO の42スキルはまさにこれ** — 規範・知識であって、利用者が打つ動作ではない（打つ動作は9本のコマンド）。
+全スキルに **`user-invocable: false`** を付けた。**一覧から消えるだけで、description は context に残るため
+自動発火は落ちない**。`lint #30` が新規スキルの付け忘れを止める。
+
+**サブエージェントの `skills:` preload には影響しない** — 公式注記のとおり preload は起動時に本文を注入する
+別経路（"Subagents with preloaded skills work differently: the full skill content is injected at startup"）。
+
 ### 4c. プラグイン同梱エージェントの frontmatter（2026-07-26 に一次情報で確認）
 
 公式仕様（[plugins-reference](https://code.claude.com/docs/en/plugins-reference)）:

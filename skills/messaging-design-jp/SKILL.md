@@ -1,6 +1,7 @@
 ---
 name: messaging-design-jp
 description: メッセージングの設計 — 何を言い続けるかを決め、全媒体でそれを保つ。Use when ブランドの主張（メッセージングハウス）の新設・見直し、ポジショニングステートメントの言語化、「結局うちは何を言っている会社なのか」が曖昧なとき、媒体ごとに言っていることがバラバラだと感じたとき、発信のブレを点検したいとき、新しい訴求を追加してよいかの判断。Not for 個別のコピー作成（→copywriting）、記事の構成設計（→content-design）、指標の設計（→kpi-design-jp）、読み手別の書き分け（→psych-target-jp）。
+user-invocable: false
 ---
 
 # メッセージング設計

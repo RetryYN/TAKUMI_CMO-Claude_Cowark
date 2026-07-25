@@ -1,6 +1,7 @@
 ---
 name: voc-research-jp
 description: 顧客の声（VOC）の集め方と読み方 — 何を聞き、どのバイアスを避け、どう言葉を取り出すか。Use when 顧客インタビューの設計と実施、アンケートの設問設計、問い合わせ・レビュー・SNS言及の分析、ペルソナ/ICP の更新、「顧客は何に困っているのか」を確かめたいとき、施策の前提が推測になっていると気づいたとき。Not for 競合・市場の調査（→deep-research部品）、指標の設計（→kpi-design-jp）、検索クエリの取得操作（→search-console-jp）、記事の企画（→content-design）。
+user-invocable: false
 ---
 
 # 顧客の声（VOC）の集め方と読み方

@@ -1,6 +1,7 @@
 ---
 name: sns-jp
 description: 日本市場SNS運用 — LINE/X/Instagram/TikTok/YouTube の日本の勢力図・投稿慣習に基づく投稿作成・チャネル設計・カレンダー運用。Use when SNS投稿の作成、投稿カレンダー、チャネル選定（どのSNSでやるべきか）、LINE公式アカウントの配信設計、ハッシュタグ戦略を求められたとき。Not for 広告出稿クリエイティブ（→video-script/copywriting）、法的チェック単体（→ad-compliance-jp）。
+user-invocable: false
 ---
 
 # 日本市場SNS運用スキル

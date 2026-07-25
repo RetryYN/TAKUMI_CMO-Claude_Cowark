@@ -1,6 +1,7 @@
 ---
 name: stp-jp
 description: STP（セグメンテーション・ターゲティング・ポジショニング） — 誰に売らないかを決め、頭の中の場所を取る。Use when 「誰に売ればいいか」「ターゲットを決めたい」「ペルソナを作りたい」、セグメントの切り方、ターゲットの絞り込み、ポジショニングマップの作成、既存ターゲットの見直し、新商品や新市場の検討、「万人向け」になってしまっているとき。Not for どの土俵で戦うかの決定（→winning-position-jp）、何を言い続けるかの言語化（→messaging-design-jp）、顧客の一次情報の取得（→voc-research-jp）、市場構造の分析（→market-analysis-jp）、顧客データの集計（→customer-analytics-jp）。
+user-invocable: false
 ---
 
 # STP — 誰に売らないかを決める

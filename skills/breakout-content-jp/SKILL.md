@@ -1,6 +1,7 @@
 ---
 name: breakout-content-jp
 description: 伸びるコンテンツの構造 — 配信され、保存・引用され、記憶に残るものの作り方と、当たりを再現する方法。Use when 記事・投稿・動画の企画、「作っても伸びない」とき、当たった1本を横展開したいとき、テーマ選定、タイトルとサムネイルの判断、伸びなかった原因の切り分け、コンテンツの実験計画。Not for 構成の型と量産の管理（→content-design）、検索意図の設計（→seo-jp）、短い言葉の作成（→copywriting）、媒体別の投稿慣習（→sns-jp）、指標の定義（→kpi-design-jp）。
+user-invocable: false
 ---
 
 # 伸びるコンテンツの構造

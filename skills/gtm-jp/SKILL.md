@@ -1,6 +1,7 @@
 ---
 name: gtm-jp
 description: Google タグマネージャー（GTM）の設定リファレンス — タグ・トリガー・変数・データレイヤーの正しい組み方。Use when タグ・トリガー・変数の追加/変更、GA4 イベントの実装、スクロール率や読了率など独自指標の作成、SNS からの CV 計測の実装、コンテナの調査・棚卸し、プレビュー検証、公開とロールバック。Not for GA4 側の設定と分析（→ga4-jp）、検索露出の計測（→search-console-jp）。
+user-invocable: false
 ---
 
 # GTM 設定スキル

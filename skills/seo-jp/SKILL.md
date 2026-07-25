@@ -1,6 +1,7 @@
 ---
 name: seo-jp
 description: 日本語SEO/AEO — 検索・AI回答エンジンに見つかる記事・ページの設計と診断。Use when SEO記事の構成設計、既存ページのSEO診断、キーワード・見出し設計、AI検索（AIオーバービュー/ChatGPT検索）対応、note/オウンドメディアの検索流入改善。Not for 表示速度・技術品質の診断（→site-audit部品）、キャッチコピー単体（→copywriting）。
+user-invocable: false
 ---
 
 # 日本語SEO/AEO スキル

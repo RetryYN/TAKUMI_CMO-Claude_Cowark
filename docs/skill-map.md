@@ -114,7 +114,7 @@ A. 環境と人を知る ─→ B. 勝ち筋を決める ─→ C. 計画する 
 4. このファイルの層の表に追加する
 5. `docs/command-registry.md` のスキル台帳に追加する
 6. 手順書（`procedures/`）か部品（`docs/parts/`）から到達できるようにする
-7. golden（`docs/evals.md`）と Tier 2（`procedures/takumi-verify.md` + `templates/verify-task.yaml`）を足す
+7. golden（`docs/evals.md`）と Tier 2（`procedures/takumi-verify.md` — **V番号の正本はここ1つだけ**）を足す
 8. `python3 scripts/lint.py` が緑になるまで直す
 
 ## 注意
