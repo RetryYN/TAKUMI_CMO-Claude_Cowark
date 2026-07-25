@@ -35,25 +35,43 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 
 | 入れ方 | 更新 | 備考 |
 |---|---|---|
-| **GitHub から marketplace を追加**（`RetryYN/TAKUMI_CMO-Claude_Cowark`） | **できる**（リポジトリを clone するので相対パスも解決する） | **これが唯一の正しい配布経路** |
-| marketplace.json への**直URL**を追加 | 追加自体は通るが**install で落ちる** | 後述 |
+| **GitHub から marketplace を追加**（`RetryYN/TAKUMI_CMO-Claude_Cowark`） | **できる** | **これが唯一の正しい配布経路**（2026-07-26 に add → install → update を実測。v5.5.0 / `displayName: 匠CMO` まで正しく入った） |
+| marketplace.json への**直URL**を追加 | **install が落ちる**（プラグイン側では直せない） | 後述 |
 | **ローカルアップロード**（フォルダ・zip を直接） | **できない** | 取得先が無いので「マーケットプレイスの更新に失敗しました」になる。**入れ直すには削除して marketplace から追加し直す** |
 
-**直URL が落ちる理由**（一次情報 + 実測）:
+**直URL が落ちる件（2026-07-26 実測。プラグイン側では直せない）**
+
+一次情報はこう書いている:
 
 > 「URL ベースの marketplace は **marketplace.json 自体しかダウンロードしない**。
 > サーバ上のプラグインファイルは落とさないので、相対パスは解決できない。
 > URL 配布では GitHub・npm・git URL のソースを使うこと」
 
-2026-07-26 に手元で再現: `"source": "./"` のまま URL で追加 → install すると
-`ENOTDIR: not a directory, scandir .../plugins/marketplaces/retryyn-takumi-cmo`
-（marketplace.json が**ファイルとして**そのパスに置かれ、ディレクトリではないため）。
+そこで `"source": "./"` を明示 github ソースへ変えた。**が、それでも直URL 追加の install は同じエラーで落ちた**
+（`claude` CLI v2.1.219 で前後を実測）:
 
-**したがって `marketplace.json` の source は相対パスにしない。**
-本プラグインは明示 github ソースにしてある（どの経路でも解決する）。`lint #38` が相対パスを機械的に禁じる。
+```
+✘ Failed to install: ENOTDIR: not a directory,
+  scandir '~/.claude/plugins/marketplaces/retryyn-takumi-cmo'
+```
 
-> **これが「追加の仕方によって壊れる」種類の不具合であることに注意。** git clone 経由では動くので、
-> 開発側の手元では最後まで再現しない。**利用者がどう入れたかを訊かないと切り分けられない。**
+**エラーは marketplace のキャッシュ位置を scandir しようとして起きており、プラグインの source を見る前段で落ちている。**
+URL 追加ではそのパスに marketplace.json が**ファイルとして**置かれるので、ディレクトリとして走査できない。
+**つまり source の書き方では直らない。CLI 側の URL 経路の制約。**
+
+**それでも明示 github ソースにしておく理由**は別にある:
+
+1. 一次情報が URL 配布では外部ソースを使えと明記している（相対パスは仕様上サポート外の経路がある）
+2. **Cowork の marketplace 同期はサーバ側で走り、各プラグインの `source.repo` を検証する**
+   （上流 issue #61271 の実ログ: `[remoteMarketplaceOps] … "error": "Repository not found on github.com…"`）。
+   `"./"` には `repo` が無いので、**この検証を通れない可能性がある** —
+   利用者側で出た「マーケットプレイスの更新に失敗しました」の原因候補として最も有力だが、
+   **サーバ側の挙動は手元から観測できないので断定しない**（Cowork のログで確認できたら本節を更新する）
+
+`lint #38` が相対パスを機械的に禁じる。
+
+> **「追加の仕方によって壊れる」種類なので、開発側の手元では再現しない。**
+> 障害報告を受けたら、まず**どうやって入れたか**を訊く。
 
 ## 2. hooks の配線挙動（最重要）
 
