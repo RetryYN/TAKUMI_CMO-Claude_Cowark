@@ -30,6 +30,8 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | 損益分岐点 | `BreakEven` | 値オブジェクト | 固定費と変動費率から分岐点・必要売上・安全余裕率。**変動費率1以上は拒否**（分岐点が存在しない） |
 | キャッシュサイクル | `CashCycle` | 値オブジェクト | CCC（棚卸+売上債権−仕入債務）と必要運転資金。負のCCCは「現金を生む構造」 |
 | オーガニック獲得コスト | `OrganicAcquisitionCost` | 値オブジェクト | 時間×単価÷獲得件数。**ゼロ広告費でも時間が原価**。獲得0件は判定不能（0円ではない） |
+| 市場シェア | `MarketShare` | 値オブジェクト | ある**明示された市場**でのシェア。**市場の定義（分母）が空なら生成不可**。7段階の目標値と射程距離を判定 |
+| ランチェスターの法則 | `LanchesterMode` | 値オブジェクト | 第一法則（局地戦・射程3倍）／第二法則（広域戦・射程√3倍） |
 | ゲート | `Gate` | ドメインサービス（hook） | 不変条件の機械強制（Brand Isolation / ゼロ課金 / 送出監査 等） |
 
 ## 匠の∞ループ（中核のドメインサービス）
@@ -82,6 +84,7 @@ TAKUMI-CMO のドメインを集約・エンティティ・値オブジェクト
 | `Campaign` | 実装済み | `tests/test_campaign.py` |
 | `UpstreamLoop` / `DownstreamLoop` / `PlanHandoff` / `MeasurementHandoff` | 実装済み | `tests/test_loop.py` |
 | `PremiumOffer` / `PremiumKind` | 実装済み | `tests/test_premium.py` |
+| `MarketShare` / `LanchesterMode` | 実装済み（**KPIツリーとは非依存**。戦略の判断材料であって動かす指標ではない） | `tests/test_market_share.py` |
 | `BreakEven` / `CashCycle` / `OrganicAcquisitionCost` | 実装済み（**KPIツリーとは意図的に非依存** — 「動かす指標」と「続ける/やめる指標」を混ぜない） | `tests/test_unit_economics.py` |
 | `Task` | **コード化しない** — ランタイム側の表現（`tasks/*.yaml` + `docs/steps-reference.md` の A〜K）が正本。Python に写すと二重管理になる | — |
 | `Gate` | **コード化しない** — 実体は `hooks/scripts/*.sh`。判定ロジックは `scripts/test-hooks.sh` が保証する | — |
