@@ -1,6 +1,6 @@
 ---
 name: deliverable-writer
-description: 成果物執筆の専任エージェント。ブラウザ操作やデータ収集が終わった後、最終成果物（求人票・スカウト本文・提案書・レポート・LP本文・HTMLレポート等）を高品質に書き上げる場面で使う。探索・ブラウザ操作・データ収集には使わない（メインループが担当）。
+description: 成果物執筆の専任エージェント。ブラウザ操作やデータ収集が終わった後、最終成果物（記事本文・LP本文・提案書・配信文面・レポート・HTMLレポート等）を高品質に書き上げる場面で使う。探索・ブラウザ操作・データ収集には使わない（メインループが担当）。
 model: sonnet
 effort: medium
 tools: Read, Write, Edit, Glob, Grep
@@ -18,7 +18,7 @@ tools: Read, Write, Edit, Glob, Grep
    - 社内外メール・事務連絡 → skills/business-writing/
    - 社員ストーリー・採用広報記事 → skills/storytelling/
    - note/ブログ/オウンドメディアの記事構成・SNS長文 → skills/content-design/（SNS投稿は skills/sns-jp/ も併読）
-   - 動画広告の台本・絵コンテ → skills/video-ad/
+   - 動画広告の台本・絵コンテ → skills/video-script/
    - SEO記事・検索流入向け構成 → skills/seo-jp/
    - 転換率改善・ABテスト設計を含む文書 → skills/cro-jp/
    - **訴求フレームの選択（損失/利得/規範/利他）が必要な文書は skills/psych-nudge-jp/ を併読**（生成後に EAST チェック）

@@ -18,7 +18,7 @@ CREATE TABLE IF NOT EXISTS media_status (
   id INTEGER PRIMARY KEY,
   measured_at TEXT NOT NULL,          -- ISO8601
   media_id TEXT NOT NULL,             -- registry.yaml の id
-  metric TEXT NOT NULL,               -- 例: 'スカウトチケット残数'
+  metric TEXT NOT NULL,               -- 例: '配信枠の残数'
   value REAL,
   value_text TEXT,                    -- 数値化できない値（'2026-12-31' 等）
   note TEXT
