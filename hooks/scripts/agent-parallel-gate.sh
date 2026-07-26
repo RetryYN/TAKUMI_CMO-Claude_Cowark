@@ -52,7 +52,7 @@ fi
 case "$RUNNING" in ''|*[!0-9]*) RUNNING=0 ;; esac
 
 if [ "$RUNNING" -ge "$MAX" ]; then
-  MSG="【並列ゲート】サブエージェントの同時起動は最大 ${MAX} 体です（現在 ${RUNNING} 体が実行中）。前の委譲が返ってから次を起動してください。急ぐなら、いま走っている中で優先度の低いものを止めてから起動します。上限そのものを変えるのは利用者の環境設定（CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS）で、プラグイン側では変更できません。詳細は docs/agent-tiers.md。"
+  MSG="【並列ゲート】サブエージェントの同時起動は最大 ${MAX} 体です（現在 ${RUNNING} 体が実行中）。前の委譲が返ってから次を起動してください。急ぐなら、いま走っている中で優先度の低いものを止めてから起動します。**実際には ${RUNNING} 体も走っていないのにここで止まったなら、それは枠の取りこぼしです** — 委譲が異常終了（Connection closed 等）すると PostToolUse が発火せず枠が残ります。memory/.workflow/agents_running の行数と実際の実行数を見比べ、合わなければ同ファイルを消してから再開してください（次のセッション開始時にも自動で消えます）。上限そのものを変えるのは利用者の環境設定（CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS）で、プラグイン側では変更できません。詳細は docs/agent-tiers.md。"
   if [ "$MODE" = "deny" ]; then
     deny "$MSG"
   else
