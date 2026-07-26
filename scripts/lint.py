@@ -1548,6 +1548,39 @@ try:
 except Exception:
     pass  # git が無い環境では検査しない（開発は git 前提だが、動かなくなるほうが害）
 
+# --- 53. V78（preload 実測）の probe が、本当に preload の有無を弁別できるか
+#         （2026-07-26 第16ラン V78 FAIL の切り分けで導入。旧 probe は2つとも
+#          **答えがエージェント本文に書いてあった**:
+#            `outcome-verifier` に「KPIツリーに無い指標を返してよいか」と聞いていたが、
+#            その答えは `agents/outcome-verifier.md` に「有料指標は KPIツリーに存在しない前提」とある。
+#            `design-critic` に「コントラスト比の具体値」を聞いていたが、`4.5` は同エージェント本文にあり、
+#            かつ WCAG の一般知識でもある。
+#          **preload が死んでいても満点で答えられる問いで、preload の生死を測っていた。**
+#          probe は「preload 先にあり、かつエージェント本文に無い語」でなければ意味を持たない —
+#          文章で決めても腐るので、語そのものを表に持って機械で確かめる ---
+_V78_PROBES = [
+    # (エージェント, preload 先スキル, probe の弁別語)
+    ("outcome-verifier", "kpi-design-jp", "虚栄の指標を見分ける4つの問い"),
+    ("design-critic", "psych-ux-jp", "楽天型"),
+]
+for _ag, _sk, _needle in _V78_PROBES:
+    _ap, _sp = ROOT / "agents" / f"{_ag}.md", ROOT / "skills" / _sk / "SKILL.md"
+    if not (_ap.is_file() and _sp.is_file()):
+        err(f"lint #53 の表が実体とずれている: {_ag} / {_sk}")
+        continue
+    if _needle not in read(_sp):
+        err(f"V78 の probe「{_needle}」が skills/{_sk}/SKILL.md に無い — "
+            f"**preload 先に無い語を聞いても、答えられないのが正常**になってしまう")
+    if _needle in read(_ap):
+        err(f"V78 の probe「{_needle}」が agents/{_ag}.md にも書いてある — "
+            f"**preload が届いていなくても答えられる**ので、preload の生死を測れない")
+    if _sk not in preloaded_skills(_ap):
+        err(f"V78 の probe は skills/{_sk} を測る前提だが、agents/{_ag}.md の "
+            f"`skills:` preload に載っていない")
+    if _needle not in read(ROOT / "procedures/takumi-verify.md"):
+        err(f"V78 の probe「{_needle}」が procedures/takumi-verify.md に書かれていない — "
+            f"**検証者が実際に使う語と、ここで弁別性を保証している語がずれる**")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
