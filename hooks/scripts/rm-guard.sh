@@ -26,10 +26,23 @@ GATE_MODE="${TAKUMI_GATE_MODE:-deny}"
 # **自分の後片付けが拡大解釈で一括削除に化けるのを止める**ためのもの（先頭コメント参照）。
 SCAN_TEXT="$(cmd_skeleton)"
 
+# 再帰削除の検出パターン。**削除対象を伴うことまで求める。**
+# 2026-07-26 の第14ラン（cloud）で誤爆を観測: インタプリタに食わせる形
+# （`python3 - <<PY` / `python3 -c`）は本文が実行されうるので走査対象に残しているが、
+# そのせいで **文字列リテラルに削除の語が現れるだけ**の行でも deny していた
+# （検証レポートの生成スクリプトが2回止まった）。
+# 対策: 再帰フラグの直後に**パスらしきもの**が続くことを要求する。
+#   `rm -rf /tmp/x` `rm -rf "$DIR"` `rm -r ./x` `rm -rf *` → 対象あり = deny
+#   `print("rm -rf は使わない")` `print("rm -rf")`        → 対象なし = 通過
+# 引用符1つは挟んでよい（`rm -rf "$DIR"` を取り逃さないため）。
+# **グロブ一括の枝（下）は同じ手が使えない** — `rm *.png は使わない` のような散文にも
+# パスらしきものが現れるため区別できない。あちらはフェイルクローズのまま据え置く。
+_RM_RECURSIVE='(^|[^[:alnum:]_-])rm[[:space:]]+(-[[:alnum:]]*[rR][[:alnum:]]*|--recursive)([[:space:]]+-[[:alnum:]-]+)*[[:space:]]+["'"'"'\\]{0,2}[A-Za-z0-9_./~$*{-]'
+
 # 対象コマンド判定（該当しなければ即通過）
 DANGEROUS=0
-# rm の再帰フラグ（-r/-R/--recursive、-rf 等の複合も拾う）
-if printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]]+(-[[:alnum:]]*[rR]|--recursive)'; then
+# rm の再帰フラグ（-r/-R/--recursive、-rf 等の複合も拾う）+ 削除対象
+if printf '%s' "$SCAN_TEXT" | grep -qE "$_RM_RECURSIVE"; then
   DANGEROUS=1
 # rm のグロブ一括（rm ... * / rm dir/*.png 等）
 elif printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]][^;|&]*\*'; then
@@ -47,7 +60,7 @@ fi
 # 免除: memory/.workflow/ 配下のみを対象とするフラグ掃除（再帰フラグなし）は素通し
 # 例: rm -f memory/.workflow/{b4_done,e_done} / rm memory/.workflow/verify_*
 if printf '%s' "$SCAN_TEXT" | grep -q 'memory/\.workflow/' && \
-   ! printf '%s' "$SCAN_TEXT" | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]]+(-[[:alnum:]]*[rR]|--recursive)'; then
+   ! printf '%s' "$SCAN_TEXT" | grep -qE "$_RM_RECURSIVE"; then
   # rm の対象パスが .workflow 以外を含まないことを確認（含む場合はゲート対象）
   if ! printf '%s' "$SCAN_TEXT" | sed 's|memory/\.workflow/[^[:space:]]*||g' | grep -qE '(^|[^[:alnum:]_-])rm[[:space:]][^;|&]*[[:alnum:]/*]'; then
     exit 0
