@@ -1425,6 +1425,41 @@ for _hook, _agent, _needles, _what in _DUAL_GUARDED:
             f"（不足: {' / '.join(_missing)}）— hook の発火は保証されない（escalations E5）ので、"
             f"**沈黙した環境では守るものが1枚も無くなる**。エージェント側の自己規律として二重化すること")
 
+# --- 48. 「G1〜G42」のような**範囲表記**が実体の最大番号を指しているか
+#         （2026-07-27 第15ラン所見4。`docs/evals.md` の運用節が「G1〜G42」のままで、
+#          実体は G67 だった。#39 は同じ検査を `takumi-verify.md` にしかかけておらず、
+#          **同じ壊れ方が別ファイルで起きていた**（#40 の走査範囲が狭かったのと同じ形）。
+#          範囲表記は**書き写した瞬間に二重管理**になり、番号を足しても誰も直しに来ない。
+#          記録ファイル（過去ランの記述）は当時の範囲が正しいので対象外 ---
+_g_max = max([int(n) for n in re.findall(r"^\|\s*G(\d+)", read(ROOT / "docs/evals.md"), re.M)] or [0])
+for _f in sorted(ROOT.rglob("*.md")):
+    _rel = _f.relative_to(ROOT).as_posix()
+    if ".git" in _f.parts or _rel in _RECORD_FILES:
+        continue
+    for _n in {int(m) for m in re.findall(r"G1〜G(\d+)", read(_f))}:
+        if _n != _g_max:
+            err(f"{_rel}: 範囲表記 `G1〜G{_n}` が実体と合っていない（docs/evals.md の最大は G{_g_max}）— "
+                f"**少ない範囲を書くと「全部やった」が嘘になる**。範囲を書き写したら、"
+                f"golden を足すたびに直しに来なければならない")
+
+# --- 49. 簡体字が混入していないか
+#         （2026-07-27 第15ラン所見5。`skills/design-evidence-jp` に「説得を长さに頼らない」。
+#          日本語の文中に1文字だけ混ざるので**読んでも気づけない**（「長」と「长」）。
+#          本プロダクトはコードを除き日本語が原則なので、字種の取り違えは規約違反そのもの。
+#          対象は日本語で書かれる文書だけ（コード中の文字列は対象外）。
+#          **簡体字専用の字だけを見る。** 最初の実装は `国` を入れて9ファイルを誤爆させた —
+#          `国` は日本の新字体でもあり、**日中で同じ字は判別材料にならない**。
+#          この表は網羅ではなく「よく混ざる字」の列挙で、見つけたら足していく ---
+_SIMPLIFIED = "长门问时东车马鸟语说读书对话间关开发图馆网页应该动员产业务实现变换级别"
+for _f in sorted(list(ROOT.rglob("*.md")) + list(ROOT.rglob("*.yaml"))):
+    if ".git" in _f.parts:
+        continue
+    _rel = _f.relative_to(ROOT).as_posix()
+    _hits = sorted({c for c in read(_f) if c in _SIMPLIFIED})
+    if _hits:
+        err(f"{_rel}: 簡体字が混入している（{' '.join(_hits)}）— "
+            f"日本語の文中に1文字だけ混ざると**読んでも気づけない**。日本語の字体に直すこと")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
