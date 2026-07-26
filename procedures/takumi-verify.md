@@ -57,13 +57,14 @@ argument-hint: "[quick（普段の簡易点検） | full（全項目） | evals�
 3. **Step E** で開始時刻と環境（cloud か・hook が配線されているか）を記録する
 4. **Step G** で下表を上から実行する。**1項目ごとに PASS / FAIL / SKIP(理由) を確定してから次へ進む**
 5. **Step I** で結果を集計し、`knowledge/verification/<date>-verify.md` に記録
-6. **Step K** で報告し、TESTING.md の `<!-- tier2-verified: <version> env=<cloud|local> fail=<件数> gates=<実測>/<総数> ws=<yes|no> -->` を **現行バージョン・実行環境・実測の FAIL 件数・実測できたゲート数・ワークスペース接続の有無**に更新する
+6. **Step K** で報告し、TESTING.md の `<!-- tier2-verified: <version> env=<cloud|local> fail=<件数> skip=<件数> gates=<実測>/<総数> ws=<yes|no> -->` を **現行バージョン・実行環境・実測の FAIL 件数・SKIP 件数・実測できたゲート数・ワークスペース接続の有無**に更新する
 
 > **どの欄も偽らない。** それぞれが配布判断の入力である:
 >
 > | 欄 | 何を書くか | 偽ると何が起きるか |
 > |---|---|---|
 > | `fail` | 実測の FAIL 件数 | FAIL があったランを 0 と書けば**配布ゲートが黙って開く** |
+> | `skip` | 実測の SKIP 件数 | **FAIL 0 は「測らない」ことでも作れる。** 少なく書くと「測っていない量」が隠れる（2026-07-26 第17ランで、測った量が半分でも当時の条件を全部満たした）。上限は12件 |
 > | `gates` | **実測で deny を確認できた**既定 deny hook の数 ／ **既定 deny の hook 全6本** | 測っていないゲートを数えると、**hook が沈黙したまま「効いている」ことになる**（E5: 発火は cloud でも保証されない） |
 > | `ws` | 永続フォルダを接続していれば `yes` | `yes` と書くと V11/V18/V19/V30/V31 を測ったことになる |
 > | `env` | 観測事実に基づく `cloud` / `local` | 配布条件ではないが、**環境差の切り分けができなくなる** |
@@ -81,7 +82,7 @@ argument-hint: "[quick（普段の簡易点検） | full（全項目） | evals�
 > **書けない環境では、報告書の末尾に次の1行をそのまま出す**:
 >
 > ```
-> マーカー更新（開発者が TESTING.md に手で入れる）: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> gates=<実測>/<総数> ws=<yes|no> -->
+> マーカー更新（開発者が TESTING.md に手で入れる）: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> skip=<件数> gates=<実測>/<総数> ws=<yes|no> -->
 > ```
 >
 > **「書けなかった」で終えない**（マーカーが古いままだと lint が「未実施」と言い続け、実測した事実が消える）。

@@ -755,6 +755,11 @@ if _si.is_file() and _sj.is_file():
 # 配布ゲートの分母 = **既定モードが deny の hook**。warn 既定（agent-parallel-gate）は
 # 「止まること」を証明できないので分母に入れない。**分母は実体から数える** —
 # マーカーに書かれた分母をそのまま信じると、分母を小さく書くだけで「全数実測」に見える。
+# SKIP の上限。環境由来の SKIP は実績で 8 件（V8 自然文発火・V16 Slack 未接続・
+# V84 `/` メニュー不可視 ＋ ws=no の V11/V14/V18/V19/V49）。それを超える SKIP は
+# 「測れなかった」ではなく「測らなかった」を疑う。上げるならこの根拠ごと更新する
+_SKIP_MAX = 12
+
 _deny_hooks = []
 for _hp in sorted((ROOT / "hooks/scripts").glob("*.sh")):
     _hsrc = read(_hp)
@@ -767,7 +772,7 @@ for _hp in sorted((ROOT / "hooks/scripts").glob("*.sh")):
 
 _testing = ROOT / "TESTING.md"
 if _testing.is_file():
-    _marker_re = (r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s+fail=(\d+)"
+    _marker_re = (r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s+fail=(\d+)\s+skip=(\d+)"
                   r"\s+gates=(\d+)/(\d+)\s+ws=(\w+)\s*-->")
     _all = re.findall(_marker_re, read(_testing))
     # 正本は1つだけ。複数あると re.search が**最初の1つ**しか読まず、
@@ -778,15 +783,17 @@ if _testing.is_file():
             f"古いマーカーが残っていると実測より緩い判定になる")
     _m = re.search(_marker_re, read(_testing))
     if not _m:
-        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> "
+        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> skip=<件数> "
             "gates=<実測>/<総数> ws=<yes|no> --> マーカーが無い（形式を変えたか？）。"
-            "最後に実機検証したバージョン・実行環境・FAIL件数・**実測できたゲート数**・"
-            "**ワークスペース接続の有無**を機械可読で持つ。"
+            "最後に実機検証したバージョン・実行環境・FAIL件数・**SKIP件数**・"
+            "**実測できたゲート数**・**ワークスペース接続の有無**を機械可読で持つ。"
             "FAIL件数が無いと『版が揃っている』だけで緑に見え、"
-            "ゲート数が無いと『hook が沈黙したまま通った』ランを配布可と読み違える")
+            "ゲート数が無いと『hook が沈黙したまま通った』ランを配布可と読み違え、"
+            "**SKIP件数が無いと「測らないことで FAIL 0 を作った」ランを見分けられない**")
     else:
         _ran, _env, _fail = _m.group(1), _m.group(2), int(_m.group(3))
-        _gate_hit, _gate_total, _ws = int(_m.group(4)), int(_m.group(5)), _m.group(6)
+        _skip = int(_m.group(4))
+        _gate_hit, _gate_total, _ws = int(_m.group(5)), int(_m.group(6)), _m.group(7)
         if _env not in ("cloud", "local"):
             err(f"TESTING.md: tier2-verified の env={_env} は不正（cloud か local）")
         if _ws not in ("yes", "no"):
@@ -798,6 +805,20 @@ if _testing.is_file():
                 f"分母は hooks/scripts/ の実体と一致していなければならない")
         elif _gate_hit > _gate_total:
             err(f"TESTING.md: tier2-verified の gates={_gate_hit}/{_gate_total} は分子が分母を超えている")
+        # **FAIL 0 は「測らない」ことで作れる。** 2026-07-26 の第17ラン（v5.9.0）が
+        # PASS 34 / FAIL 0 / SKIP 30 で、直前の第16ラン（PASS 67 / FAIL 1 / SKIP 8）の
+        # **半分しか測っていないのに、当時の条件（fail=0・gates 全数・同版）をすべて満たした**。
+        # 検証者自身は「実挙動は未測定」「黙って PASS にしていない」と申告していたが、
+        # **ゲートはその申告を聞く口を持っていなかった**。SKIP 件数を条件に入れる。
+        # 閾値は環境由来の SKIP（自然文発火の観測機会なし・Slack 未接続・`/` メニュー不可視・
+        # ws=no の5件）を数えた実績値 8 に余裕を足した値。
+        if _skip > _SKIP_MAX:
+            warns.append(
+                f"Tier 2 の最終ラン（v{_ran}）は SKIP が {_skip} 件（上限 {_SKIP_MAX} 件）— "
+                f"**FAIL 0 でも配布判断の材料にならない**。"
+                f"FAIL 0 は「測らない」ことでも作れるので、**測っていない量そのものを条件にする**。"
+                f"環境由来（ws=no・コネクタ未接続・UI 不可視）以外の SKIP を潰してから再ランすること"
+            )
         if _fail > 0:
             warns.append(
                 f"Tier 2 の最終ラン（v{_ran}）に FAIL が {_fail} 件ある — **配布判断は FAIL 0 が条件**。"
