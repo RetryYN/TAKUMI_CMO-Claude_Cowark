@@ -1337,6 +1337,34 @@ for _h in sorted((ROOT / "hooks/scripts").glob("*.sh")):
             f"（`TESTING.md「GATE_MODE 昇格」節が正本` と引く。手順を書き写すと、"
             f"**deny に上げてよい条件が2通り**になり、緩いほうが読まれる）")
 
+# --- 47. hook が守る規律が、対象エージェントの定義本文にも書かれているか（多層防御の二重化）
+#         （2026-07-27 第15ラン G31 FAIL で検出。Critic Gate の規律は `critic-gate.sh` に**しか**無く、
+#          `agents/design-artisan.md` には critic / 審査 / 提示 のいずれの語も1件も無かった。
+#          E5 のとおり **hook の発火は保証されない**ので、沈黙した環境では
+#          「審査前に完成品を渡さない」を守るものが**1枚も無くなる**。
+#          escalations の「設計上の帰結」は『hook が効かなくても壊れない』を掲げているのに、
+#          このゲートだけ帰結が適用されていなかった。
+#          **文章で「多層防御」と書いてあるだけでは層は増えない** — 層があることを機械で数える） ---
+#         **語が1つ出てくるだけでは足りない**（意図的破壊で実測）: 「design-critic 未審査と書く」の
+#         1行だけでも語は出現し、検査は黙る。規律の実体は「**ゲートが沈黙していても出さない**」という
+#         条件のほうなので、審査先の名前と沈黙時の条件を**両方**要求する。
+_DUAL_GUARDED = [
+    # (hook, 二重化すべきエージェント, 本文に必要な語（全部要る）, 何の規律か)
+    ("critic-gate.sh", "design-artisan.md", ("design-critic", "沈黙"),
+     "design-critic の PASS 前に生成物を完成品として渡さない（ゲートが沈黙していても）"),
+]
+for _hook, _agent, _needles, _what in _DUAL_GUARDED:
+    _ap = ROOT / "agents" / _agent
+    if not _ap.is_file():
+        err(f"lint #47 の表が実体とずれている: agents/{_agent} が無い")
+        continue
+    _at = read(_ap)
+    _missing = [n for n in _needles if n not in _at]
+    if _missing:
+        err(f"agents/{_agent}: {_hook} が守る規律「{_what}」が本文に無い"
+            f"（不足: {' / '.join(_missing)}）— hook の発火は保証されない（escalations E5）ので、"
+            f"**沈黙した環境では守るものが1枚も無くなる**。エージェント側の自己規律として二重化すること")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
