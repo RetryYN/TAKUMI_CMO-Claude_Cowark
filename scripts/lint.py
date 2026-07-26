@@ -1462,6 +1462,30 @@ for _f in sorted(list(ROOT.rglob("*.md")) + list(ROOT.rglob("*.yaml"))):
         err(f"{_rel}: 簡体字が混入している（{' '.join(_hits)}）— "
             f"日本語の文中に1文字だけ混ざると**読んでも気づけない**。日本語の字体に直すこと")
 
+# --- 50. 常時ロードの予算（session-rules.txt は毎セッション全文が文脈に載る）
+#         （2026-07-27 のトークン効率レビューで導入。ルール(3) が1行 4,094字まで育っており、
+#          **ファイル全体 9,365字の 44% が1行**だった。中身はスキル索引と各スキルの具体値で、
+#          **調べた15項目すべてが正本側にも存在**＝二重管理。しかも本ファイルの1行目自身が
+#          「詳細な値・手順はここに複製せず正本を Read」と書いていた — **規約が自分の中で破られていた**。
+#          索引が不要なのは、42本の `SKILL.md` の `description`（`Use when` / `Not for`）を
+#          プラットフォームが常時読める形で載せているため。**同じ情報に3回払っていた。**
+#          上限は「いま通る値のすぐ上」に置く（ラチェット）。増やすときは
+#          **「正本を開かなかったときに効かないと困るか」を説明してから**上限ごと上げる ---
+_RULES_MAX_TOTAL = 7_400   # 全体（字）
+_RULES_MAX_LINE = 760      # 1行（字）— 1行が肥大すると読み手も差分も追えなくなる
+if _rules_txt.is_file():
+    _rt = read(_rules_txt)
+    if len(_rt) > _RULES_MAX_TOTAL:
+        err(f"hooks/scripts/session-rules.txt が {len(_rt):,}字（上限 {_RULES_MAX_TOTAL:,}字）— "
+            f"**毎セッション全文が文脈に載る**ので、長くなるほど本題に使える文脈が減る。"
+            f"索引・具体値・手順は正本を指すだけにする。"
+            f"**ここに置いてよいのは「正本を開かなかったときに効かないと困るもの」だけ**")
+    for _i, _l in enumerate(_rt.splitlines(), 1):
+        if len(_l) > _RULES_MAX_LINE:
+            err(f"hooks/scripts/session-rules.txt 行{_i}: {len(_l):,}字（上限 {_RULES_MAX_LINE:,}字）— "
+                f"1つのルールに詰め込みすぎ。**正本へ切り出すか、別番号のルールに分ける**"
+                f"（過去にルール(3)が 4,094字まで育ち、中身は全項目が正本と二重管理だった）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
