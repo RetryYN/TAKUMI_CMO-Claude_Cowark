@@ -1220,6 +1220,32 @@ for _f in sorted(list((ROOT / "procedures").glob("*.md")) + list((ROOT / "docs")
                 f"別名にしたなら追随する／ワークスペース生成物なら lint の "
                 f"_WORKSPACE_ARTIFACTS に足す）")
 
+# --- 42. 「構造の規定」を正本以外が書き写していないか
+#         （2026-07-26 の第13ラン（cloud）で検出。ダッシュボードのタブの切り方について
+#          `templates/dashboard-design.md` が「カテゴリー単位（2026-07-22 確定）」と
+#          **却下の経緯つきで**書いているのに、`procedures/takumi-dashboard.md` だけが
+#          「タスク単位」＝**その経緯で既に却下された設計**のまま取り残されていた。
+#          しかも手順書自身が「大原則は templates/dashboard-design.md」と書いており、
+#          **正本を指しながら中身も書き写して、書き写したほうが腐っていた**。
+#          正本を指すだけなら腐らない。**書き写した瞬間に二重管理になる。** ---
+_CANON_ONLY = [
+    (r"タブは[^\n]{0,6}単位", "templates/dashboard-design.md", "ダッシュボードのタブの切り方"),
+]
+for _pat, _canon, _what in _CANON_ONLY:
+    _holders = []
+    for _f in sorted(ROOT.rglob("*.md")):
+        _rel = _f.relative_to(ROOT).as_posix()
+        if ".git" in _f.parts or _rel in _HISTORY_FILES or _rel == "TESTING.md":
+            continue
+        if re.search(_pat, read(_f)):
+            _holders.append(_rel)
+    if _canon not in _holders:
+        err(f"{_canon}: {_what} の規定が正本から消えている（`{_pat}` に一致する記述が無い）")
+    for _h in _holders:
+        if _h != _canon:
+            err(f"{_h}: {_what} は `{_canon}` が正本。**書き写さずに指す**"
+                f"（書き写すと二重管理になり、写したほうが腐る）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
