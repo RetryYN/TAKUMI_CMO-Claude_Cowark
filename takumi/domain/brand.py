@@ -59,6 +59,18 @@ class BrandPartition:
 
     slug: BrandSlug
 
+    def __post_init__(self) -> None:
+        # 生の文字列を渡されると BrandSlug の検証（英数字・ハイフン・長さ）を丸ごと飛ばせる。
+        # いまは `.base` で AttributeError になって落ちる＝フェイルクローズだが、
+        # **なぜ落ちたのかが読めない**。区画パスは Brand Isolation Guard の判定材料なので、
+        # 「宣言してもらう設計は、宣言が本物かを検査して初めて機械保証になる」を通す（F-1 と同じ）。
+        if not isinstance(self.slug, BrandSlug):
+            raise ValueError(
+                f"区画の slug は BrandSlug で宣言してください"
+                f"（受け取った値: {self.slug!r} / 型: {type(self.slug).__name__}）。"
+                "生の文字列を渡すと slug の検証を飛ばせてしまう"
+            )
+
     @property
     def base(self) -> str:
         return f"{_BRANDS_ROOT}/{self.slug.value}"

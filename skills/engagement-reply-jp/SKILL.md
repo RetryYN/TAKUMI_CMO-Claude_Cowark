@@ -199,7 +199,7 @@ UI は頻繁に変わるため、記憶で操作しない。
 
 1. 応対記録: `knowledge/brands/<slug>/channels/<媒体>/engagement/<date>.md`
    — 相手（**個人が特定できる情報は落とす**）・内容の要旨・判断（返す/返さない）・理由・返信文
-2. **繰り返し出る質問 → コンテンツ化**（`/匠発信`・`/匠発信` の FAQ・記事）
+2. **繰り返し出る質問 → コンテンツ化**（`/匠発信 ▸ takumi-website` の FAQ・`takumi-ownedmedia` の記事）
 3. **繰り返し出る不満 → `/匠顧客` の材料**（顧客の語彙をそのまま拾う）
 4. **好意的な言及の質と量 → `skills/kpi-design-jp` の Happiness 指標**に接続
 5. **返信で使った主張が messaging.md の柱と矛盾していないか**（→ `skills/messaging-design-jp`）

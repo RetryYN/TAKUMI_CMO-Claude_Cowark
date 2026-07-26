@@ -409,7 +409,7 @@ dataLayer.push({'gtm.blocklist': ['customScripts']});
 - 公開、バージョン、承認（ロールバック手順）— `support.google.com/tagmanager/answer/6107163`
 - UTM パラメータ — `support.google.com/analytics/answer/10917952`
 
-**【二次情報のみ・未確認】** 規範として引用しない
+**【二次情報・原典未取得】** 規範として引用しない
 
 - GTM セキュリティ（カスタムHTML 経由の e-skimmer / Magecart）— ThreatNG Security, Crystallize
 - GTM と CSP の共存 — Incremys, Beyond Measure

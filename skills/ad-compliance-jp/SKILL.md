@@ -177,7 +177,7 @@ user-invocable: false
 > 接続の正本は [docs/skill-map.md](../../docs/skill-map.md)。層: **F. 出す前の関門**
 
 - **前段**（先に決まっているべきこと）: 生成系すべての最終稿（`skills/copywriting`／`skills/sales-writing`／`skills/storytelling`／`skills/video-script`／`skills/sns-jp`／`skills/seo-jp`／`skills/business-writing`）
-- **後段**（ここで決めたら次に開く）: 公開・配信の手順（`/匠発信`・`/匠発信`・`/匠発信`）。**出す先の規約も別に確かめる**（`skills/local-seo-jp` §3）
+- **後段**（ここで決めたら次に開く）: 公開・配信の手順（`/匠発信 ▸ takumi-ownedmedia`（記事）・`takumi-sns`（投稿）・`takumi-email`（配信））。**出す先の規約も別に確かめる**（`skills/local-seo-jp` §3）
 - **併用**（同時に開く）: `skills/offer-design-jp`（価格・返品・定期購入）／`skills/referral-advocacy-jp`（対価）／`skills/brand-guideline-jp`（禁止事項）／`skills/engagement-reply-jp`
 - **正本が別**: 景品の上限は `takumi/domain/premium.py`、No.1 の分母は `takumi/domain/market_share.py`、個人データは `privacy-auditor`
 

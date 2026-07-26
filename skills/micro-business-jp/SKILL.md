@@ -200,7 +200,7 @@ OrganicAcquisitionCost(hours_spent=40, hourly_rate_yen=5_000, customers_acquired
   公正取引委員会「フリーランス・事業者間取引適正化等法 Q&A」
   （`https://www.jftc.go.jp/fllaw_limited/fllaw_qa.html`）。**2024年11月1日施行**
 
-**【一次情報・入手先】**
+**【一次情報・出所は特定済み／原文は未取得（要確認）】**
 
 - **フリーランスの実態（人数・収入・取引環境）**: 内閣官房・公正取引委員会・厚生労働省・中小企業庁
   「フリーランス実態調査」（`https://www.chusho.meti.go.jp/keiei/torihiki/law_freelance.html`、

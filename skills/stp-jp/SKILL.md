@@ -169,7 +169,7 @@ user-invocable: false
 
 ## 出典
 
-**【一次情報・入手先】**
+**【一次情報・出所は特定済み／原文は未取得（要確認）】**
 
 - **市場規模・人口・世帯の実数**: 政府統計の総合窓口 e-Stat（`https://www.e-stat.go.jp/`）、総務省統計局
 - **自社セグメントの実データ**: GA4・Search Console（→ `skills/ga4-jp`・`skills/search-console-jp`）

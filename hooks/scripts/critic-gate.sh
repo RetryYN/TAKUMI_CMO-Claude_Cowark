@@ -4,8 +4,9 @@
 # 対象は「ファイルを人間・外部に渡す出口」のみ（投稿系ブラウザ操作は workflow-gate/psv ゲートの層）。
 # フラグ運用: 委譲直後に critic_pending を touch（同時に critic_pass を rm — 前回 PASS の鮮度切れ防止）。
 # critic が PASS を返したら critic_pending を rm し、PASS の1行要約を critic_pass に書き込む。
-# 導入手順: 初期は warn で運用し、誤爆パターンを knowledge/config/critic-suppress.txt（grep -E 正規表現・
-# 1行1パターン・# はコメント。緩める方向の追記はユーザー確認必須）に収集後、deny へ昇格。
+# 導入手順（TESTING.md「GATE_MODE 昇格」節が正本）: 初期は warn（注入のみ）で運用し、誤爆ゼロ確認後に deny へ昇格。
+# 本ゲート固有: 誤爆パターンは knowledge/config/critic-suppress.txt に収集する（grep -E 正規表現・
+# 1行1パターン・# はコメント。緩める方向の追記はユーザー確認必須）。
 # 2026-07-24 deny 昇格済み（v0.101.1 実機で matcher 発火・誤爆ゼロを確認）。
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"

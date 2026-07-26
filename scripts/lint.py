@@ -28,6 +28,11 @@ warns: list[str] = []
 # 「現行の名前と一致しているか」を見る検査からは一律で外す
 # （旧コマンド名・旧プラグイン名・廃止ファイルへの言及は、ここでは違反ではなく記録）。
 _HISTORY_FILES = {"TESTING-HISTORY.md"}
+# 記録ファイル: **壊れていた形をそのまま引用するのが仕事**なので、
+# 「壊れた書き方を見つける」種類の検査（#40 併記の潰れ / #41 宙吊り参照 / #42 書き写し）から外す。
+# 規約違反そのものを見る検査（#36 など）は履歴だけを外し、TESTING.md は対象に残す
+# （最新ランの記述は現行の規約に従わせたい）。
+_RECORD_FILES = _HISTORY_FILES | {"TESTING.md"}
 
 
 def err(msg: str) -> None:
@@ -1174,9 +1179,11 @@ if _verify_md.is_file():
 # 区切りは「・」「、」空白「または」など多様なので**区切り記号を列挙せず距離で見る**
 # （最初の実装は区切り記号を列挙したため、最悪の形「/匠発信 /匠発信 /匠発信」＝空白区切りを取り逃した）。
 _dup_cmd = re.compile(r"/([匠][ぁ-んァ-ヴー一-龠]{1,4})[^/\n]{0,14}?/\1(?![ぁ-んァ-ヴー一-龠])")
-for _f in sorted(list((ROOT / "procedures").glob("*.md")) + list((ROOT / "docs").rglob("*.md"))):
+# 走査は**全 .md**（2026-07-26 の監査で判明: procedures/ と docs/ に限っていたため
+# `skills/` に同じ壊れ方が4件残っていた。**検査の網は、壊れ方が起きうる範囲まで広げる**）
+for _f in sorted(ROOT.rglob("*.md")):
     _rel = _f.relative_to(ROOT).as_posix()
-    if _rel in _HISTORY_FILES:
+    if ".git" in _f.parts or _rel in _RECORD_FILES:
         continue
     for _line_no, _line in enumerate(read(_f).splitlines(), 1):
         _hit = _dup_cmd.search(_line)
@@ -1203,10 +1210,9 @@ _WORKSPACE_ARTIFACTS = {
     "creatives.md", "pending.md",
 }
 _MD_REF_OK = {"README.md", "SKILL.md", "CLAUDE.md"}
-for _f in sorted(list((ROOT / "procedures").glob("*.md")) + list((ROOT / "docs").rglob("*.md"))
-                 + list((ROOT / "agents").glob("*.md")) + list((ROOT / "commands").glob("*.md"))):
+for _f in sorted(ROOT.rglob("*.md")):  # 2026-07-26: 走査を全 .md へ広げた（#40 と同じ理由）
     _rel = _f.relative_to(ROOT).as_posix()
-    if _rel in _HISTORY_FILES:
+    if ".git" in _f.parts or _rel in _RECORD_FILES:
         continue
     for _line_no, _line in enumerate(read(_f).splitlines(), 1):
         if "knowledge/" in _line:  # ワークスペース配下を説明している行は対象外
@@ -1235,7 +1241,7 @@ for _pat, _canon, _what in _CANON_ONLY:
     _holders = []
     for _f in sorted(ROOT.rglob("*.md")):
         _rel = _f.relative_to(ROOT).as_posix()
-        if ".git" in _f.parts or _rel in _HISTORY_FILES or _rel == "TESTING.md":
+        if ".git" in _f.parts or _rel in _RECORD_FILES:
             continue
         if re.search(_pat, read(_f)):
             _holders.append(_rel)
@@ -1272,6 +1278,64 @@ if _esc.is_file():
                 err(f"{_rel}:{_line}: {_e} は**解消済み**なのに制約として引用している"
                     f"（解消したのに制約として書かれていると、**できることをやらない**ほうへ"
                     f"実装が引きずられる。引用するなら「{_e} は解消」と併記する）")
+
+# --- 44. ブランド区画に触れる手順書が「アクティブブランド確定」を書いているか
+#         （2026-07-26 の監査で検出。`knowledge/brands/` を読み書きする手順書 17本のうち
+#          **`takumi-research` だけ**が、アクティブブランドに一度も言及していなかった。
+#          区画外への書き込みは Brand Isolation Guard が deny するので、
+#          **前段を書いていない手順書に従うと、止められた側は理由も直し方も分からない**。
+#          ゲートがあるから安全、ではない — **止まったときに何をすればよいかを手順書が持つ**べき） ---
+for _f in sorted((ROOT / "procedures").glob("*.md")):
+    _t = read(_f)
+    if "knowledge/brands/" not in _t:
+        continue
+    if "アクティブブランド" not in _t and "active_brand" not in _t:
+        err(f"procedures/{_f.name}: ブランド区画（knowledge/brands/）に触れているのに"
+            f"**アクティブブランド確定の前段が無い** — Brand Isolation Guard の deny に当たったとき、"
+            f"読み手は理由も直し方も分からない。冒頭に「前段: アクティブブランドを確定する"
+            f"（未確定なら `/匠設定`）」を置く")
+
+# --- 45. 出典ラベル（確からしさの申告）が正本の5つだけか
+#         （2026-07-26 の監査で検出。`docs/開発ワークフロー.md` は5段階を定義しているのに、
+#          実際には**12種類**が使われていた — 「一次情報・入手先」＝「出所は特定済み／原文は未取得」、
+#          「二次情報のみ・未確認」＝「二次情報・原典未取得」のような**同義の別綴り**が増えていた。
+#          さらに**正本ファイル自身が自分の表と食い違っていた**（L25 が表に無いラベルを使用）。
+#          綴りが割れると、**確からしさの申告が読み手にも機械にも数えられなくなる**。
+#          補足は許す — 正本のラベルで始めて ` — ` か `（` の後ろに足す形だけ ---
+_LABEL_CANON = re.findall(r"^\| \*\*【([^】]+)】\*\*", read(ROOT / "docs/開発ワークフロー.md"), re.M)
+if len(_LABEL_CANON) != 5:
+    err(f"docs/開発ワークフロー.md: 出典ラベルの正本表が5行でない（{len(_LABEL_CANON)}行）"
+        f"— #45 はこの表を正本として読む")
+_label_use = re.compile(r"【([^】]*(?:情報|未確認|社内基準)[^】]*)】")
+for _f in sorted(ROOT.rglob("*.md")):
+    _rel = _f.relative_to(ROOT).as_posix()
+    if ".git" in _f.parts or _rel in _RECORD_FILES:
+        continue
+    for _line_no, _line in enumerate(read(_f).splitlines(), 1):
+        for _m in _label_use.finditer(_line):
+            _used = _m.group(1)
+            if any(_used == _c or _used.startswith(_c + " — ") or _used.startswith(_c + "（")
+                   for _c in _LABEL_CANON):
+                continue
+            err(f"{_rel}:{_line_no}: 出典ラベル 【{_used}】 は正本の5つに無い"
+                f"（同義の別綴りを作らない — 確からしさの申告が数えられなくなる。"
+                f"補足を足すなら `【<正本のラベル> — 補足】` の形にする）")
+
+# --- 46. GATE_MODE を持つ hook が、昇格手順の正本を参照しているか
+#         （2026-07-26 の監査で検出。5本中 `critic-gate` だけが正本を引かずに
+#          **手順を自分の言葉で書き写して**おり、しかも**文言がずれていた**
+#          — 正本は「誤爆ゼロ確認後に deny へ昇格」、こちらは「誤爆パターンを収集後、deny へ昇格」。
+#          **ゲートを deny に上げてよい条件が2通り書かれている**状態で、緩いほうを読めば
+#          誤爆を残したまま昇格できてしまう。#42 と同じ「書き写すと腐る」形だが、
+#          対象が **deny の昇格条件** なので実害が大きい ---
+for _h in sorted((ROOT / "hooks/scripts").glob("*.sh")):
+    _t = read(_h)
+    if "GATE_MODE" not in _t and "_GATE_MODE" not in _t:
+        continue
+    if "GATE_MODE 昇格" not in _t:
+        err(f"hooks/scripts/{_h.name}: GATE_MODE を持つのに昇格手順の正本を参照していない"
+            f"（`TESTING.md「GATE_MODE 昇格」節が正本` と引く。手順を書き写すと、"
+            f"**deny に上げてよい条件が2通り**になり、緩いほうが読まれる）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "

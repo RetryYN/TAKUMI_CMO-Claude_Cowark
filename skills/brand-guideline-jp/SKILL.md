@@ -145,7 +145,7 @@ user-invocable: false
 
 - **正本は1つ**: `knowledge/brands/<slug>/brand.yaml`（トーン・NG・配色）と
   `knowledge/brands/<slug>/strategy/brand-guideline.md`
-- **制作の手順書から必ず参照させる**（`/匠発信`・`/匠発信`・`/匠発信`）
+- **制作の手順書から必ず参照させる**（`/匠発信 ▸ takumi-content`（制作物）・`takumi-website`（サイト・LP）・`takumi-ownedmedia`（記事））
 - **AI に渡すときは要約でなく該当箇所の原文を渡す**（要約すると縛りが消える）
 
 ### (2) チェックできる形に落とす

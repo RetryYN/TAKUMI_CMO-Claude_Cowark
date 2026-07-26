@@ -181,7 +181,7 @@ user-invocable: false
 
 ## 出典
 
-**【一次情報・入手先】**
+**【一次情報・出所は特定済み／原文は未取得（要確認）】**
 
 - **自社の行動・購買データ**: GA4／Search Console（→ `skills/ga4-jp`・`skills/search-console-jp`）。
   **GA4 の数値は推定値でありしきい値で行が消える**ため、**絶対値ではなく比率と推移で読む**
