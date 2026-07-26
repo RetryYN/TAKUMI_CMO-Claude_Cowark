@@ -1503,6 +1503,46 @@ for _a in sorted((ROOT / "agents").glob("*.md")):
             f"判定の根拠でないスキルは外すか、詳細を `resources/` へ寄せて SKILL.md を薄くする"
             f"（`skills/web-design` が先例）。`python3 scripts/context-budget.py` で内訳を見る")
 
+# --- 52. version を上げずに配布物を変えていないか
+#         （2026-07-27 に実測で発覚。v5.7.0 へ繰り上げた**後**に
+#          `hooks/scripts/session-rules.txt` と `_common.sh` を変えており、
+#          **同じ 5.7.0 で中身が2種類ある**状態になっていた。
+#          **Cowork は version フィールドの変化でしか更新を検知しない**ので、
+#          先に同期した利用者には修正が**永久に届かない**。
+#          リリースチェックリスト項目2 は文章で規定していたが、機械検査が無かった。
+#          対象は「利用者の環境に配られて実行時に読まれるもの」だけ —
+#          `scripts/` `tests/` は開発側、ルート直下の .md（TESTING.md 等）は記録。
+#          **マーカー更新のコミットは version を上げてはいけない**規定があるので、
+#          記録ファイルを対象に入れると規定同士が噛み合わなくなる ---
+_SHIPPED = ("commands", "procedures", "agents", "skills", "hooks", "templates", "takumi", "docs")
+try:
+    import subprocess as _sp
+
+    def _git(*a):
+        return _sp.run(["git", *a], cwd=ROOT, capture_output=True, text=True, timeout=10)
+
+    if _git("rev-parse", "--git-dir").returncode == 0:
+        if _git("rev-parse", "--is-shallow-repository").stdout.strip() == "true":
+            # **扱えないものを扱えるふりで検査しない** — 浅いクローンでは履歴を辿れないので、
+            # 黙って通すのではなく「検査できなかった」ことを言う
+            warns.append("lint #52（version 繰り上げ漏れ）を実行できない: 浅いクローン。"
+                         "CI なら actions/checkout に `fetch-depth: 0` を付ける")
+        else:
+            _vcommit = _git("log", "-1", "--format=%H", "--",
+                            ".claude-plugin/plugin.json").stdout.strip()
+            if _vcommit:
+                _changed = [f for f in _git("diff", "--name-only", f"{_vcommit}..HEAD",
+                                            "--", *_SHIPPED).stdout.splitlines() if f.strip()]
+                if _changed:
+                    warns.append(
+                        f"version={plugin['version']} を繰り上げた後に配布物が {len(_changed)} 件変わっている"
+                        f"（{', '.join(_changed[:4])}{' …' if len(_changed) > 4 else ''}）— "
+                        f"**Cowork は version の変化でしか更新を検知しない**ので、"
+                        f"先に同期した利用者には届かない。配布する前に version を繰り上げること"
+                        f"（リリースチェックリスト項目2）")
+except Exception:
+    pass  # git が無い環境では検査しない（開発は git 前提だが、動かなくなるほうが害）
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
