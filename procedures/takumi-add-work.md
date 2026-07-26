@@ -13,7 +13,20 @@
 
 ### 2. 台帳登録
 
-`knowledge/media/registry.yaml`（正本・スキーマは procedures/takumi-ownedmedia.md）に1エントリ追記。id は英語ケバブケース（例: onecareer, doda）。
+`knowledge/media/registry.yaml` に1エントリ追記する。**このスキーマの正本はここ**
+（2026-07-26 まで「正本は takumi-ownedmedia」と書かれていたが、**その記述はどこにも存在しなかった**）。
+
+| キー | 必須 | 値 | 備考 |
+|---|---|---|---|
+| `id` | ○ | 英語ケバブケース（例: `company-blog`, `note-official`） | ディレクトリ名 `knowledge/sites/<id>/` になる |
+| `name` | ○ | 表示名（例: 自社ブログ） | ダッシュボードの行見出し |
+| `kind` | ○ | `sns` / `owned_media` / `website` / `email` / `earned` | `ChannelKind` と1対1。**有料出稿の種別は持たない**（ゼロ広告費） |
+| `parent` | ○ | `sns` / `website` / `other` | 動的コマンドのグルーピング（§4 の親判定表）。既存パック非該当は `other`＝非表示親 |
+| `url` | ○ | 管理画面のトップURL | 巡回の起点 |
+| `quota` | — | 残数の項目名と場所 | 不明なら省略（マッピング中に見つけたら §3-4 で追記） |
+| `renew_date` | — | 契約更新日・期限 | 同上 |
+
+**有料広告媒体・求人媒体は登録しない**（§4 で廃止済み。id の例に求人媒体を書かない）。
 
 ### 3. 初期マッピング（フェーズ① First Delve — 読み取り専用）
 

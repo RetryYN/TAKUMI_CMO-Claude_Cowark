@@ -103,7 +103,7 @@
 
 1. **どこで止められたはずかを1つ特定する**（承認前・公開前チェック・素材の確認など）
 2. その1点を**手順かゲートに落とす**（人の注意力に頼らない）
-3. `knowledge/feedback/lessons.md` に NG 事例として記録（`/メモリ保存`）
+3. `knowledge/feedback/lessons.md` に NG 事例として記録（takumi-feedback）
 4. メッセージングの柱と矛盾していたなら `docs/parts/messaging-audit.md` の点検対象に加える
 5. **①で止めたものを再開する**（止めっぱなしを放置しない）
 

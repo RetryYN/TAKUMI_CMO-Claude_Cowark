@@ -1,5 +1,8 @@
 # /匠発信 ▸ 自社サイト・LP の診断と改善（takumi-website）
 
+> **前段**: アクティブブランドを先に確定する（未確定なら `/匠設定`）。区画外への書き込みは Brand Isolation Guard が deny する。
+> **ループ上の位置**（→ `docs/parts/task-loop.md`）: **① 構える＝完了条件と対象ページの確定／② 作る＝`design-artisan`（モック）・`deliverable-writer`（文面）／③ 咎める＝`design-critic`／④ 確かめる＝`outcome-verifier`**。
+
 要望を受けて実行粒度（docs/parts/index.md の3段: タスク単体 / ワークフロー連結 / まるっと）を判定し、タスク5型に振り分ける。各タスクは docs/parts/ の部品を Read して従う。
 
 | 要望の型 | タスク | 部品 |
