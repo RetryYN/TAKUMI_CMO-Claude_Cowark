@@ -46,7 +46,6 @@ completed: 2026-07-23        # 全問回答した日付。部分回答なら pen
 sns: [x, note]               # 運用する媒体
 genai: {gemini: 有料, chatgpt: なし}
 stock_sites: [pngtree（無料枠）]
-recruit_media: [onecareer]   # /匠設定 済みの id
 dl_folder: ok                # ok | pending
 own_site: https://…
 ```

@@ -51,4 +51,4 @@
 
 - 調査は読み取り専用（変更操作なし・ゲート不要）。bot検知・CAPTCHA・レート制限に遭遇したら即中断して報告
 - 結果はレポート化するなら logical-writing + docs/conventions.md 準拠。記録先は knowledge/（styles/ audits/ sns/<媒体>/research/）
-- 調査結果から制作に進む場合は該当パック（/匠発信 /匠発信 /匠発信）へ引き継ぐ
+- 調査結果から制作に進む場合は該当パック（`/匠発信 ▸ takumi-ownedmedia`（記事）・`takumi-sns`（投稿）・`takumi-content`（画像・動画））へ引き継ぐ

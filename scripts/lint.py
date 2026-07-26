@@ -1043,7 +1043,12 @@ if _yaml is not None:
 #          内部手順は手順名（takumi-start）で書く。
 #          除外: TESTING.md（履歴ログ。当時の名称のまま残す方針）／台帳の移行表／「旧 /◯◯」表記 ---
 _cmd_names = {p.stem for p in (ROOT / "commands").glob("*.md")}
-_slash = re.compile(r"(?:(?<=^)|(?<=[\s（(「『]))/([ぁ-んァ-ヴー一-龠]{2,10})", re.M)
+# 2026-07-26: 直前文字の集合に ` を足した。**リポジトリの主流表記は `` `/匠発信` `` であり、
+# この検査はそれを一度も見ていなかった**（第12ランで廃止名がバックティック内に3件生き残っていた）。
+# `*`（Markdown 太字）は足さない — `Glob **/ファイル名` のようなグロブに誤爆する。
+_slash = re.compile(r"(?:(?<=^)|(?<=[\s（(「『`]))/([ぁ-んァ-ヴー一-龠]{2,10})", re.M)
+# メタ構文変数（「任意の名前」を表す説明用の綴り）。実在するコマンド名ではないので対象外
+_SLASH_PLACEHOLDER = {"名前", "ファイル名", "媒体名"}
 for _f in sorted(ROOT.rglob("*")):
     if (not _f.is_file() or ".git" in _f.parts
             or _f.suffix not in (".md", ".sh", ".txt", ".py", ".json")):
@@ -1054,9 +1059,10 @@ for _f in sorted(ROOT.rglob("*")):
     _t = read(_f)
     if _rel == "docs/command-registry.md":  # 旧名→新名の移行表は旧名が出て当然
         _t = re.sub(r"### 旧コマンド名からの対応.*?(?=\n## )", "", _t, flags=re.S)
-    _t = re.sub(r"旧 /[ぁ-んァ-ヴー一-龠]{2,10}", "", _t)  # 「旧 /素材探し」は履歴の明示
+    # 「旧 /素材探し」「旧 `/検証`」は履歴の明示（バックティックで囲む書き方も許す）
+    _t = re.sub(r"旧 `?/[ぁ-んァ-ヴー一-龠]{2,10}", "", _t)
     for _mm in _slash.finditer(_t):
-        if _mm.group(1) not in _cmd_names:
+        if _mm.group(1) not in _cmd_names and _mm.group(1) not in _SLASH_PLACEHOLDER:
             err(f"{_rel}: `/{_mm.group(1)}` は登録コマンドに無い"
                 f"（スラッシュ表記は「打てば動く」約束。登録9本以外は手順名で書く — "
                 f"内部手順はスラッシュを付けず takumi-start のように書く。"
@@ -1153,6 +1159,66 @@ if _verify_md.is_file():
             err(f"procedures/takumi-verify.md: 件数が実体と合っていない — "
                 f"手順書は {_n} と書いているが {_what} は {_actual}。"
                 f"**少ない数を書くと「全部やった」が嘘になる**（網羅したフリ）")
+
+# --- 40. 同じコマンド名が1行の中で「併記」されていないか
+#         （2026-07-26 の第12ラン V34 で検出。v5.0.0 の 20本→9本統合で、
+#          異なる手順書を指していた併記（例「旧 /コンテンツ・旧 /オウンドメディア」）を
+#          **すべて `/匠発信` に一括置換した**結果、`/匠発信・/匠発信` という
+#          **どちらへ行けばよいか決められない**記述が9箇所残っていた。
+#          最悪の形は `procedures/takumi-research.md` の「（/匠発信 /匠発信 /匠発信）」。
+#          文章としては読めてしまうので、人間の目視では最後まで見つからなかった。
+#          **併記は手順書名で書く**（`/匠発信 ▸ takumi-content`）。
+#          離れた位置での再出現（同じ行の別の文で同じコマンドに触れる）は正当なので、
+#          **併記記号をはさんで近接している場合だけ**を見る ---
+# 近接（14字以内・間に別のコマンドを挟まない）で同じ名前が再出現したら併記とみなす。
+# 区切りは「・」「、」空白「または」など多様なので**区切り記号を列挙せず距離で見る**
+# （最初の実装は区切り記号を列挙したため、最悪の形「/匠発信 /匠発信 /匠発信」＝空白区切りを取り逃した）。
+_dup_cmd = re.compile(r"/([匠][ぁ-んァ-ヴー一-龠]{1,4})[^/\n]{0,14}?/\1(?![ぁ-んァ-ヴー一-龠])")
+for _f in sorted(list((ROOT / "procedures").glob("*.md")) + list((ROOT / "docs").rglob("*.md"))):
+    _rel = _f.relative_to(ROOT).as_posix()
+    if _rel in _HISTORY_FILES:
+        continue
+    for _line_no, _line in enumerate(read(_f).splitlines(), 1):
+        _hit = _dup_cmd.search(_line)
+        if _hit:
+            err(f"{_rel}:{_line_no}: `/{_hit.group(1)}` が同じ行で併記されている — "
+                f"**どの手順書へ行けばよいか決められない**（20本→9本統合の一括置換で潰れた形）。"
+                f"`/{_hit.group(1)} ▸ takumi-<手順書名>` のように行き先まで書く")
+
+# --- 41. 地の文が名指しした `*.md` が実在するか
+#         （2026-07-26 の第12ラン V34 で検出。docs/parts/design-handoff.md が
+#          `notion-publish-rules.md の切り抜き規約` を根拠として指していたが、
+#          **そのファイルはリポジトリのどこにも無かった**。
+#          既存の参照検査（#14 index.md / #21 skills / #37 節名）は
+#          **決まった台帳の中だけ**を見ており、地の文の名指しは誰も見ていなかった） ---
+_md_ref = re.compile(r"(?<![\w/.-])([a-z][a-z0-9-]{2,40}\.md)")
+_all_md = {p.name for p in ROOT.rglob("*.md")}
+# **利用者のワークスペースに生成されるファイル**はプラグイン内に実体が無くて当然。
+# ここに載っていない bare な .md 名は「プラグイン内の正本を指した」とみなす。
+# 新しいワークスペース生成物を増やしたらここに足す（足さないと ERROR で気づける＝それでよい）。
+_WORKSPACE_ARTIFACTS = {
+    "lessons.md", "messaging.md", "winning-position.md", "artifacts-index.md",
+    "queue.md", "roadmap.md", "strategy.md", "sources.md", "accounts.md",
+    "browser.md", "index.md", "session-archive.md", "brand.md",
+    "creatives.md", "pending.md",
+}
+_MD_REF_OK = {"README.md", "SKILL.md", "CLAUDE.md"}
+for _f in sorted(list((ROOT / "procedures").glob("*.md")) + list((ROOT / "docs").rglob("*.md"))
+                 + list((ROOT / "agents").glob("*.md")) + list((ROOT / "commands").glob("*.md"))):
+    _rel = _f.relative_to(ROOT).as_posix()
+    if _rel in _HISTORY_FILES:
+        continue
+    for _line_no, _line in enumerate(read(_f).splitlines(), 1):
+        if "knowledge/" in _line:  # ワークスペース配下を説明している行は対象外
+            continue
+        for _name in sorted(set(_md_ref.findall(_line))):
+            if (_name in _all_md or _name in _MD_REF_OK
+                    or _name in _WORKSPACE_ARTIFACTS):
+                continue
+            err(f"{_rel}:{_line_no}: 実在しない `{_name}` を名指ししている"
+                f"（地の文で根拠として指したファイルは実体が要る。消したなら参照も消す／"
+                f"別名にしたなら追随する／ワークスペース生成物なら lint の "
+                f"_WORKSPACE_ARTIFACTS に足す）")
 
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
