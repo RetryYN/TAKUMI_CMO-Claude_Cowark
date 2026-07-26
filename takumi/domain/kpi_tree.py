@@ -62,6 +62,15 @@ class KpiTree:
 
     root: KpiNode
 
+    def __post_init__(self) -> None:
+        # 根が KpiNode でないと、有料指標の検査（__post_init__）を通っていない木ができる
+        if not isinstance(self.root, KpiNode):
+            raise ValueError(
+                f"KPIツリーの根は KpiNode で宣言してください"
+                f"（受け取った値: {self.root!r} / 型: {type(self.root).__name__}）。"
+                "生の値を渡すと有料指標の検査を飛ばせてしまう"
+            )
+
     def _walk(self, node: KpiNode):
         yield node
         for child in node.children:

@@ -101,7 +101,7 @@ AI は触らないが、ユーザーに説明する必要があるので正確�
 - 削除と「セーフサーチ」レポートツール — Search Console ヘルプ `support.google.com/webmasters/answer/9689846`
 - 検索パフォーマンス レポート — Search Console ヘルプ `support.google.com/webmasters/answer/7576553`（**AI 関連の記述は無かった**）
 
-**【二次情報のみ・未確認】** 実機の画面で確認すること
+**【二次情報・原典未取得】** 実機の画面で確認すること
 - Introducing Search Generative AI performance reports in Search Console — Google Search Central Blog（2026年6月・本文取得できず）
 - Google finally gives Search Console its own generative AI visibility reports — PPC Land
 - Search Console Now Reports AI Overviews & AI Mode Impressions — pikaseo

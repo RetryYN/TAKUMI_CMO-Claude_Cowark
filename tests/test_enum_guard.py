@@ -17,9 +17,9 @@ import pkgutil
 import unittest
 
 import takumi.domain as domain_pkg
-from takumi.domain.brand import Brand, BrandSlug, BrandStatus
+from takumi.domain.brand import Brand, BrandPartition, BrandSlug, BrandStatus
 from takumi.domain.channel import Channel, ChannelKind
-from takumi.domain.kpi_tree import KpiKind, KpiNode
+from takumi.domain.kpi_tree import KpiKind, KpiNode, KpiTree
 from takumi.domain.local_profile import ReviewSolicitation, SolicitationTarget
 from takumi.domain.premium import PremiumKind, PremiumOffer
 from takumi.domain.task_loop import LoopPhase, Step
@@ -119,6 +119,36 @@ class TestPremiumF1回帰(unittest.TestCase):
                     kind=kind, transaction_value_yen=5000, premium_value_yen=0
                 )
                 self.assertGreater(offer.max_premium_yen(), 0)
+
+
+class Test宣言の検査を横展開(unittest.TestCase):
+    """Enum 以外にも「宣言してもらう設計」がある。**宣言が本物かを検査して初めて機械保証になる。**
+
+    2026-07-26 の監査で検出: `BrandPartition` と `KpiTree` は型注釈だけで検証が無く、
+    生の値を渡すと配下の検証（slug 規約・有料指標）を丸ごと飛ばせた。
+    どちらも後段で AttributeError になって落ちる＝フェイルクローズだったが、
+    **なぜ落ちたのかが読めない**ので、ドメイン層の ValueError にそろえた。
+    """
+
+    def test_BrandPartition_は生の文字列を受け付けない(self):
+        for bad in ("acme", "../../etc", "", None, 1):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValueError):
+                    BrandPartition(bad)
+
+    def test_BrandPartition_は_BrandSlug_なら作れる(self):
+        p = BrandPartition(BrandSlug("acme"))
+        self.assertEqual(p.base, "knowledge/brands/acme")
+
+    def test_KpiTree_は生の値を根にできない(self):
+        for bad in ("訪問数", None, 1, {"name": "訪問数"}):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValueError):
+                    KpiTree(root=bad)
+
+    def test_KpiTree_は_KpiNode_なら作れる(self):
+        t = KpiTree(root=KpiNode(name="訪問数", kind=KpiKind.LEADING, children=[]))
+        self.assertEqual(t.all_names(), ["訪問数"])
 
 
 if __name__ == "__main__":

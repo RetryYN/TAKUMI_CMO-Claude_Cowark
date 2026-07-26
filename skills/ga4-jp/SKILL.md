@@ -264,7 +264,7 @@ GA4 のモデルは3つ:
 - Google の契約とポリシーにおける PII の理解 — `support.google.com/analytics/answer/7686480`
 - UTM パラメータ — `support.google.com/analytics/answer/10917952`
 
-**【二次情報のみ・未確認】** 規範として引用しない
+**【二次情報・原典未取得】** 規範として引用しない
 
 - GA4 の AI Assistant チャネル追加 — Search Engine Journal, Digital Applied ほか
 - AI 経由トラフィックの Direct 落ち比率・転換率 — 出所を辿れないため設計判断の根拠にしない
