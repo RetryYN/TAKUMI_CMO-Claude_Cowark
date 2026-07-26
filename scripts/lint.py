@@ -871,11 +871,16 @@ for _f in md_files + [ROOT / "TESTING.md"]:
     for _s in set(re.findall(r"Step ([A-Z])(?![a-z])", _txt)):
         if _step_ids and _s not in _step_ids:
             err(f"{_rel}: Step {_s} は `docs/steps-reference.md` の一覧に無い")
-    # lint のチェック番号: 「lint」を含む行の #n だけを見る（PR 番号と混同しない）
+    # lint のチェック番号: 「lint」を含む行の #n だけを見る（PR 番号と混同しない）。
+    # **裸の `#N` は lint のチェック番号を意味する**という規約にして曖昧さを消す —
+    # 上流の issue は `claude-code#69020` の形（リポジトリ名を前置）で書くこと。
+    # 2026-07-27 に escalations E9 で上流 issue 4件を裸の `#N` で書き、
+    # **同じ行に「lint #52」もあったため全部が lint 番号として照合された**。
+    # 直前が英数字・ハイフン・スラッシュなら他所の番号空間とみなす。
     for _line in _txt.splitlines():
         if "lint" not in _line.lower():
             continue
-        for _m in re.finditer(r"(?<!PR )(?<!pull/)(?<!issues/)#(\d+[a-z]?)\b", _line):
+        for _m in re.finditer(r"(?<![-\w/])(?<!PR )#(\d+[a-z]?)\b", _line):
             if _m.group(1) not in _lint_set:
                 err(f"{_rel}: lint のチェック #{_m.group(1)} は `scripts/lint.py` に存在しない"
                     f"（改番・削除で引用が宙に浮いている）")

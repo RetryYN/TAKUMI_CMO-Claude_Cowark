@@ -10,7 +10,60 @@ TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowor
 
 - **配布 = git リポジトリの marketplace 同期**。このリポジトリがそのまま配布物（削除ビルドは無い）。
 - Cowork 設定 →プラグイン→ marketplace としてリポジトリURL（`RetryYN/TAKUMI_CMO-Claude_Cowark`）を追加 → プラグインを有効化。
-- **更新検知は `.claude-plugin/plugin.json` / `marketplace.json` の `version` フィールド**。bump しないと利用者に更新が反映されない（`scripts/bump-version.sh` で両ファイル同時更新）。
+- **更新検知は `.claude-plugin/plugin.json` / `marketplace.json` の `version` フィールド**。bump しないと利用者に更新が反映されない（`scripts/bump-version.sh` で両ファイル同時更新。**繰り上げ漏れは lint #52 が git 履歴で見る**）。仕組みと復旧手順は §1b。
+
+### 1b. 更新が届かないとき（**トラブルが最も多い箇所**）
+
+**【一次情報・確認済み】** [plugin-marketplaces](https://code.claude.com/docs/en/plugin-marketplaces) §Version resolution and release channels（2026-07-27 取得）:
+
+> Plugin versions determine cache paths and update detection: if the resolved version matches what a user already has, `/plugin update` and auto-update skip the plugin.
+
+**バージョンの解決順序**（先に見つかったものが勝つ）:
+
+1. プラグインの `plugin.json` の `version`
+2. marketplace エントリの `version`
+3. **プラグインの source の git コミット SHA**
+
+**【一次情報・確認済み — ローカル環境の実測】** キャッシュはバージョンごとのディレクトリに展開される。
+本機に `~/.claude/plugins/cache/retryyn-takumi-cmo/takumi-cmo/5.5.0/` があり、
+中身はリポジトリ全体の複製で `plugin.json` の version は `5.5.0` だった（2026-07-27 観測）。
+**バージョン文字列が変わらなければパスも変わらないので、取りに行かずに既存ディレクトリを再利用する。**
+「push したのに反映されない」の大半はこれ。
+
+#### 更新は2段階（**片方だけでは届かない**）
+
+| 段 | 何をする | コマンド |
+|---|---|---|
+| 1 | **marketplace の複製を最新にする**（カタログの git pull） | `/plugin marketplace update <name>` |
+| 2 | **プラグイン本体を入れ直す**（version が変わっていれば取得） | `/plugin update <plugin>` |
+
+**1 を飛ばすと 2 は古いカタログを見て「最新です」と言う。** 逆に 1 だけでは実体が入れ替わらない。
+
+#### それでも直らないとき
+
+1. `version` が本当に上がっているか（`plugin.json` が最優先。ここが据え置きだと**他をどう直しても届かない**）
+2. キャッシュを消す — `rm -rf ~/.claude/plugins/cache` → 再起動 → 入れ直す
+3. **Cowork では 1・2 をやっても古い版が残る報告がある**（→ escalations E9）
+
+#### なぜ `version` を省略しないのか
+
+**【一次情報・確認済み】** 同ドキュメントは、git 系 source なら `version` を**省略すれば全コミットが新バージョン扱い**になり、
+「内部利用や活発に開発中のプラグインではこれが最も簡単」と書いている。
+**本プロダクトは採らない** — [TESTING.md](../TESTING.md)「配布判断の4条件」が版を条件に含めており、
+**版が「検証済みであること」の単位**になっているため。全コミットが新版になると、
+**未検証の途中状態がそのまま利用者に流れる**。省略は「検証しないなら簡単」という選択であり、本プロダクトの前提と噛み合わない。
+
+#### `version` を2箇所に書いていることについて
+
+**【一次情報・確認済み】** 同ドキュメントは「`plugin.json` と marketplace エントリの**両方に `version` を書くのは避けよ**。
+Claude Code は常に `plugin.json` の値を警告なしに使うので、古いマニフェストの版が
+marketplace 側で設定した版を**覆い隠しうる**」と警告している。
+
+**本プロダクトは意図的に両方へ書き、lint #1 が一致を機械強制している。** 警告が指す危険は「2つが食い違うこと」であり、
+食い違いを機械で潰してあるなら覆い隠しは起きない。**なお公式バリデータはこれを検査できない** —
+同ドキュメントによれば、エントリの version と `plugin.json` の照合が走るのは
+**`source` がローカルパスのときだけ**で、本プロダクトは `source: github` である。**ここは自前の lint にしか守れない。**
+
 - **`name` は必ず kebab-case（小文字・数字・ハイフンのみ）**。非 kebab-case の名前は **claude.ai marketplace 同期が拒否**する（Cowork 配布では致命的）。現状 plugin=`takumi-cmo` / marketplace=`retryyn-takumi-cmo` は適合。
 - **`.claude-plugin/` に入るのはマニフェストだけ**、他は各トップレベルディレクトリに置く。プラグイン実体は cache へコピーされるため `../` 外部参照は不可（相対不達 → Glob フォールバック。§4）。
 - ルート直下の構成（**リポジトリ全体がそのまま配布物**なので、dev-side のファイルも利用者の cache にコピーされる。害はないが「配布されない」と誤解しないこと）:
