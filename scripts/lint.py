@@ -1602,6 +1602,39 @@ for _ag, _sk, _needle in _V78_PROBES:
         err(f"V78 の probe「{_needle}」が procedures/takumi-verify.md に書かれていない — "
             f"**検証者が実際に使う語と、ここで弁別性を保証している語がずれる**")
 
+# --- 54. `fable` の代替に `sonnet`（速い側）を指定していないか
+#         （2026-07-26 利用者の指摘で発覚。`docs/agent-tiers.md` は design-artisan について
+#          「**fable の段を下げると成果物の質が直接落ちる**」と書いた**4行後に**
+#          `model: sonnet` を明示して再委譲、と書いていた。**正本が自分の中で矛盾していた。**
+#          `agents/risk-forecaster.md` には最初から「**判断を担う役なので sonnet への降格はしない**」と
+#          あり、**同じ規則が design-artisan にだけ適用されていなかった**。
+#          しかも同じ指示が8箇所に書き写されており、全部が sonnet のままだった。
+#          規則: **fable が使えないときは、その級の「深く考える側」（= opus）へ横移動する。速い側へ降ろさない。**
+#          モデル名の列挙行（`sonnet / opus / haiku / fable` のような一覧）は対象外 —
+#          **代替を指示している文脈だけを見る** ---
+_FALLBACK_CTX = ("再委譲", "フォールバック", "不可なら", "起動できな", "使えない場合", "降格")
+for _f in sorted(ROOT.rglob("*.md")):
+    _rel = _f.relative_to(ROOT).as_posix()
+    if ".git" in _f.parts or _rel in _RECORD_FILES:
+        continue
+    for _ln, _line in enumerate(read(_f).splitlines(), 1):
+        if "fable" not in _line or "sonnet" not in _line:
+            continue
+        if not any(_c in _line for _c in _FALLBACK_CTX):
+            continue  # モデル名の一覧・級の表など、代替を指示していない行
+        # **`sonnet` の直後に来る否定だけ**を取り除いてから、裸の `sonnet` が残るかを見る。
+        # 行のどこかに否定語があれば免除、という作り方では
+        # 「`model: sonnet` を明示して再委譲する（…速い側へ降ろさない）」が素通りした（実測）。
+        # 否定は**その sonnet を否定しているとき**だけ効く
+        _bare = re.sub(r"sonnet[^。]{0,12}?(への?)?(降格(は)?しない|降ろさない|使わない|置かない)",
+                       "", _line)
+        if "sonnet" not in _bare:
+            continue
+        err(f"{_rel}:{_ln}: `fable` の代替に `sonnet` を指定している — "
+            f"**fable を選んだ理由（審美・生成の当たり）が代替で失われる**。"
+            f"その級の「深く考える側」（`opus`）へ横移動すること"
+            f"（正本 docs/agent-tiers.md。速い側へ降ろさない）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "

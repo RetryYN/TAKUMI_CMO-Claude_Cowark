@@ -17,7 +17,7 @@ argument-hint: <対象ページURL> [改善の目的（例: CVR向上 / 読み�
 4. **成果物の生成（役割分担）**:
    - **改善提案レポート** → `deliverable-writer` に委譲（templates/report-template.html 準拠）: 課題→改善案→期待効果の対応表、Before/After の構成比較
    - **改善版モックアップHTML** → `design-artisan` に委譲（最上位モデル）: 対象サイトのデザイントークンを維持しつつ課題を解消したレイアウト案。実コンテンツ使用。委譲プロンプトにはトークンJSON・課題診断・抽出コンテンツの絶対パスと出力先を明記
-   - design-artisan の fable 指定がこの環境で使えない場合は、**design-artisan をモデル sonnet で起動する**（エージェントの専門化された指示が品質の本体であり、モデルは代替可。deliverable-writer への代行はしない）
+   - design-artisan の fable 指定がこの環境で使えない場合は、**design-artisan をモデル opus で起動する**（**速い側へ降ろさない** — 正本は docs/agent-tiers.md。deliverable-writer への代行はしない）
 
 5. **修正ループ（生成 → 批評 → 修正）**: モックアップ生成後、必ず `design-critic` エージェントに (a)モックアップ (b)トークンJSON (c)課題診断 の絶対パスを渡してレビューさせる
    - `VERDICT: REVISE` なら FIX リストを design-artisan に渡して修正させ、再度 design-critic にかける

@@ -18,7 +18,7 @@ argument-hint: <対象タスク（例: このLPを徹底改善 / 競合を網羅
 | ワーカー（発見・執筆・変換） | sonnet | medium | loop-until-dry の発見役、ペルソナレビュアー、原稿生成 |
 | 検証・審査・裁定 | opus | medium | 敵対的検証の反証役、トーナメント審査、最終裁定 |
 | 設計の壁打ち | strategy-advisor（定義済み） | - | 実行前の計画セカンドオピニオン |
-| ビジュアル生成 | fable（不可なら sonnet） | high | モックアップHTML生成、デザイン案（定義済み design-artisan を優先使用） |
+| ビジュアル生成 | fable（不可なら opus） | high | モックアップHTML生成、デザイン案（定義済み design-artisan を優先使用） |
 | 機械的な軽作業（分類・場合分け・整形） | haiku（不安があれば sonnet） | low | 分類・振り分け、リスト整形、突合、重複排除 |
 
 - 事前定義エージェント（deliverable-writer / design-artisan / design-critic / strategy-advisor / pre-send-verifier）は定義ファイル側に model/effort を持つため、呼び出し時の上書きは不要
