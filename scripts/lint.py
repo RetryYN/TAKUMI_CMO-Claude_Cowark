@@ -1452,9 +1452,11 @@ for _f in sorted(ROOT.rglob("*.md")):
 #          この表は網羅ではなく「よく混ざる字」の列挙で、見つけたら足していく ---
 _SIMPLIFIED = "长门问时东车马鸟语说读书对话间关开发图馆网页应该动员产业务实现变换级别"
 for _f in sorted(list(ROOT.rglob("*.md")) + list(ROOT.rglob("*.yaml"))):
-    if ".git" in _f.parts:
-        continue
     _rel = _f.relative_to(ROOT).as_posix()
+    # 記録ファイルは対象外 — 検出した混入を**そのままの形で引用する**のが記録の役目で、
+    # 直すと何が起きたのか読めなくなる（#40/#41/#42/#48 と同じ扱い）
+    if ".git" in _f.parts or _rel in _RECORD_FILES:
+        continue
     _hits = sorted({c for c in read(_f) if c in _SIMPLIFIED})
     if _hits:
         err(f"{_rel}: 簡体字が混入している（{' '.join(_hits)}）— "
