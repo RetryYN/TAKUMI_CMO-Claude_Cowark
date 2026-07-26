@@ -244,8 +244,11 @@ out=$(printf '{"tool_name":"Bash","tool_input":{"command":"bash <<EOF\\nrm -rf /
 check "rm-guard: bash へ渡す本文は deny" 'RM Guard' "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat <<EOF | sh\\nrm -rf /tmp/x\\nEOF"}}' | bash "$SC/rm-guard.sh")
 check "rm-guard: インタプリタへパイプする本文は deny" 'RM Guard' "$out"
-out=$(printf '{"tool_name":"Bash","tool_input":{"command":"python3 - <<PY\\nimport os\\n# rm -rf の説明\\nPY"}}' | bash "$SC/rm-guard.sh")
-check "rm-guard: python へ渡す本文は deny" 'RM Guard' "$out"
+# 本文が実行されうる経路（python）は走査対象に残す。**削除対象を伴う場合**に deny する
+# （2026-07-26: 元のケースは本文が「# rm -rf の説明」＝対象を伴わない散文で、
+#  第14ラン O-4 の修正後は通過が正しい。ここは実際に消しにいく本文へ差し替えた）
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"python3 - <<PY\\nimport os\\nos.system(\\"rm -rf /tmp/x\\")\\nPY"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: python へ渡す本文の実削除は deny" 'RM Guard' "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat > /tmp/g.py <<EOF\\nhello\\nEOF\\nrm -rf outputs/"}}' | bash "$SC/rm-guard.sh")
 check "rm-guard: 終端後の本物の rm -rf は deny" 'RM Guard' "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cat > /tmp/g.py <<EOF\\nhello\\nEOF\\nrm outputs/*.png"}}' | bash "$SC/rm-guard.sh")
@@ -259,6 +262,21 @@ out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo start\\nls\\nrm 
 check "rm-guard: 多行コマンド3行目のグロブ削除は deny" 'RM Guard' "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cd /tmp\\nrm outputs/one.png"}}' | bash "$SC/rm-guard.sh")
 check "rm-guard: 多行コマンドの個別rmは通過" EMPTY "$out"
+# --- 削除対象を伴わない「語だけ」の出現（2026-07-26 第14ラン O-4）---
+# インタプリタ経路の本文は実行されうるので走査対象に残す。そのぶん、
+# 文字列リテラルに削除の語が現れるだけの行を止めないよう、対象パスの有無で分ける。
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"python3 -c \\"print(1)\\"  # rm -rf は使わない"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 削除対象のない語だけは通過" EMPTY "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"python3 - <<PY\\nprint(\\"rm -rf は使わない\\")\\nPY"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: python本文の語だけは通過" EMPTY "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"python3 -c \\"import os; os.system(\\\\\\"rm -rf /tmp/x\\\\\\")\\""}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: python本文の本物の削除は deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"rm -rf \\"$DIR\\""}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 変数展開の削除対象も deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"rm -r -f /tmp/x"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: フラグ分離の rm -r -f も deny" 'RM Guard' "$out"
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"rm --recursive /tmp/x"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: --recursive も deny" 'RM Guard' "$out"
 export TAKUMI_GATE_MODE=warn
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"rm -rf outputs/"}}' | bash "$SC/rm-guard.sh")
 check "rm-guard: warnモードは注入のみ" 'additionalContext.*RM Guard' "$out"

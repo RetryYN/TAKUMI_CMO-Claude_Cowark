@@ -1246,6 +1246,33 @@ for _pat, _canon, _what in _CANON_ONLY:
             err(f"{_h}: {_what} は `{_canon}` が正本。**書き写さずに指す**"
                 f"（書き写すと二重管理になり、写したほうが腐る）")
 
+# --- 43. 解消済みの escalation を「生きた制約」として引用していないか
+#         （2026-07-26 の第14ラン（cloud）で検出。E2「ローカルスケジュールを AI から登録できない」は
+#          2026-07-26 に一次情報で**解消**が確認され、`unattended-ops.md` と `takumi-task.md` は
+#          改訂されたのに、**`cowork-runtime.md` だけが「登録できない（escalations E2）」のまま**だった。
+#          解消したのに制約として書かれていると、**できることをやらない**ほうへ実装が引きずられる。
+#          引用そのものは禁止しない — 「E2 は解消」と書くのは正しい。
+#          **近くに「解消」が無い引用**だけを落とす） ---
+_esc = ROOT / "docs/escalations.md"
+if _esc.is_file():
+    _resolved = re.findall(r"^\| (E\d+) \| \*\*解消", read(_esc), re.M)
+    # 近くにこれらの語があれば「もう生きた制約ではない」と読める＝正当な引用
+    _RESOLVED_OK = ("解消", "誤り", "撤回", "取り下げ", "だった")
+    for _f in sorted(ROOT.rglob("*.md")):
+        _rel = _f.relative_to(ROOT).as_posix()
+        if ".git" in _f.parts or _rel in _HISTORY_FILES or _rel == "docs/escalations.md":
+            continue
+        _t = read(_f)
+        for _e in _resolved:
+            for _m in re.finditer(rf"escalations {_e}\b|（{_e}）|\({_e}\)", _t):
+                _near = _t[max(0, _m.start() - 80):_m.end() + 80]
+                if any(_w in _near for _w in _RESOLVED_OK):
+                    continue
+                _line = _t[:_m.start()].count("\n") + 1
+                err(f"{_rel}:{_line}: {_e} は**解消済み**なのに制約として引用している"
+                    f"（解消したのに制約として書かれていると、**できることをやらない**ほうへ"
+                    f"実装が引きずられる。引用するなら「{_e} は解消」と併記する）")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
