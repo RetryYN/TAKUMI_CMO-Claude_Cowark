@@ -2,7 +2,7 @@
 
 TAKUMI-CMO は **Claude Cowork** 上で動くプラグイン。ここは「Cowork がこのプラグインをどう実行するか」の正本。
 検証コマンド（`/匠検証` = takumi-verify）と開発ワークフロー（[開発ワークフロー.md](開発ワークフロー.md)）はこの仕様を前提に設計する。
-プラグインでは根治できない本体側の課題は [escalations.md](escalations.md)（上申台帳 E1〜E4）が正本、本ファイルと重複記載しない。
+プラグインでは根治できない本体側の課題は [escalations.md](escalations.md)（上申台帳）が正本、本ファイルと重複記載しない。
 
 すべて 2026-07-24 までの実機検証（TESTING.md）で確定した事実。推測は「未確認」と明示する。
 
@@ -184,5 +184,5 @@ URL 追加ではそのパスに marketplace.json が**ファイルとして**置
 ## 6. 検証は「dev↔Cowork の往復」で完結する（→ 開発ワークフロー.md §二層検証）
 
 - **Tier 1（機械・毎コミット・ローカル/CI）**: lint / 単体テスト / test-hooks / shellcheck。参照整合・ドメイン不変条件・hook スクリプトのロジックを保証する。**hook の"配線"は検証できない**（ローカルはフェイルオープン）。
-- **Tier 2（実機・節目・cloud Cowork）**: `/匠検証`（takumi-verify）を cloud セッションで実行。hook の実配線・コマンド経路・エージェント起動・ブランド分離など**Tier 1 が構造的に検証できない項目**を実測する。ユーザーが cloud Cowork で実行 → PASS/FAIL 表を開発側に貼り戻す往復で確定。
+- **Tier 2（実機・節目・Cowork）**: `/匠検証`（takumi-verify）を実機セッションで実行（**ローカルで可** — 配布判断は環境名ではなく**ゲートを全数実測できたか**で決める。正本は [TESTING.md](../TESTING.md) の「配布判断の4条件」）。hook の実配線・コマンド経路・エージェント起動・ブランド分離など**Tier 1 が構造的に検証できない項目**を実測する。ユーザーが実行 → PASS/FAIL 表を開発側に貼り戻す往復で確定。
 - 検証の外部無害原則: ブラウザは example.com と the-internet.herokuapp.com（V5(b) 固定）のみ。`verify_allowlist` で機械強制し、リスト外 navigate は url-guard が deny する。

@@ -739,9 +739,36 @@ if _si.is_file() and _sj.is_file():
 #          「Tier 1 緑 ＋ 直近の Tier 2 が **FAIL 0**」だが、FAIL 件数はどこにも機械可読で無く、
 #          **文章でしか書かれていなかった**。第10ラン（v5.5.0）が FAIL 1 を出したことで、
 #          「版と env が揃えば緑になる」＝FAIL を積んだまま配布可に見える穴が実際に見えた） ---
+#         （2026-07-27 改訂: **`env=cloud` を配布条件から外し、`gates=` と `ws=` に置き換えた**。
+#          cloud を要求していた理由は2つあり、**どちらも cloud/ローカルの軸ではなかった**:
+#            (a)「ローカルは hook 配線が環境依存（E4）」→ **配線されているかは毎ラン測れる**。
+#               env は配線の代理変数にすぎず、E4 の台帳自身が既に
+#               「ローカルかどうかで decide せず、毎ラン実際に発火するかを測って判定する」と結論している。
+#               **正本の結論と、機械が要求している条件が食い違っていた。**
+#            (b)「永続フォルダ未接続だと knowledge/ 系が測れない」→ これは**接続の有無**の軸。
+#               cloud でも未接続なら測れないし、ローカルでも接続すれば測れる。
+#          実際、第13ラン（cloud）で「cloud でしか出ない」とした3件のうち2件は FUSE の癖で、
+#          **第15ラン（ローカル）でも同じ FUSE の rm EPERM が再現した**。残る1件は
+#          cloud 由来ですらなく lint #42 が Tier 1 で担保している。
+#          **代理変数で測っていたものを、本体で測る。** ローカルでも全ゲートを実測できれば配布判断に使える） ---
+
+# 配布ゲートの分母 = **既定モードが deny の hook**。warn 既定（agent-parallel-gate）は
+# 「止まること」を証明できないので分母に入れない。**分母は実体から数える** —
+# マーカーに書かれた分母をそのまま信じると、分母を小さく書くだけで「全数実測」に見える。
+_deny_hooks = []
+for _hp in sorted((ROOT / "hooks/scripts").glob("*.sh")):
+    _hsrc = read(_hp)
+    if not re.search(r'^\s*deny\s+"', _hsrc, re.M):
+        continue  # deny を呼ばない（注入のみ）hook は対象外
+    _mode_m = re.search(r'^\s*(?:GATE_)?MODE="\$\{[A-Z_]+:-(\w+)\}"', _hsrc, re.M)
+    if _mode_m and _mode_m.group(1) != "deny":
+        continue  # 既定 warn の試運転ゲート
+    _deny_hooks.append(_hp.name)
+
 _testing = ROOT / "TESTING.md"
 if _testing.is_file():
-    _marker_re = r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s+fail=(\d+)\s*-->"
+    _marker_re = (r"<!--\s*tier2-verified:\s*([0-9.]+)\s+env=(\w+)\s+fail=(\d+)"
+                  r"\s+gates=(\d+)/(\d+)\s+ws=(\w+)\s*-->")
     _all = re.findall(_marker_re, read(_testing))
     # 正本は1つだけ。複数あると re.search が**最初の1つ**しか読まず、
     # 古いランのマーカーが新しいランを黙って上書きする（過去ラン節にマーカーを残すと起きる）
@@ -751,14 +778,26 @@ if _testing.is_file():
             f"古いマーカーが残っていると実測より緩い判定になる")
     _m = re.search(_marker_re, read(_testing))
     if not _m:
-        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> --> "
-            "マーカーが無い（最後に実機検証したバージョン・**実行環境**・**FAIL件数**を機械可読で持つ。"
-            "環境が無いと『ローカルで通った』を配布可と読み違え、"
-            "FAIL件数が無いと『版が揃っている』だけで緑に見える）")
+        err("TESTING.md: <!-- tier2-verified: <version> env=<cloud|local> fail=<件数> "
+            "gates=<実測>/<総数> ws=<yes|no> --> マーカーが無い（形式を変えたか？）。"
+            "最後に実機検証したバージョン・実行環境・FAIL件数・**実測できたゲート数**・"
+            "**ワークスペース接続の有無**を機械可読で持つ。"
+            "FAIL件数が無いと『版が揃っている』だけで緑に見え、"
+            "ゲート数が無いと『hook が沈黙したまま通った』ランを配布可と読み違える")
     else:
         _ran, _env, _fail = _m.group(1), _m.group(2), int(_m.group(3))
+        _gate_hit, _gate_total, _ws = int(_m.group(4)), int(_m.group(5)), _m.group(6)
         if _env not in ("cloud", "local"):
             err(f"TESTING.md: tier2-verified の env={_env} は不正（cloud か local）")
+        if _ws not in ("yes", "no"):
+            err(f"TESTING.md: tier2-verified の ws={_ws} は不正（yes か no）")
+        if _gate_total != len(_deny_hooks):
+            err(f"TESTING.md: tier2-verified の gates 分母 {_gate_total} が実体と合わない"
+                f"（既定 deny の hook は {len(_deny_hooks)} 本: {', '.join(_deny_hooks)}）— "
+                f"**分母を小さく書けば「全数実測」に見えてしまう**ので、"
+                f"分母は hooks/scripts/ の実体と一致していなければならない")
+        elif _gate_hit > _gate_total:
+            err(f"TESTING.md: tier2-verified の gates={_gate_hit}/{_gate_total} は分子が分母を超えている")
         if _fail > 0:
             warns.append(
                 f"Tier 2 の最終ラン（v{_ran}）に FAIL が {_fail} 件ある — **配布判断は FAIL 0 が条件**。"
@@ -767,14 +806,24 @@ if _testing.is_file():
         if _ran != plugin["version"]:
             warns.append(
                 f"Tier 2 実機検証が未実施: 最終ラン={_ran}（env={_env}） / 現行={plugin['version']}"
-                f" — cloud Cowork で `/匠検証 full` と言い、結果を TESTING.md に記録して"
+                f" — Cowork（**ローカルで可**）で `/匠検証 full` と言い、結果を TESTING.md に記録して"
                 f" マーカーを更新すること（リリースチェックリスト項目5・人間が実行）"
             )
-        elif _env != "cloud":
+        elif _gate_hit < _gate_total:
             warns.append(
-                f"Tier 2 の最終ランが env={_env}（v{_ran}）— **配布判断には cloud ランが要る**。"
-                f" ローカルは hook 配線が環境依存（escalations E4）で、永続フォルダ未接続なら"
-                f" knowledge/ 系（ブランド区画・ダッシュボード）を測れない"
+                f"Tier 2 の最終ラン（v{_ran} / env={_env}）で実測できたゲートが"
+                f" {_gate_hit}/{_gate_total} — **配布判断は全ゲートの実測が条件**。"
+                f" hook の発火は cloud でも保証されない（escalations E5）ので、"
+                f" **測っていないゲートは「効いている」と仮定しない**"
+                f"（既定 deny の hook: {', '.join(_deny_hooks)}）"
+            )
+        if _ws != "yes":
+            warns.append(
+                f"Tier 2 の最終ラン（v{_ran}）はワークスペース未接続（ws=no）— "
+                f"**knowledge/ 系を要する項目が測れていない**（V11 ダッシュボード生成 /"
+                f" V18・V19 タスク登録と実行連携 / V30 動的コマンド生成 / V31 セットアップ再質問なし）。"
+                f"配布は止めないが、これらは**未検証のまま配っている**。"
+                f"ローカル Cowork なら永続フォルダを1つ接続すれば測れる"
             )
 
 # --- 27. 番号で他所を指す引用が、実在する番号を指しているか
@@ -1154,6 +1203,10 @@ if _verify_md.is_file():
          len(list((ROOT / "skills").glob("*/SKILL.md"))), "skills/*/SKILL.md の実体数"),
         (r"\*\*procedures/ 全(\d+)本\*\*",
          len(list((ROOT / "procedures").glob("*.md"))), "procedures/*.md の実体数"),
+        # gates= の分母。手順書が実測すべき本数を書いており、**これが分母の説明そのもの**なので、
+        # 実体（既定 deny の hook）とずれると検証者が少ない数を全数と信じる
+        (r"既定 deny の hook 全(\d+)本",
+         len(_deny_hooks), "既定モードが deny の hooks/scripts/*.sh の本数"),
     ]
     for _pat, _actual, _what in _counts:
         _hits = {int(m) for m in re.findall(_pat, _vtext)}
@@ -1236,12 +1289,19 @@ for _f in sorted(ROOT.rglob("*.md")):  # 2026-07-26: 走査を全 .md へ広げ�
 #          正本を指すだけなら腐らない。**書き写した瞬間に二重管理になる。** ---
 _CANON_ONLY = [
     (r"タブは[^\n]{0,6}単位", "templates/dashboard-design.md", "ダッシュボードのタブの切り方"),
+    # 2026-07-27 追加。配布条件は TESTING.md・開発ワークフロー・command-registry・cowork-runtime の
+    # **4箇所に書き写されており**、`env=cloud` を外したとき3箇所が古いまま残った（実測）。
+    # 条件そのものを書いてよいのは正本だけにして、他は指すだけにする。
+    (r"Tier 1 緑 ＋", "TESTING.md", "配布判断の条件"),
 ]
 for _pat, _canon, _what in _CANON_ONLY:
     _holders = []
     for _f in sorted(ROOT.rglob("*.md")):
         _rel = _f.relative_to(ROOT).as_posix()
-        if ".git" in _f.parts or _rel in _RECORD_FILES:
+        # 記録ファイルは「書き写し」の告発対象から外す（過去ランの引用を壊れた形のまま残すため）。
+        # ただし**正本自身が記録ファイルのときは必ず読む** — 読み飛ばすと
+        # 「正本から規定が消えている」と誤検知し、しかも書き写しの検査が丸ごと無効になる（実測）
+        if ".git" in _f.parts or (_rel in _RECORD_FILES and _rel != _canon):
             continue
         if re.search(_pat, read(_f)):
             _holders.append(_rel)

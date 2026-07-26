@@ -325,6 +325,6 @@ Cowork の配布は marketplace 同期＝**このリポジトリがそのまま�
 - [ ] **`claude plugin validate .claude-plugin/plugin.json --strict` → `Validation passed`**（公式バリデータ。**スキーマの正本は自前で持たない**）
 - [ ] **`claude plugin validate .claude-plugin/marketplace.json --strict` → `Validation passed`**
 - [ ] CI（GitHub Actions）最新 run が success
-- [ ] Cowork 実機での直近の `/匠検証 full` 結果が TESTING.md に記録され、**同バージョン・`env=cloud`・FAIL 0**（`env=local` は配布判断に使えない）
+- [ ] Cowork 実機での直近の `/匠検証 full` 結果が TESTING.md に記録され、**配布判断の条件を満たす**（条件の正本は [TESTING.md](../TESTING.md) の「配布判断の4条件」。ここには書き写さない — 写した側が腐る）
 - [ ] `.claude-plugin/` の version が配布告知と一致（bump 忘れは更新反映されない）
 - [ ] docs/escalations.md の上申事項が最新（プラグインで根治不可の限界が README「既知の限界」と齟齬なく開示されている）
