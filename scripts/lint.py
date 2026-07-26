@@ -1486,6 +1486,23 @@ if _rules_txt.is_file():
                 f"1つのルールに詰め込みすぎ。**正本へ切り出すか、別番号のルールに分ける**"
                 f"（過去にルール(3)が 4,094字まで育ち、中身は全項目が正本と二重管理だった）")
 
+# --- 51. 委譲1回あたりの preload 予算（`skills:` は**スキル全文**が起動時に注入される）
+#         （2026-07-27 のトークン効率レビューで導入。実測: cmo-strategist が6本 40,251字、
+#          privacy-auditor が3本 28,400字。同時上限4体を重い順に使うと 12万字を超える。
+#          preload は E6（委譲先が正本を Read できない環境がある）への対策で**買っているものがある**ため
+#          削らないが、**黙って増えるのは止める**。増やすなら「Read では届かない判定根拠か」を
+#          説明したうえで上限ごと上げる。#34 は「必読なら preload 必須」の側だけを見ており、
+#          **増える方向にしか効かない検査だった** ---
+_PRELOAD_MAX = 44_000
+for _a in sorted((ROOT / "agents").glob("*.md")):
+    _n = sum(len(read(ROOT / f"skills/{_s}/SKILL.md"))
+             for _s in preloaded_skills(_a) if (ROOT / f"skills/{_s}/SKILL.md").is_file())
+    if _n > _PRELOAD_MAX:
+        err(f"agents/{_a.name}: `skills:` preload の合計が {_n:,}字（上限 {_PRELOAD_MAX:,}字）— "
+            f"**スキル全文が起動時に注入される**ので、委譲1回ぶんの文脈をそのまま食う。"
+            f"判定の根拠でないスキルは外すか、詳細を `resources/` へ寄せて SKILL.md を薄くする"
+            f"（`skills/web-design` が先例）。`python3 scripts/context-budget.py` で内訳を見る")
+
 # --- 結果 ---
 print(f"lint: commands={len(commands)} procedures={len(procedures)} "
       f"agents={len(list((ROOT/'agents').glob('*.md')))} skills={len(list((ROOT/'skills').glob('*/SKILL.md')))} "
