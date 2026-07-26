@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # lint #52 が version の繰り上げ漏れを git log で見るため
       - name: Install PyYAML（frontmatter を本物の YAML パーサで検査するため）
         run: python3 -m pip install --quiet pyyaml
       - name: Run lint
