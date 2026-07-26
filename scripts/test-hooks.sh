@@ -257,7 +257,14 @@ check "rm-guard: 終端後の本物のグロブ削除は deny" 'RM Guard' "$out"
 # ペイロードでは改行が literal な \n で来るため、`[^[:alnum:]_-]` 境界に対して
 # `\n` の "n" が英数字として働き、2行目以降の rm -rf が一致しなかった。
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cd /tmp\\nrm -rf outputs/"}}' | bash "$SC/rm-guard.sh")
-check "rm-guard: 多行コマンド2行目の rm -rf は deny" 'RM Guard' "$out"
+check "rm-guard: 改行区切りの2行目も deny（フェイルオープン回帰）" 'RM Guard' "$out"
+
+# 15c. 改行復元がマルチバイト混在でも壊れないこと
+#      （2026-07-27: CMD_TEXT の生成を sed から bash のパラメータ展開へ替えた。
+#       ASCII だけのテストでは**多バイト文字での取りこぼしを検出できない**ので、
+#       日本語を含む2行目の rm を明示的に置く。素通りしたらフェイルオープン）
+out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo 完了しました\\nrm -rf outputs/"}}' | bash "$SC/rm-guard.sh")
+check "rm-guard: 多行コマンド2行目の rm -rf は deny（日本語混在）" 'RM Guard' "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"echo start\\nls\\nrm outputs/*.png"}}' | bash "$SC/rm-guard.sh")
 check "rm-guard: 多行コマンド3行目のグロブ削除は deny" 'RM Guard' "$out"
 out=$(printf '{"tool_name":"Bash","tool_input":{"command":"cd /tmp\\nrm outputs/one.png"}}' | bash "$SC/rm-guard.sh")
