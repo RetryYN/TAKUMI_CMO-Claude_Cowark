@@ -39,7 +39,7 @@
 | リサーチ | logical-writing（レポート化するとき） | 大規模並列調査のみ調査系サブエージェントに分割 |
 | 収集 | —（ライセンスCPが規範） | — |
 | クリエイティブ（文章） | copy / sales / logical / business / storytelling / sns-jp / content-design / video-script / **seo-jp**（SEO記事）を依頼内容で選択 + **psych-nudge-jp**（訴求フレーム）・**psych-target-jp**（読み手別の書き分け） | 本格執筆は **deliverable-writer** へ委譲 |
-| クリエイティブ（画像・動画・ページ） | web-design + **psych-ux-jp**（心理根拠）+ **design-evidence-jp**（実証数値基準）+ 公開物は ad-compliance-jp 必須 | ビジュアル成果物（モックアップ・カルーセル・バナー等）は **design-artisan**（生成）→ **design-critic**（審査）のループ。**artisan が既定モデル（fable）で起動できず即終了したら、`model: sonnet` を明示して再委譲する**（自動フォールバックは無い＝呼び出し側の責務。docs/media-pipeline.md 末尾が正本）。**critic の PASS を得るまでユーザーに引き渡さない**（REVISE なら FIX を artisan に戻して再審査、最大2周。依頼経路を問わずこの順序は省略不可） |
+| クリエイティブ（画像・動画・ページ） | web-design + **psych-ux-jp**（心理根拠）+ **design-evidence-jp**（実証数値基準）+ 公開物は ad-compliance-jp 必須 | ビジュアル成果物（モックアップ・カルーセル・バナー等）は **design-artisan**（生成）→ **design-critic**（審査）のループ。**artisan が既定モデル（fable）で起動できず即終了したら、`model: opus` を明示して再委譲する**（自動フォールバックは無い＝呼び出し側の責務。**速い側へ降ろさない** — 正本は docs/agent-tiers.md）。**critic の PASS を得るまでユーザーに引き渡さない**（REVISE なら FIX を artisan に戻して再審査、最大2周。依頼経路を問わずこの順序は省略不可） |
 | 分析 | logical-writing / **seo-jp**（SEO診断）/ **cro-jp**（転換率のボトルネック分析）/ **local-seo-jp**（商圏のある事業の地図・ローカル検索） | 効果測定（返信率・エンゲージ集計）は **outcome-verifier** |
 | 掃き出し | —（不可逆送出の規律が規範） | 不可逆な一括送出は **pre-send-verifier**（敵対的監査）必須 → ユーザー承認 → 完了後に **outcome-verifier**（証跡検証） |
 | （横断）設計判断 | — | 長く効く判断・確信のない分岐は **strategy-advisor** に壁打ち（session-rules (11)(12)）。**計測基盤（GTM/GA4/GSC）の変更・指標の新設は単独の壁打ちではなく docs/parts/pre-setup-council.md の並列合議**（常設 **risk-forecaster**（構造由来の破綻を先読み）／**strategy-advisor**（運用継続性・ロールバック）を1ターンで同時委譲。**privacy-auditor は個人データが射程に入るときだけ追加** — タグ・トリガー・変数の設定には呼ばない。統合はメインループが行う） |

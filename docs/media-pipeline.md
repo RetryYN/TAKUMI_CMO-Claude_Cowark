@@ -65,7 +65,7 @@ ffmpeg -framerate 24 -i f%04d.png -c:v libvpx-vp9 -pix_fmt yuva420p -b:v 0 -crf 
 
 > **委譲の失敗時の作法（2026-07-25 ローカル実機検証 F2 で実測。自動フォールバックは存在しない）**:
 > `design-artisan` は既定 `model: fable`。fable が月次上限・不達だと **`Agent terminated early due to an API error` で即終了**する。
-> このとき**そのまま「生成できなかった」と報告してはならない** — `model: sonnet` を明示して同じプロンプトで再委譲し、
+> このとき**そのまま「生成できなかった」と報告してはならない** — `model: opus` を明示して同じプロンプトで再委譲し、
 > **どちらのモデルで生成したかを成果物の報告に1行添える**（`deliverable-writer` への振替は禁止＝別の役割）。
 > 同様に、委譲先が規範ファイル（`skills/**`）に到達できなかったと申告したら、
 > 呼び出し側が正本を Read して**本文を委譲プロンプトに同梱**して再委譲する（E6）。
